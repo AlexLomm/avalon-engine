@@ -1,0 +1,29 @@
+{
+  "name": "avalon-engine",
+  "version": "0.1.0",
+  "description": "This is an engine for playing the popular \"The Resistance: Avalon\" game.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx jest"
+  },
+  "author": "Alex Lomia",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.17.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlexLomm/avalon-engine.git"
+  },
+  "homepage": "https://github.com/AlexLomm/avalon-engine",
+  "bugs": "https://github.com/AlexLomm/avalon-engine/issues",
+  "keywords": [
+    "avalon",
+    "avalon node",
+    "avalon engine",
+    "resistance avalon"
+  ],
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
+}
