@@ -12,7 +12,7 @@ test('should return a role', () => {
 
   expect(player.getRole()).toBeFalsy();
 
-  const role = new Role();
+  const role = new Role('MERLIN');
   player.setRole(role);
 
   expect(player.getRole()).toEqual(role);

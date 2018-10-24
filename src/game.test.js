@@ -1,16 +1,26 @@
+const _      = require('lodash');
 const errors = require('./errors');
 const Game   = require('./game.js');
 const Player = require('./player');
 
-describe('adding players', () => {
+describe('working with players', () => {
   test('should add a player', () => {
     const game = new Game();
 
-    expect(game._players.length).toBeFalsy();
+    expect(game.getPlayers().length).toBeFalsy();
 
     game.addPlayer(new Player());
 
-    expect(game._players.length).toBeTruthy();
+    expect(game.getPlayers().length).toBeTruthy();
+  });
+
+  test('should get players', () => {
+    const game = new Game();
+
+    game.addPlayer(new Player('user-1'));
+    game.addPlayer(new Player('user-2'));
+
+    expect(game.getPlayers().length).toEqual(2);
   });
 
   test('should check that player is not falsy', () => {
@@ -36,7 +46,7 @@ describe('adding players', () => {
   test('should not add a player when the game is started', () => {
     const game = new Game();
 
-    [1, 2, 3, 4, 5].forEach(i => game.addPlayer(new Player(i)));
+    _.times(5, (i) => game.addPlayer(new Player(i)));
 
     game.start();
 
@@ -48,8 +58,7 @@ describe('adding players', () => {
   test('should prevent adding more than 10 players', () => {
     const game = new Game();
 
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-      .forEach((username) => game.addPlayer(new Player(username)));
+    _.times(10, (i) => game.addPlayer(new Player(i)));
 
     expect(() => {
       game.addPlayer(new Player());
@@ -90,7 +99,7 @@ describe('game start', () => {
   test('should mark the game as started', () => {
     const game = new Game();
 
-    game._players = [1, 2, 3, 4, 5];
+    _.times(8, (i) => game.addPlayer(new Player(i)));
 
     expect(game.getStartedAt()).toBeDefined();
     expect(game.getStartedAt()).toBeFalsy();
@@ -98,6 +107,81 @@ describe('game start', () => {
     game.start();
 
     expect(game.getStartedAt() instanceof Date).toStrictEqual(true);
+  });
+
+  test('should load the level preset appropriate to the player count', () => {
+    const game = new Game();
+
+    _.times(8, (i) => game.addPlayer(new Player(i)));
+
+    expect(game.getLevelPreset()).toBeDefined();
+    expect(game.getLevelPreset()).toBeFalsy();
+
+    game.start();
+
+    const levelPreset = game.getLevelPreset();
+    expect(levelPreset.getGoodCount() + levelPreset.getEvilCount()).toEqual(8);
+  });
+
+  test('should assign every player a role', () => {
+    const game = new Game();
+
+    _.times(8, (i) => game.addPlayer(new Player(i)));
+
+    game.start();
+
+    const roles = game.getPlayers()
+                      .filter(p => !!p.getRole())
+                      .map(p => p.getRole());
+
+    expect(roles.length).toEqual(8);
+  });
+
+  test('should always have default roles', () => {
+    const game = new Game();
+
+    _.times(7, (i) => game.addPlayer(new Player(i)));
+
+    game.start({
+      MERLIN: false,
+      ASSASSIN: false,
+    });
+
+    expect(game.getPlayers().find(p => p.getRole().getId() === 'MERLIN')).toBeTruthy();
+    expect(game.getPlayers().find(p => p.getRole().getId() === 'ASSASSIN')).toBeTruthy();
+  });
+
+  test('should have unique roles', () => {
+    const game = new Game();
+
+    _.times(10, (i) => game.addPlayer(new Player(i)));
+
+    game.start();
+
+    const roleIds = game.getPlayers().map(p => p.getRole().getId());
+
+    expect(_.uniqBy(roleIds, v => v).length).toEqual(roleIds.length);
+  });
+
+  test('should have a correct number of good and evil players', () => {
+    for (let j = 5; j < 10; j++) {
+      const game = new Game();
+
+      _.times(j, (i) => game.addPlayer(new Player(i)));
+
+      game.start();
+
+      let goodCount = 0;
+      let evilCount = 0;
+      game.getPlayers().forEach(p => {
+        const loyalty = p.getRole().getLoyalty();
+
+        loyalty === 'GOOD' ? goodCount++ : evilCount++;
+      });
+
+      expect(game.getLevelPreset().getGoodCount()).toEqual(goodCount);
+      expect(game.getLevelPreset().getEvilCount()).toEqual(evilCount);
+    }
   });
 });
 
