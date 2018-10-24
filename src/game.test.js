@@ -185,6 +185,72 @@ describe('game start', () => {
   });
 });
 
+describe('reveal roles', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  test('should reveal the roles', () => {
+    const game = new Game();
+
+    expect(game.getRolesAreRevealed()).toBeDefined();
+    expect(game.getRolesAreRevealed()).toBeFalsy();
+
+    game.revealRoles();
+
+    expect(game.getRolesAreRevealed()).toBeTruthy();
+  });
+
+  test('should conceal roles after specified seconds', (done) => {
+    const game = new Game();
+
+    game.revealRoles(10);
+
+    setTimeout(() => {
+      expect(game.getRolesAreRevealed()).toBeFalsy();
+
+      done();
+    }, 10.01 * 1000);
+
+    jest.runAllTimers();
+  });
+
+  test('should return a promise which will resolve after the roles are concealed', (done) => {
+    const game = new Game();
+
+    const p = game.revealRoles(10).then(() => {
+      expect(game.getRolesAreRevealed()).toBeFalsy();
+
+      done();
+    });
+
+    expect(p instanceof Promise).toBeTruthy();
+
+    jest.runAllTimers();
+  });
+
+  test('should return the old promise if it hasn\'t resolved yet', () => {
+    const game = new Game();
+
+    const p1 = game.revealRoles(10);
+    const p2 = game.revealRoles(10);
+
+    expect(p1).toBe(p2);
+  });
+
+  test('should return a new promise if the old one has resolved', () => {
+    const game = new Game();
+
+    const p1 = game.revealRoles(10);
+
+    jest.advanceTimersByTime(11 * 1000);
+
+    const p2 = game.revealRoles(10);
+
+    expect(p1).not.toBe(p2);
+  });
+});
+
 test('should set creation date', () => {
   const game = new Game();
 

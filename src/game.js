@@ -4,11 +4,13 @@ const LevelPreset = require('./level-preset');
 const Role        = require('./role');
 
 const Game = function () {
-  this._createdAt   = new Date();
-  this._startedAt   = null;
-  this._finishedAt  = null;
-  this._levelPreset = null;
-  this._players     = [];
+  this._createdAt          = new Date();
+  this._startedAt          = null;
+  this._finishedAt         = null;
+  this._levelPreset        = null;
+  this._rolesAreRevealed   = false;
+  this._revealRolesPromise = null;
+  this._players            = [];
 };
 
 Game.prototype.getPlayers = function () {
@@ -120,6 +122,28 @@ Game.prototype.getCreator = function () {
 
 Game.prototype.getLevelPreset = function () {
   return this._levelPreset;
+};
+
+Game.prototype.getRolesAreRevealed = function () {
+  return this._rolesAreRevealed;
+};
+
+Game.prototype.revealRoles = function (seconds) {
+  if (this._revealRolesPromise) return this._revealRolesPromise;
+
+  this._rolesAreRevealed = true;
+
+  this._revealRolesPromise = new Promise((resolve) => {
+    const rolesAreRevealed = setTimeout(() => {
+      this._rolesAreRevealed   = false;
+      this._revealRolesPromise = null;
+      clearTimeout(rolesAreRevealed);
+
+      resolve();
+    }, seconds * 1000);
+  });
+
+  return this._revealRolesPromise;
 };
 
 module.exports = Game;
