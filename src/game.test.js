@@ -2,6 +2,7 @@ const _      = require('lodash');
 const errors = require('./errors');
 const Game   = require('./game.js');
 const Player = require('./player');
+const Quest  = require('./quest');
 
 describe('working with players', () => {
   test('should add a player', () => {
@@ -86,13 +87,13 @@ describe('game start', () => {
     expect(() => {
       game.start();
 
-      [1, 2, 3, 4].forEach(() => game.addPlayer(new Player()));
+      _.times(4, (i) => game.addPlayer(new Player(i)));
     }).toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
 
     expect(() => {
       game.start();
 
-      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].forEach(() => game.addPlayer(new Player()));
+      _.times(11, (i) => game.addPlayer(new Player(i)));
     }).toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
   });
 
@@ -183,6 +184,31 @@ describe('game start', () => {
       expect(game.getLevelPreset().getEvilCount()).toEqual(evilCount);
     }
   });
+
+  test('should preserve a creator after game is started', () => {
+    const game = new Game();
+
+    _.times(7, (i) => game.addPlayer(new Player(i)));
+
+    const gameCreator = game.getCreator();
+
+    game.start();
+
+    expect(game.getCreator()).toBe(gameCreator);
+  });
+
+  test('should initialize quests', () => {
+    const game = new Game();
+
+    expect(game.getQuests().length).toBeFalsy();
+
+    _.times(5, (i) => game.addPlayer(new Player(i)));
+
+    game.start();
+
+    expect(game.getQuests().length).toEqual(5);
+    expect(game.getQuests()[0] instanceof Quest).toBeTruthy();
+  });
 });
 
 describe('reveal roles', () => {
@@ -266,4 +292,11 @@ test('should mark the game as finished', () => {
   game.finish();
 
   expect(game.getFinishedAt() instanceof Date).toStrictEqual(true);
+});
+
+test('should be assigned a unique id', () => {
+  const game1 = new Game();
+  const game2 = new Game();
+
+  expect(game1.getId()).not.toEqual(game2.getId());
 });

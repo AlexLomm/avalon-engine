@@ -1,9 +1,12 @@
+const crypto      = require('crypto');
 const _           = require('lodash');
 const errors      = require('./errors');
 const LevelPreset = require('./level-preset');
 const Role        = require('./role');
+const Quest       = require('./quest');
 
 const Game = function () {
+  this._id                 = crypto.randomBytes(20).toString('hex');
   this._createdAt          = new Date();
   this._startedAt          = null;
   this._finishedAt         = null;
@@ -11,6 +14,11 @@ const Game = function () {
   this._rolesAreRevealed   = false;
   this._revealRolesPromise = null;
   this._players            = [];
+  this._quests             = [];
+};
+
+Game.prototype.getId = function () {
+  return this._id;
 };
 
 Game.prototype.getPlayers = function () {
@@ -56,6 +64,9 @@ Game.prototype.start = function (config = {}) {
 
   // TODO: maybe extract into a separate class?
   this._assignRoles(config);
+
+  // TODO: maybe extract into a separate class?
+  this._initQuests();
 };
 
 Game.prototype._assignRoles = function (config = {}) {
@@ -112,6 +123,12 @@ Game.prototype._generateMinions = function (count) {
   ].slice(0, count);
 };
 
+Game.prototype._initQuests = function () {
+  this._quests = this._levelPreset.getQuests().map(config => {
+    return new Quest(config.playersNeeded, config.failsNeeded);
+  });
+};
+
 Game.prototype.finish = function () {
   this._finishedAt = new Date();
 };
@@ -144,6 +161,10 @@ Game.prototype.revealRoles = function (seconds) {
   });
 
   return this._revealRolesPromise;
+};
+
+Game.prototype.getQuests = function () {
+  return this._quests;
 };
 
 module.exports = Game;
