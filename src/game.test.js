@@ -66,7 +66,7 @@ describe('working with players', () => {
     }).toThrow(errors.MAXIMUM_PLAYERS_REACHED);
   });
 
-  test('should make the first player creator', () => {
+  test('should make the first player a creator', () => {
     const game = new Game();
 
     game.addPlayer(new Player('username-1'));
@@ -236,7 +236,7 @@ describe('reveal roles', () => {
       expect(game.getRolesAreRevealed()).toBeFalsy();
 
       done();
-    }, 10.01 * 1000);
+    }, 11 * 1000);
 
     jest.runAllTimers();
   });
@@ -274,6 +274,35 @@ describe('reveal roles', () => {
     const p2 = game.revealRoles(10);
 
     expect(p1).not.toBe(p2);
+  });
+});
+
+describe('choosing players', () => {
+  test('should set and get chosen players', () => {
+    const game = new Game();
+
+    game.addPlayer(new Player('user-1'));
+    game.addPlayer(new Player('user-2'));
+
+    expect(game.getChosenPlayers().length).toBeFalsy();
+
+    game.toggleIsChosen('user-2');
+
+    expect(game.getChosenPlayers().pop().getUsername()).toEqual('user-2');
+  });
+
+  test('should not submit in an inappropriate time', () => {
+    const game = new Game();
+
+    _.times(7, (i) => game.addPlayer(new Player(i)));
+
+    expect(() => game.submitPlayers()).toThrow(errors.GAME_NOT_STARTED);
+
+    game.start();
+
+    expect(() => game.submitPlayers()).toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
+
+    // TODO: add cases
   });
 });
 

@@ -1,31 +1,43 @@
-const rolesConfig  = require('./roles.config').rolesConfig;
-const errors = require('./errors');
+const rolesConfig = require('./roles.config').rolesConfig;
+const errors      = require('./errors');
 
 const Role = function (id) {
   if (!rolesConfig[id]) {
     throw new Error(errors.INCORRECT_ROLE_ID);
   }
 
-  this.id          = rolesConfig[id].id;
-  this.name        = rolesConfig[id].name;
-  this.description = rolesConfig[id].description;
-  this.loyalty     = rolesConfig[id].loyalty;
+  this._id             = rolesConfig[id].id;
+  this._name           = rolesConfig[id].name;
+  this._description    = rolesConfig[id].description;
+  this._loyalty        = rolesConfig[id].loyalty;
+  this._visibleRoleIds = rolesConfig[id].visibleRoleIds;
 };
 
 Role.prototype.getId = function () {
-  return this.id;
+  return this._id;
 };
 
 Role.prototype.getName = function () {
-  return this.name;
+  return this._name;
 };
 
 Role.prototype.getDescription = function () {
-  return this.description;
+  return this._description;
 };
 
 Role.prototype.getLoyalty = function () {
-  return this.loyalty;
+  return this._loyalty;
+};
+
+Role.prototype.getVisibleRoleIds = function () {
+  return this._visibleRoleIds;
+};
+
+Role.prototype.canSee = function (anotherRole) {
+  const index = this._visibleRoleIds
+    .findIndex((roleId) => roleId === anotherRole.getId());
+
+  return index > -1;
 };
 
 module.exports = Role;

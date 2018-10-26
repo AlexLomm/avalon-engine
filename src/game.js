@@ -1,6 +1,7 @@
 const crypto      = require('crypto');
 const _           = require('lodash');
 const errors      = require('./errors');
+const roleIds     = require('./roles.config').roleIds;
 const LevelPreset = require('./level-preset');
 const Role        = require('./role');
 const Quest       = require('./quest');
@@ -28,9 +29,13 @@ Game.prototype.getPlayers = function () {
 Game.prototype.addPlayer = function (player) {
   if (!player) return;
 
-  if (this._startedAt) throw new Error(errors.GAME_ALREADY_STARTED);
+  if (this._startedAt) {
+    throw new Error(errors.GAME_ALREADY_STARTED);
+  }
 
-  const existingPlayer = this._players.find(p => p.username === player.username);
+  const existingPlayer = this._players
+    .find(p => p.getUsername() === player.getUsername());
+
   if (existingPlayer) {
     throw new Error(errors.USERNAME_ALREADY_EXISTS);
   }
@@ -79,8 +84,8 @@ Game.prototype._assignRoles = function (config = {}) {
 
 Game.prototype._generateRolesConfig = function (config) {
   const defaultRolesConfig = {
-    MERLIN: true,
-    ASSASSIN: true,
+    [roleIds.MERLIN]: true,
+    [roleIds.ASSASSIN]: true,
   };
 
   return Object.assign({}, config, defaultRolesConfig);
@@ -106,21 +111,21 @@ Game.prototype._generateRoles = function (config) {
 };
 
 Game.prototype._generateServants = function (count) {
-  return [
-    new Role('SERVANT_1'),
-    new Role('SERVANT_2'),
-    new Role('SERVANT_3'),
-    new Role('SERVANT_4'),
-    new Role('SERVANT_5'),
-  ].slice(0, count);
+  return _.shuffle([
+    new Role(roleIds.SERVANT_1),
+    new Role(roleIds.SERVANT_2),
+    new Role(roleIds.SERVANT_3),
+    new Role(roleIds.SERVANT_4),
+    new Role(roleIds.SERVANT_5),
+  ]).slice(0, count);
 };
 
 Game.prototype._generateMinions = function (count) {
-  return [
-    new Role('MINION_1'),
-    new Role('MINION_2'),
-    new Role('MINION_3'),
-  ].slice(0, count);
+  return _.shuffle([
+    new Role(roleIds.MINION_1),
+    new Role(roleIds.MINION_2),
+    new Role(roleIds.MINION_3),
+  ]).slice(0, count);
 };
 
 Game.prototype._initQuests = function () {
@@ -165,6 +170,32 @@ Game.prototype.revealRoles = function (seconds) {
 
 Game.prototype.getQuests = function () {
   return this._quests;
+};
+
+Game.prototype.submitPlayers = function () {
+  if (!this._startedAt) {
+    throw new Error(errors.GAME_NOT_STARTED);
+  }
+
+  const chosenPlayers = this.getChosenPlayers();
+
+  if (!chosenPlayers.length) {
+    throw new Error(errors.INCORRECT_NUMBER_OF_PLAYERS);
+  }
+
+  // TODO: add logic
+};
+
+Game.prototype.getChosenPlayers = function () {
+  return this._players.filter(player => player.getIsChosen());
+};
+
+Game.prototype.toggleIsChosen = function (username) {
+  const player = this._players.find(p => p.getUsername() === username);
+
+  if (!player) return;
+
+  player.toggleIsChosen();
 };
 
 module.exports = Game;
