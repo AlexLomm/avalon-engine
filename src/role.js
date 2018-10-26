@@ -1,15 +1,15 @@
-const roles  = require('./roles.config');
+const rolesConfig  = require('./roles.config').rolesConfig;
 const errors = require('./errors');
 
 const Role = function (id) {
-  if (!roles[id]) {
+  if (!rolesConfig[id]) {
     throw new Error(errors.INCORRECT_ROLE_ID);
   }
 
-  this.id          = roles[id].id;
-  this.name        = roles[id].name;
-  this.description = roles[id].description;
-  this.loyalty     = roles[id].loyalty;
+  this.id          = rolesConfig[id].id;
+  this.name        = rolesConfig[id].name;
+  this.description = rolesConfig[id].description;
+  this.loyalty     = rolesConfig[id].loyalty;
 };
 
 Role.prototype.getId = function () {
