@@ -1,10 +1,10 @@
-const crypto      = require('crypto');
-const _           = require('lodash');
-const errors      = require('./errors');
-const roleIds     = require('./roles.config').roleIds;
-const LevelPreset = require('./level-preset');
-const Role        = require('./role');
-const Quest       = require('./quest');
+const crypto               = require('crypto');
+const _                    = require('lodash');
+const errors               = require('./errors');
+const {roleIds, loyalties} = require('./roles.config');
+const LevelPreset          = require('./level-preset');
+const Role                 = require('./role');
+const Quest                = require('./quest');
 
 const Game = function () {
   this._id                 = crypto.randomBytes(20).toString('hex');
@@ -15,6 +15,7 @@ const Game = function () {
   this._rolesAreRevealed   = false;
   this._revealRolesPromise = null;
   this._players            = [];
+  this._leaderIndex        = -1;
   this._quests             = [];
 };
 
@@ -72,6 +73,8 @@ Game.prototype.start = function (config = {}) {
 
   // TODO: maybe extract into a separate class?
   this._initQuests();
+
+  this._nextLeader();
 };
 
 Game.prototype._assignRoles = function (config = {}) {
@@ -129,9 +132,22 @@ Game.prototype._generateMinions = function (count) {
 };
 
 Game.prototype._initQuests = function () {
-  this._quests = this._levelPreset.getQuests().map(config => {
-    return new Quest(config.playersNeeded, config.failsNeeded);
-  });
+  this._quests = this._levelPreset.getQuests().map(
+    (config) => new Quest(config.playersNeeded, config.failsNeeded)
+  );
+};
+
+Game.prototype._nextLeader = function () {
+  if (this._leaderIndex === -1) {
+    this._leaderIndex = _.random(0, this._players.length - 1);
+
+    this._players[this._leaderIndex].markAsLeader();
+
+    return;
+  }
+
+  this._players[this._leaderIndex].unmarkAsLeader();
+  this._players[(this._leaderIndex + 1) % this._players.length].markAsLeader();
 };
 
 Game.prototype.finish = function () {

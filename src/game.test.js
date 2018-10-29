@@ -132,8 +132,8 @@ describe('game start', () => {
     game.start();
 
     const roles = game.getPlayers()
-                      .filter(p => !!p.getRole())
-                      .map(p => p.getRole());
+      .filter(p => !!p.getRole())
+      .map(p => p.getRole());
 
     expect(roles.length).toEqual(8);
   });
@@ -208,6 +208,17 @@ describe('game start', () => {
 
     expect(game.getQuests().length).toEqual(5);
     expect(game.getQuests()[0] instanceof Quest).toBeTruthy();
+  });
+
+  test('should choose a team leader', () => {
+    const game = new Game();
+
+    _.times(5, (i) => game.addPlayer(new Player(i)));
+
+    game.start();
+
+    const leader = game.getPlayers().find(p => p.getIsLeader());
+    expect(leader).toBeTruthy();
   });
 });
 

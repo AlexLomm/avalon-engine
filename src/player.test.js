@@ -43,8 +43,23 @@ test('should say if can see another player', () => {
   player1.setRole(new Role(roleIds.MERLIN));
 
   const player2 = new Player('user-2');
-  player2.setRole(new Role(roleIds.MINION_1))
+  player2.setRole(new Role(roleIds.MINION_1));
 
   expect(player1.canSee(player2)).toBeTruthy();
   expect(player2.canSee(player1)).toBeFalsy();
+});
+
+test('should mark as leader', () => {
+  const player = new Player('user-1');
+
+  expect(player.getIsLeader()).toBeDefined();
+  expect(player.getIsLeader()).toBeFalsy();
+
+  player.markAsLeader();
+
+  expect(player.getIsLeader()).toBeTruthy();
+
+  player.unmarkAsLeader();
+
+  expect(player.getIsLeader()).toBeFalsy();
 });
