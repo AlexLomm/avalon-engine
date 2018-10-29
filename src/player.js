@@ -2,7 +2,6 @@ const Player = function (username) {
   this._username = username;
   this._role     = null;
   this._isChosen = false;
-  this._isLeader = false;
 };
 
 Player.prototype.getUsername = function () {
@@ -27,18 +26,6 @@ Player.prototype.toggleIsChosen = function () {
 
 Player.prototype.canSee = function (anotherPlayer) {
   return this._role.canSee(anotherPlayer.getRole());
-};
-
-Player.prototype.getIsLeader = function () {
-  return this._isLeader;
-};
-
-Player.prototype.markAsLeader = function () {
-  this._isLeader = true;
-};
-
-Player.prototype.unmarkAsLeader = function () {
-  this._isLeader = false;
 };
 
 module.exports = Player;

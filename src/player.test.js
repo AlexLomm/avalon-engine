@@ -48,18 +48,3 @@ test('should say if can see another player', () => {
   expect(player1.canSee(player2)).toBeTruthy();
   expect(player2.canSee(player1)).toBeFalsy();
 });
-
-test('should mark as leader', () => {
-  const player = new Player('user-1');
-
-  expect(player.getIsLeader()).toBeDefined();
-  expect(player.getIsLeader()).toBeFalsy();
-
-  player.markAsLeader();
-
-  expect(player.getIsLeader()).toBeTruthy();
-
-  player.unmarkAsLeader();
-
-  expect(player.getIsLeader()).toBeFalsy();
-});
