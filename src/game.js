@@ -1,10 +1,13 @@
 const crypto         = require('crypto');
 const errors         = require('./errors');
 const LevelPreset    = require('./level-preset');
-const Quest          = require('./quest');
 const PlayersManager = require('./players-manager');
+const QuestsManager  = require('./quests-manager');
 
-const Game = function () {
+const Game = function (
+  playersManager = new PlayersManager(),
+  questsManager  = new QuestsManager()
+) {
   this._id                 = crypto.randomBytes(20).toString('hex');
   this._createdAt          = new Date();
   this._startedAt          = null;
@@ -12,9 +15,8 @@ const Game = function () {
   this._levelPreset        = null;
   this._rolesAreRevealed   = false;
   this._revealRolesPromise = null;
-  this._quests             = [];
-  // TODO: inject as a dependency
-  this._playersManager     = new PlayersManager();
+  this._playersManager     = playersManager;
+  this._questsManager      = questsManager;
 };
 
 Game.prototype.getId = function () {
@@ -53,14 +55,7 @@ Game.prototype.start = function (config = {}) {
 
   this._playersManager.assignRoles(this._levelPreset, config);
 
-  // TODO: maybe extract into a separate class?
-  this._initQuests();
-};
-
-Game.prototype._initQuests = function () {
-  this._quests = this._levelPreset.getQuests().map(
-    (config) => new Quest(config.playersNeeded, config.failsNeeded)
-  );
+  this._questsManager.init(this._levelPreset);
 };
 
 Game.prototype.finish = function () {
@@ -93,10 +88,6 @@ Game.prototype.revealRoles = function (seconds) {
   return this._revealRolesPromise;
 };
 
-Game.prototype.getQuests = function () {
-  return this._quests;
-};
-
 Game.prototype.submitPlayers = function () {
   if (!this._startedAt) {
     throw new Error(errors.GAME_NOT_STARTED);
@@ -112,11 +103,7 @@ Game.prototype.submitPlayers = function () {
 };
 
 Game.prototype.toggleIsChosen = function (username) {
-  const player = this._playersManager.find(p => p.getUsername() === username);
-
-  if (!player) return;
-
-  player.toggleIsChosen();
+  this._playersManager.toggleIsChosen(username);
 };
 
 Game.prototype.isTimeToVoteForTeam = function (username) {

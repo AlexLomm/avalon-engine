@@ -1,8 +1,9 @@
-const _      = require('lodash');
-const errors = require('./errors');
-const Game   = require('./game.js');
-const Player = require('./player');
-const Quest  = require('./quest');
+const _              = require('lodash');
+const errors         = require('./errors');
+const Game           = require('./game.js');
+const Player         = require('./player');
+const PlayersManager = require('./players-manager');
+const QuestsManager  = require('./quests-manager');
 
 describe('game start', () => {
   test('should not start the game if players\' count is incorrect', () => {
@@ -52,17 +53,34 @@ describe('game start', () => {
     expect(levelPreset.getGoodCount() + levelPreset.getEvilCount()).toEqual(8);
   });
 
-  test('should initialize quests', () => {
-    const game = new Game();
+  test('should assign roles', () => {
+    const playersManager = new PlayersManager();
 
-    expect(game.getQuests().length).toBeFalsy();
+    const game = new Game(playersManager);
+    jest.spyOn(playersManager, 'assignRoles');
 
     _.times(5, (i) => game.addPlayer(new Player(i)));
 
+    expect(playersManager.assignRoles).toBeCalledTimes(0);
+
     game.start();
 
-    expect(game.getQuests().length).toEqual(5);
-    expect(game.getQuests()[0] instanceof Quest).toBeTruthy();
+    expect(playersManager.assignRoles).toBeCalledTimes(1);
+  });
+
+  test('should initialize quests', () => {
+    const questsManager = new QuestsManager();
+
+    const game = new Game(new PlayersManager(), questsManager);
+    jest.spyOn(questsManager, 'init');
+
+    _.times(5, (i) => game.addPlayer(new Player(i)));
+
+    expect(questsManager.init).toBeCalledTimes(0);
+
+    game.start();
+
+    expect(questsManager.init).toBeCalledTimes(1);
   });
 });
 
@@ -185,4 +203,16 @@ test('should not add a player when the game is started', () => {
   expect(() => {
     game.addPlayer(new Player(6));
   }).toThrow(errors.GAME_ALREADY_STARTED);
+});
+
+test('should toggle whether player is chosen or not', () => {
+  const playersManager = new PlayersManager();
+  const game           = new Game(playersManager);
+
+  jest.spyOn(playersManager, 'toggleIsChosen');
+  _.times(5, (i) => game.addPlayer(new Player(i)));
+
+  game.toggleIsChosen(3);
+
+  expect(playersManager.toggleIsChosen).toBeCalledTimes(1);
 });
