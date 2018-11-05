@@ -6,24 +6,12 @@ const PlayersManager = require('./players-manager');
 const QuestsManager  = require('./quests-manager');
 
 describe('game start', () => {
-  test('should not start the game if players\' count is incorrect', () => {
+  test('should not start the game if the player count is not enough', () => {
     const game = new Game();
 
-    expect(() => {
-      game.start();
-    }).toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
+    _.times(4, (i) => game.addPlayer(new Player(i)));
 
-    expect(() => {
-      game.start();
-
-      _.times(4, (i) => game.addPlayer(new Player(i)));
-    }).toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
-
-    expect(() => {
-      game.start();
-
-      _.times(11, (i) => game.addPlayer(new Player(i)));
-    }).toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
+    expect(() => game.start()).toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
   });
 
   test('should mark the game as started', () => {
@@ -40,23 +28,22 @@ describe('game start', () => {
   });
 
   test('should load the level preset appropriate to the player count', () => {
-    const game = new Game();
+    const game        = new Game();
+    const playerCount = 8;
 
-    _.times(8, (i) => game.addPlayer(new Player(i)));
-
-    expect(game.getLevelPreset()).toBeDefined();
-    expect(game.getLevelPreset()).toBeFalsy();
+    _.times(playerCount, (i) => game.addPlayer(new Player(i)));
 
     game.start();
 
-    const levelPreset = game.getLevelPreset();
-    expect(levelPreset.getGoodCount() + levelPreset.getEvilCount()).toEqual(8);
+    const goodCount = game.getLevelPreset().getGoodCount();
+    const evilCount = game.getLevelPreset().getEvilCount();
+
+    expect(goodCount + evilCount).toEqual(playerCount);
   });
 
   test('should assign roles', () => {
     const playersManager = new PlayersManager();
-
-    const game = new Game(playersManager);
+    const game           = new Game(playersManager);
     jest.spyOn(playersManager, 'assignRoles');
 
     _.times(5, (i) => game.addPlayer(new Player(i)));
@@ -70,8 +57,7 @@ describe('game start', () => {
 
   test('should initialize quests', () => {
     const questsManager = new QuestsManager();
-
-    const game = new Game(new PlayersManager(), questsManager);
+    const game          = new Game(new PlayersManager(), questsManager);
     jest.spyOn(questsManager, 'init');
 
     _.times(5, (i) => game.addPlayer(new Player(i)));
@@ -150,6 +136,348 @@ describe('reveal roles', () => {
   });
 });
 
+describe('post starting phase', () => {
+  let game;
+  let playersManager;
+  let questsManager;
+  let leader;
+  beforeEach(() => {
+    playersManager = new PlayersManager();
+    questsManager  = new QuestsManager();
+
+    game = new Game(playersManager, questsManager);
+
+    _.times(7, (i) => game.addPlayer(new Player(i)));
+
+    game.start();
+    game.revealRoles(10);
+    jest.runAllTimers();
+
+    leader = playersManager.getLeader();
+  });
+
+  describe('team proposal', () => {
+    test('should throw when the team proposition is not allowed', () => {
+      playersManager = new PlayersManager();
+      questsManager  = new QuestsManager();
+
+      const game = new Game(playersManager, questsManager);
+
+      expect(() => game.toggleIsProposed(leader.getUsername(), 1))
+        .toThrow(errors.NO_VOTING_TIME);
+
+      _.times(7, (i) => game.addPlayer(new Player(i)));
+
+      expect(() => game.toggleIsProposed(leader.getUsername(), 1))
+        .toThrow(errors.NO_VOTING_TIME);
+
+      game.start();
+
+      expect(() => game.toggleIsProposed(leader.getUsername(), 1))
+        .toThrow(errors.NO_VOTING_TIME);
+
+      game.revealRoles(10);
+
+      expect(() => game.toggleIsProposed(leader.getUsername(), 1))
+        .toThrow(errors.NO_VOTING_TIME);
+
+      jest.runAllTimers();
+
+      _.times(
+        questsManager.getCurrentQuest().getVotesNeeded(),
+        (username) => game.toggleIsProposed(
+          playersManager.getLeader().getUsername(),
+          username
+        )
+      );
+
+      game.submitTeam(playersManager.getLeader().getUsername());
+
+      expect(() => game.toggleIsProposed(playersManager.getLeader().getUsername(), 1))
+        .toThrow(errors.NO_VOTING_TIME);
+
+      // TODO: add additional cases
+    });
+
+    test('should disallow anybody other then the party leader to propose a player', () => {
+      const leader = playersManager.getLeader();
+
+      expect(() => game.toggleIsProposed(leader.getUsername(), 3)).not.toThrow();
+
+      const nonLeader = playersManager.getAll().find(player => !player.getIsLeader());
+      expect(() => {
+        game.toggleIsProposed(nonLeader.getUsername(), 3);
+      }).toThrow(errors.NO_RIGHT_TO_PROPOSE);
+    });
+
+    test('should toggle whether a player is proposed or not', () => {
+      const leader = playersManager.getLeader();
+
+      jest.spyOn(playersManager, 'toggleIsProposed');
+
+      game.toggleIsProposed(leader.getUsername(), 3);
+
+      expect(playersManager.toggleIsProposed).toBeCalledTimes(1);
+    });
+
+    test('should disallow any further proposals once the team is submitted', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      expect(() => game.toggleIsProposed(leader.getUsername(), 2))
+        .toThrow(errors.NO_VOTING_TIME);
+    });
+  });
+
+  describe('team submission', () => {
+    test('should disallow team submission by a non-leader player', () => {
+      const nonLeaderUsername = playersManager.getAll().find(p => !p.getIsLeader());
+
+      expect(() => game.submitTeam(nonLeaderUsername))
+        .toThrow(errors.NO_RIGHT_TO_SUBMIT_TEAM);
+    });
+
+    test('should disallow submission if not enough players are proposed', () => {
+      expect(() => game.submitTeam(leader.getUsername()))
+        .toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
+
+      game.toggleIsProposed(leader.getUsername(), 1);
+
+      expect(() => game.submitTeam(leader.getUsername()))
+        .toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
+
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      expect(game.submitTeam(leader.getUsername()));
+    });
+
+    test('should submit proposed players', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      expect(playersManager.getIsSubmitted()).toBeFalsy();
+
+      game.submitTeam(leader.getUsername());
+
+      expect(playersManager.getIsSubmitted()).toBeTruthy();
+    });
+  });
+
+  describe('team voting', () => {
+    // TODO: refactor
+    test('should throw when team voting is not allowed', () => {
+      const playersManger = new PlayersManager();
+      const game          = new Game(playersManger);
+
+      expect(() => game.voteForTeam(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      _.times(7, (i) => game.addPlayer(new Player(i)));
+
+      expect(() => game.voteForTeam(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      game.start();
+
+      expect(() => game.voteForTeam(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      game.revealRoles(10);
+
+      expect(() => game.voteForTeam(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      jest.runAllTimers();
+
+      expect(() => game.voteForTeam(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      game.toggleIsProposed(playersManger.getLeader().getUsername(), 1);
+      game.toggleIsProposed(playersManger.getLeader().getUsername(), 2);
+
+      expect(() => game.voteForTeam(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      game.submitTeam(playersManger.getLeader().getUsername());
+
+      expect(() => game.voteForTeam(1, true)).not.toThrow(errors.NO_VOTING_TIME);
+
+      // TODO: add additional cases
+    });
+
+    test('should only allow to vote when the team is submitted', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      expect(() => game.voteForTeam(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      game.submitTeam(leader.getUsername());
+
+      expect(() => game.voteForTeam(1, false)).not.toThrow();
+    });
+
+    test('should only allow to vote to an existing player', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      expect(() => game.voteForTeam(3, true)).not.toThrow();
+      expect(() => game.voteForTeam('nonexistent', true)).toThrow(errors.NO_RIGHT_TO_VOTE);
+    });
+
+    test('should only allow voting once', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      game.voteForTeam(1, true);
+
+      expect(() => game.voteForTeam(1, true)).toThrow(errors.NO_RIGHT_TO_VOTE);
+    });
+
+    test('should persist the vote in quest history', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      jest.spyOn(questsManager, 'addVote');
+      game.voteForTeam(1, true);
+
+      expect(questsManager.addVote).toBeCalledTimes(1);
+    });
+
+    test('should reset the votes when the team voting was successful', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      jest.spyOn(questsManager, 'addVote');
+
+      playersManager.getAll().forEach(p => game.voteForTeam(p.getUsername(), true));
+
+      expect(playersManager.getAll()[0].getVote()).toBeFalsy();
+    });
+
+    test('should reset the votes even when the team got rejected', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      jest.spyOn(questsManager, 'addVote');
+
+      playersManager.getAll().forEach(p => game.voteForTeam(p.getUsername(), false));
+
+      expect(playersManager.getAll()[0].getVote()).toBeFalsy();
+    });
+  });
+
+  describe('quest voting', () => {
+    // TODO: refactor
+    test('should throw when quest voting is not allowed', () => {
+      const playersManger = new PlayersManager();
+      const game          = new Game(playersManger);
+
+      expect(() => game.voteForQuest(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      _.times(7, (i) => game.addPlayer(new Player(i)));
+
+      expect(() => game.voteForQuest(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      game.start();
+
+      expect(() => game.voteForQuest(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      game.revealRoles(10);
+
+      expect(() => game.voteForQuest(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      jest.runAllTimers();
+
+      expect(() => game.voteForQuest(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      game.toggleIsProposed(playersManger.getLeader().getUsername(), 1);
+      game.toggleIsProposed(playersManger.getLeader().getUsername(), 2);
+
+      expect(() => game.voteForQuest(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      game.submitTeam(playersManger.getLeader().getUsername());
+
+      expect(() => game.voteForQuest(1, true)).toThrow(errors.NO_VOTING_TIME);
+
+      // TODO: add additional cases
+    });
+
+    test('should return whether quest voting is on', () => {
+      expect(game.questVotingIsOn()).toBeFalsy();
+
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+      game.submitTeam(leader.getUsername());
+
+      expect(game.questVotingIsOn()).toBeFalsy();
+
+      playersManager.getAll().forEach(p => game.voteForTeam(p.getUsername(), true));
+
+      expect(game.questVotingIsOn()).toBeTruthy();
+    });
+
+    test('should only allow a proposed player to vote on a quest', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      playersManager.getAll().forEach(p => game.voteForTeam(p.getUsername(), true));
+
+      expect(() => game.voteForQuest(1, true)).not.toThrow();
+      expect(() => game.voteForQuest(4, true)).toThrow(errors.NO_RIGHT_TO_VOTE);
+      expect(() => game.voteForQuest('nonexistent', true)).toThrow(errors.NO_RIGHT_TO_VOTE);
+    });
+
+    test('should only allow a player to vote on a quest once', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      playersManager.getAll().forEach(p => game.voteForTeam(p.getUsername(), true));
+
+      game.voteForQuest(1, true);
+      expect(() => game.voteForQuest(1, true)).toThrow(errors.NO_RIGHT_TO_VOTE);
+    });
+
+    test('should persist the vote in the quest history', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      playersManager.getAll().forEach(p => game.voteForTeam(p.getUsername(), true));
+
+      jest.spyOn(questsManager, 'addVote');
+
+      game.voteForQuest(1, true);
+
+      expect(questsManager.addVote).toBeCalledTimes(1);
+    });
+
+    test('should reset the votes after every proposed player has voted', () => {
+      game.toggleIsProposed(leader.getUsername(), 1);
+      game.toggleIsProposed(leader.getUsername(), 2);
+
+      game.submitTeam(leader.getUsername());
+
+      playersManager.getAll().forEach(p => game.voteForTeam(p.getUsername(), true));
+      playersManager.getProposedPlayers().forEach(p => game.voteForQuest(p.getUsername(), true));
+
+      const playersWhoVotedCount = playersManager.getAll().filter(p => p.getVote()).length;
+
+      expect(playersWhoVotedCount).toStrictEqual(0);
+    });
+  });
+});
+
 test('should set creation date', () => {
   const game = new Game();
 
@@ -174,25 +502,6 @@ test('should be assigned a unique id', () => {
   expect(game1.getId()).not.toEqual(game2.getId());
 });
 
-test('should know if it is time to vote for team', () => {
-  const game = new Game();
-
-  expect(game.isTimeToVoteForTeam()).toBeFalsy();
-
-  _.times(7, (i) => game.addPlayer(new Player(i)));
-
-  game.start();
-  game.revealRoles(10);
-
-  expect(game.isTimeToVoteForTeam()).toBeFalsy();
-
-  jest.runAllTimers();
-
-  expect(game.isTimeToVoteForTeam()).toBeFalsy();
-
-  // TODO: add logic
-});
-
 test('should not add a player when the game is started', () => {
   const game = new Game();
 
@@ -200,19 +509,5 @@ test('should not add a player when the game is started', () => {
 
   game.start();
 
-  expect(() => {
-    game.addPlayer(new Player(6));
-  }).toThrow(errors.GAME_ALREADY_STARTED);
-});
-
-test('should toggle whether player is chosen or not', () => {
-  const playersManager = new PlayersManager();
-  const game           = new Game(playersManager);
-
-  jest.spyOn(playersManager, 'toggleIsChosen');
-  _.times(5, (i) => game.addPlayer(new Player(i)));
-
-  game.toggleIsChosen(3);
-
-  expect(playersManager.toggleIsChosen).toBeCalledTimes(1);
+  expect(() => game.addPlayer(new Player(6))).toThrow(errors.GAME_ALREADY_STARTED);
 });

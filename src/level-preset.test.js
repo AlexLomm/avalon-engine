@@ -12,3 +12,9 @@ test('should get quests', () => {
   expect(levelPreset.getQuests()).toBeTruthy();
   expect(levelPreset.getQuests().length).toBeTruthy();
 });
+
+test('should get total number of players', () => {
+  const levelPreset = new LevelPreset(7);
+
+  expect(levelPreset.getPlayerCount()).toEqual(7);
+});

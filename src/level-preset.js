@@ -18,4 +18,8 @@ LevelPreset.prototype.getQuests = function () {
   return this._quests;
 };
 
+LevelPreset.prototype.getPlayerCount = function () {
+  return this._goodCount + this._evilCount;
+};
+
 module.exports = LevelPreset;

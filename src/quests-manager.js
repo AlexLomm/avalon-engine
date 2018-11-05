@@ -13,8 +13,28 @@ QuestsManager.prototype.init = function (levelPreset) {
   this._levelPreset = levelPreset;
 
   this._quests = this._levelPreset.getQuests().map(
-    (config) => new Quest(config.playersNeeded, config.failsNeeded)
+    (config) => new Quest({
+      votesNeeded: config.votesNeeded,
+      failsNeeded: config.failsNeeded,
+      playerCount: this._levelPreset.getPlayerCount()
+    })
   );
+};
+
+QuestsManager.prototype.addVote = function (vote) {
+  return this.getCurrentQuest().addVote(vote);
+};
+
+QuestsManager.prototype.teamVotingRoundIsOver = function () {
+  return this.getCurrentQuest().teamVotingRoundIsOver();
+};
+
+QuestsManager.prototype.teamVotingWasSuccessful = function () {
+  return this.getCurrentQuest().teamVotingWasSuccessful();
+};
+
+QuestsManager.prototype.getCurrentQuest = function () {
+  return this._quests.find(q => !q.isComplete());
 };
 
 module.exports = QuestsManager;

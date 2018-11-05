@@ -1,7 +1,21 @@
 const Player = function (username) {
-  this._username = username;
-  this._role     = null;
-  this._isChosen = false;
+  this._username   = username;
+  this._role       = null;
+  this._isLeader   = false;
+  this._isProposed = false;
+  this._vote       = null;
+};
+
+Player.prototype.markAsLeader = function () {
+  this._isLeader = true;
+};
+
+Player.prototype.unmarkAsLeader = function () {
+  this._isLeader = false;
+};
+
+Player.prototype.getIsLeader = function () {
+  return this._isLeader;
 };
 
 Player.prototype.getUsername = function () {
@@ -16,16 +30,29 @@ Player.prototype.getRole = function () {
   return this._role;
 };
 
-Player.prototype.getIsChosen = function () {
-  return this._isChosen;
+Player.prototype.getVote = function () {
+  return this._vote;
 };
 
-Player.prototype.toggleIsChosen = function () {
-  this._isChosen = !this._isChosen;
+Player.prototype.getIsProposed = function () {
+  return this._isProposed;
+};
+
+Player.prototype.toggleIsProposed = function () {
+  this._isProposed = !this._isProposed;
 };
 
 Player.prototype.canSee = function (anotherPlayer) {
   return this._role.canSee(anotherPlayer.getRole());
+};
+
+Player.prototype.setVote = function (vote) {
+  this._vote = vote;
+};
+
+Player.prototype.reset = function () {
+  this._vote       = null;
+  this._isProposed = false;
 };
 
 module.exports = Player;

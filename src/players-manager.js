@@ -40,16 +40,16 @@ PlayersManager.prototype.add = function (player) {
   }
 };
 
-PlayersManager.prototype.getChosenPlayers = function () {
-  return this._players.filter(player => player.getIsChosen());
+PlayersManager.prototype.getProposedPlayers = function () {
+  return this._players.filter(player => player.getIsProposed());
 };
 
-PlayersManager.prototype.toggleIsChosen = function (username) {
+PlayersManager.prototype.toggleIsProposed = function (username) {
   const player = this._players.find(p => p.getUsername() === username);
 
   if (!player) return;
 
-  player.toggleIsChosen();
+  player.toggleIsProposed();
 };
 
 PlayersManager.prototype.markAsSubmitted = function () {
@@ -125,14 +125,59 @@ PlayersManager.prototype._generateMinions = function (count) {
 PlayersManager.prototype.nextLeader = function () {
   if (this._leaderIndex === -1) {
     this._leaderIndex = _.random(0, this._players.length - 1);
+
+    this.getLeader().markAsLeader();
+
     return;
   }
 
+  this.getLeader().unmarkAsLeader();
+
   this._leaderIndex = (this._leaderIndex + 1) % this._players.length;
+  this.getLeader().markAsLeader();
 };
 
 PlayersManager.prototype.getLeader = function () {
   return this._players[this._leaderIndex];
+};
+
+PlayersManager.prototype.isAllowedToVoteForQuest = function (username) {
+  const proposedPlayer = this.getProposedPlayers()
+    .find(p => p.getUsername() === username);
+
+  return proposedPlayer && !proposedPlayer.getVote();
+};
+
+PlayersManager.prototype.isAllowedToVoteForTeam = function (username) {
+  const player = this.getAll()
+    .find(p => p.getUsername() === username);
+
+  return player && !player.getVote();
+};
+
+PlayersManager.prototype.isAllowedToProposeTeam = function (username) {
+  return this.isAllowedToProposePlayer(username);
+};
+
+PlayersManager.prototype.isAllowedToProposePlayer = function (username) {
+  const leader = this.getLeader();
+
+  if (!leader) return false;
+
+  return leader.getUsername() === username;
+};
+
+PlayersManager.prototype.setVote = function (vote) {
+  const player = this._players
+    .find(p => p.getUsername() === vote.getUsername());
+
+  if (!player) return;
+
+  player.setVote(vote);
+};
+
+PlayersManager.prototype.resetVotes = function () {
+  this._players.forEach((player) => player.setVote(null));
 };
 
 module.exports = PlayersManager;

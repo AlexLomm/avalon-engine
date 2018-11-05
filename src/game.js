@@ -3,20 +3,22 @@ const errors         = require('./errors');
 const LevelPreset    = require('./level-preset');
 const PlayersManager = require('./players-manager');
 const QuestsManager  = require('./quests-manager');
+const Vote           = require('./vote');
 
 const Game = function (
   playersManager = new PlayersManager(),
   questsManager  = new QuestsManager()
 ) {
-  this._id                 = crypto.randomBytes(20).toString('hex');
-  this._createdAt          = new Date();
-  this._startedAt          = null;
-  this._finishedAt         = null;
-  this._levelPreset        = null;
-  this._rolesAreRevealed   = false;
-  this._revealRolesPromise = null;
-  this._playersManager     = playersManager;
-  this._questsManager      = questsManager;
+  this._id                  = crypto.randomBytes(20).toString('hex');
+  this._createdAt           = new Date();
+  this._startedAt           = null;
+  this._finishedAt          = null;
+  this._levelPreset         = null;
+  this._rolesLastRevealedAt = null;
+  this._rolesAreRevealed    = false;
+  this._revealRolesPromise  = null;
+  this._playersManager      = playersManager;
+  this._questsManager       = questsManager;
 };
 
 Game.prototype.getId = function () {
@@ -77,8 +79,9 @@ Game.prototype.revealRoles = function (seconds) {
 
   this._revealRolesPromise = new Promise((resolve) => {
     const rolesAreRevealed = setTimeout(() => {
-      this._rolesAreRevealed   = false;
-      this._revealRolesPromise = null;
+      this._rolesAreRevealed    = false;
+      this._revealRolesPromise  = null;
+      this._rolesLastRevealedAt = new Date();
       clearTimeout(rolesAreRevealed);
 
       resolve();
@@ -88,26 +91,94 @@ Game.prototype.revealRoles = function (seconds) {
   return this._revealRolesPromise;
 };
 
-Game.prototype.submitPlayers = function () {
-  if (!this._startedAt) {
-    throw new Error(errors.GAME_NOT_STARTED);
+Game.prototype.submitTeam = function (username) {
+  if (!this._playersManager.isAllowedToProposeTeam(username)) {
+    throw new Error(errors.NO_RIGHT_TO_SUBMIT_TEAM);
   }
 
-  const chosenPlayers = this.getChosenPlayers();
+  const proposedPlayersCount = this._playersManager.getProposedPlayers().length;
+  const votesNeededCount     = this._questsManager.getCurrentQuest().getVotesNeeded();
 
-  if (!chosenPlayers.length) {
+  if (proposedPlayersCount !== votesNeededCount) {
     throw new Error(errors.INCORRECT_NUMBER_OF_PLAYERS);
   }
 
-  // TODO: add logic
+  this._playersManager.markAsSubmitted();
 };
 
-Game.prototype.toggleIsChosen = function (username) {
-  this._playersManager.toggleIsChosen(username);
+Game.prototype.voteForQuest = function (username, voteValue) {
+  if (!this.questVotingIsOn()) {
+    throw new Error(errors.NO_VOTING_TIME);
+  }
+
+  if (!this._playersManager.isAllowedToVoteForQuest(username)) {
+    throw new Error(errors.NO_RIGHT_TO_VOTE);
+  }
+
+  const vote = new Vote(username, voteValue);
+
+  this._playersManager.setVote(vote);
+  this._questsManager.addVote(vote);
+
+  if (this.teamVotingIsOn()) {
+    this._playersManager.resetVotes();
+  }
 };
 
-Game.prototype.isTimeToVoteForTeam = function (username) {
-  // TODO: add logic
+Game.prototype.voteForTeam = function (username, voteValue) {
+  if (!this.teamVotingIsOn()) {
+    throw new Error(errors.NO_VOTING_TIME);
+  }
+
+  if (!this._playersManager.isAllowedToVoteForTeam(username)) {
+    throw new Error(errors.NO_RIGHT_TO_VOTE);
+  }
+
+  const vote = new Vote(username, voteValue);
+
+  this._playersManager.setVote(vote);
+  this._questsManager.addVote(vote);
+
+  // TODO: add state freezing logic
+
+  if (this._questsManager.teamVotingRoundIsOver()) {
+    this._playersManager.resetVotes();
+  }
+};
+
+Game.prototype.toggleIsProposed = function (leaderUsername, username) {
+  if (!this.teamPropositionIsOn()) {
+    throw new Error(errors.NO_VOTING_TIME);
+  }
+
+  if (!this._playersManager.isAllowedToProposePlayer(leaderUsername)) {
+    throw new Error(errors.NO_RIGHT_TO_PROPOSE);
+  }
+
+  this._playersManager.toggleIsProposed(username);
+};
+
+Game.prototype.questVotingIsOn = function () {
+  return this._gameHasStarted()
+         && this._playersManager.getIsSubmitted()
+         && this._questsManager.getCurrentQuest().questVotingIsAllowed();
+};
+
+Game.prototype.teamVotingIsOn = function () {
+  return this._gameHasStarted()
+         && this._playersManager.getIsSubmitted()
+         && this._questsManager.getCurrentQuest().teamVotingIsAllowed();
+};
+
+Game.prototype.teamPropositionIsOn = function () {
+  return this._gameHasStarted()
+         && !this._playersManager.getIsSubmitted();
+};
+
+Game.prototype._gameHasStarted = function () {
+  return this._startedAt
+         && this._rolesLastRevealedAt
+         && !this._rolesAreRevealed;
 };
 
 module.exports = Game;
