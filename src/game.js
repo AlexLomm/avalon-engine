@@ -48,15 +48,10 @@ Game.prototype.getFinishedAt = function () {
 Game.prototype.start = function (config = {}) {
   const playerCount = this._playersManager.getAll().length;
 
-  if (playerCount < 5 || playerCount > 10) {
-    throw new Error(errors.INCORRECT_NUMBER_OF_PLAYERS);
-  }
-
-  this._startedAt   = new Date();
   this._levelPreset = new LevelPreset(playerCount);
+  this._startedAt   = new Date();
 
   this._playersManager.assignRoles(this._levelPreset, config);
-
   this._questsManager.init(this._levelPreset);
 };
 
