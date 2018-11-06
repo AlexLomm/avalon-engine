@@ -1,8 +1,9 @@
 const Quest = require('./quest');
 
 const QuestsManager = function () {
-  this._levelPreset = null;
-  this._quests      = [];
+  this._levelPreset       = null;
+  this._quests            = [];
+  this._currentQuestIndex = 0;
 };
 
 QuestsManager.prototype.getAll = function () {
@@ -34,7 +35,16 @@ QuestsManager.prototype.teamVotingWasSuccessful = function () {
 };
 
 QuestsManager.prototype.getCurrentQuest = function () {
-  return this._quests.find(q => !q.isComplete());
+  return this._quests[this._currentQuestIndex];
 };
+
+QuestsManager.prototype.nextQuest = function () {
+  this._currentQuestIndex++;
+};
+
+QuestsManager.prototype.isLastRoundOfTeamVoting = function () {
+  return this.getCurrentQuest().isLastRoundOfTeamVoting();
+};
+
 
 module.exports = QuestsManager;

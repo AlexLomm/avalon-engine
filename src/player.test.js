@@ -94,3 +94,12 @@ test('should reset player', () => {
   expect(player.getVote()).toBeFalsy();
   expect(player.getIsProposed()).toBeFalsy();
 });
+
+test('should test proposition to false', () => {
+  const player = new Player('user-1');
+
+  player.toggleIsProposed();
+  player.setIsProposed(false);
+
+  expect(player.getIsProposed()).toBeFalsy();
+});

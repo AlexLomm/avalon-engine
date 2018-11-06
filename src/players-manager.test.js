@@ -310,3 +310,16 @@ test('should reset votes', () => {
 
   expect(playersVotedCount).toStrictEqual(0);
 });
+
+test('should reset propositions', () => {
+  const manager = new PlayersManager();
+
+  _.times(7, (i) => manager.add(new Player(i)));
+
+  manager.setVote(new Vote(3, true));
+  manager.setVote(new Vote(4, true));
+
+  manager.resetPropositions();
+
+  expect(manager.getProposedPlayers().length).toStrictEqual(0);
+});

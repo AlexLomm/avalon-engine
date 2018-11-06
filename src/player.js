@@ -42,6 +42,10 @@ Player.prototype.toggleIsProposed = function () {
   this._isProposed = !this._isProposed;
 };
 
+Player.prototype.setIsProposed = function (isProposed) {
+  this._isProposed = isProposed;
+};
+
 Player.prototype.canSee = function (anotherPlayer) {
   return this._role.canSee(anotherPlayer.getRole());
 };

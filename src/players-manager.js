@@ -180,4 +180,8 @@ PlayersManager.prototype.resetVotes = function () {
   this._players.forEach((player) => player.setVote(null));
 };
 
+PlayersManager.prototype.resetPropositions = function () {
+  this._players.forEach((player) => player.setIsProposed(false));
+};
+
 module.exports = PlayersManager;

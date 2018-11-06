@@ -104,6 +104,12 @@ Game.prototype.submitTeam = function (username) {
   }
 
   this._playersManager.markAsSubmitted();
+
+  if (this._questsManager.isLastRoundOfTeamVoting()) {
+    this._playersManager
+      .getAll()
+      .forEach((player) => this.voteForTeam(player.getUsername(), true));
+  }
 };
 
 Game.prototype.voteForQuest = function (username, voteValue) {
@@ -120,8 +126,9 @@ Game.prototype.voteForQuest = function (username, voteValue) {
   this._playersManager.setVote(vote);
   this._questsManager.addVote(vote);
 
-  if (this.teamVotingIsOn()) {
+  if (!this.questVotingIsOn()) {
     this._playersManager.resetVotes();
+    this._questsManager.nextQuest();
   }
 };
 
@@ -141,14 +148,18 @@ Game.prototype.voteForTeam = function (username, voteValue) {
 
   // TODO: add state freezing logic
 
-  if (this._questsManager.teamVotingRoundIsOver()) {
+  if (this._questsManager.teamVotingWasSuccessful()) {
     this._playersManager.resetVotes();
+  } else if (this._questsManager.teamVotingRoundIsOver()) {
+    this._playersManager.resetVotes();
+    this._playersManager.resetPropositions();
+    this._playersManager.unmarkAsSubmitted();
   }
 };
 
 Game.prototype.toggleIsProposed = function (leaderUsername, username) {
   if (!this.teamPropositionIsOn()) {
-    throw new Error(errors.NO_VOTING_TIME);
+    throw new Error(errors.NO_PROPOSITION_TIME);
   }
 
   if (!this._playersManager.isAllowedToProposePlayer(leaderUsername)) {

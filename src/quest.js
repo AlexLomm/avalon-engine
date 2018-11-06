@@ -6,14 +6,14 @@ const Quest = function (config = {}) {
     throw new Error(errors.INCORRECT_ARGUMENTS);
   }
 
-  this._votesNeeded       = config.votesNeeded;
-  this._failsNeeded       = config.failsNeeded;
+  this._votesNeeded                 = config.votesNeeded;
+  this._failsNeeded                 = config.failsNeeded;
   // TODO: rename
-  this._playerCount       = config.playerCount;
-  this._teamVoteRounds    = [[], [], [], [], []];
-  this._currentRoundIndex = 0;
-  this._questVotes        = [];
-  this._tracker           = 1;
+  this._playerCount                 = config.playerCount;
+  this._teamVoteRounds              = [[], [], [], [], []];
+  this._currentTeamVotingRoundIndex = 0;
+  this._questVotes                  = [];
+  this._tracker                     = 1;
 };
 
 Quest.prototype.getVotesNeeded = function () {
@@ -56,7 +56,7 @@ Quest.prototype._addVoteForTeam = function (vote) {
   currentRound.push(vote);
 
   if (this._everybodyVotedInRound(currentRound) && !this.teamVotingWasSuccessful()) {
-    this._currentRoundIndex++;
+    this._currentTeamVotingRoundIndex++;
     this._tracker++;
   }
 };
@@ -114,7 +114,7 @@ Quest.prototype.teamVotingIsAllowed = function () {
 Quest.prototype.teamVotingRoundIsOver = function () {
   if (this.teamVotingWasSuccessful()) return true;
 
-  const previousRound = this._teamVoteRounds[this._currentRoundIndex - 1];
+  const previousRound = this._teamVoteRounds[this._currentTeamVotingRoundIndex - 1];
 
   if (!previousRound) return false;
 
@@ -127,7 +127,11 @@ Quest.prototype._everybodyVotedInRound = function (round) {
 };
 
 Quest.prototype._getCurrentTeamVotingRound = function () {
-  return this._teamVoteRounds[this._currentRoundIndex];
+  return this._teamVoteRounds[this._currentTeamVotingRoundIndex];
+};
+
+Quest.prototype.isLastRoundOfTeamVoting = function () {
+  return this._currentTeamVotingRoundIndex === this._teamVoteRounds.length - 1;
 };
 
 module.exports = Quest;

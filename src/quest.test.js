@@ -1,3 +1,4 @@
+const _      = require('lodash');
 const Quest  = require('./quest');
 const Vote   = require('./vote');
 const errors = require('./errors');
@@ -86,13 +87,23 @@ test('should return status: pending when the team has been rejected', () => {
   expect(quest.getStatus()).toStrictEqual(-1);
 });
 
-test('should not allow a user to vote twice in a team vote', () => {
+test('should not allow a player to vote twice in the same team voting round', () => {
   const quest = new Quest({votesNeeded: 2, failsNeeded: 1, playerCount: 2});
 
   quest.addVote(new Vote('user-1', true));
 
   expect(() => quest.addVote(new Vote('user-1', false)))
     .toThrow(errors.VOTED_ALREADY);
+});
+
+test('should allow a player to vote again in the next team voting round', () => {
+  const quest = new Quest({votesNeeded: 2, failsNeeded: 1, playerCount: 2});
+
+  quest.addVote(new Vote('user-1', false));
+  quest.addVote(new Vote('user-2', false));
+
+  expect(() => quest.addVote(new Vote('user-1', false)))
+    .not.toThrow(errors.VOTED_ALREADY);
 });
 
 test('should not allow a user to vote twice in a quest vote', () => {
@@ -181,4 +192,17 @@ test('should return whether everybody has voted for the quest or not', () => {
   quest.addVote(new Vote('user-2', true));
 
   expect(quest.questVotingIsOver()).toBeTruthy();
+});
+
+test('should return if it\'s the last round of team voting', () => {
+  const quest = new Quest({votesNeeded: 2, failsNeeded: 1, playerCount: 2});
+
+  expect(quest.isLastRoundOfTeamVoting()).toBeFalsy();
+
+  _.times(4, () => {
+    quest.addVote(new Vote('user-1', false));
+    quest.addVote(new Vote('user-2', false));
+  });
+
+  expect(quest.isLastRoundOfTeamVoting()).toBeTruthy();
 });

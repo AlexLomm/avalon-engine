@@ -7,6 +7,7 @@ module.exports = {
   INCORRECT_ROLE_ID: 'such id does not exist',
   INCORRECT_ARGUMENTS: 'the arguments supplied are incorrect',
   VOTED_ALREADY: 'the user has already voted',
+  NO_PROPOSITION_TIME: 'not a time for proposition',
   NO_VOTING_TIME: 'not a voting time',
   NO_RIGHT_TO_PROPOSE: 'has no right to propose a player',
   NO_RIGHT_TO_VOTE: 'has no right to vote',
