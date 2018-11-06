@@ -116,10 +116,7 @@ Game.prototype.voteForQuest = function (username, voteValue) {
     throw new Error(errors.NO_RIGHT_TO_VOTE);
   }
 
-  const vote = new Vote(username, voteValue);
-
-  this._playersManager.setVote(vote);
-  this._questsManager.addVote(vote);
+  this._vote(username, voteValue);
 
   if (!this.questVotingIsOn()) {
     this._playersManager.resetVotes();
@@ -136,20 +133,27 @@ Game.prototype.voteForTeam = function (username, voteValue) {
     throw new Error(errors.NO_RIGHT_TO_VOTE);
   }
 
-  const vote = new Vote(username, voteValue);
-
-  this._playersManager.setVote(vote);
-  this._questsManager.addVote(vote);
+  this._vote(username, voteValue);
 
   // TODO: add state freezing logic
 
   if (this._questsManager.teamVotingWasSuccessful()) {
     this._playersManager.resetVotes();
-  } else if (this._questsManager.teamVotingRoundIsOver()) {
+
+    return;
+  }
+
+  if (this._questsManager.teamVotingRoundIsOver()) {
     this._playersManager.resetVotes();
     this._playersManager.resetPropositions();
     this._playersManager.unmarkAsSubmitted();
   }
+};
+
+Game.prototype._vote = function (username, voteValue) {
+  const vote = new Vote(username, voteValue);
+  this._playersManager.setVote(vote);
+  this._questsManager.addVote(vote);
 };
 
 Game.prototype.toggleIsProposed = function (leaderUsername, username) {
