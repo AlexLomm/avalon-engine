@@ -5,10 +5,26 @@ const PlayersManager = require('./players-manager');
 const Player         = require('./player');
 const Vote           = require('./vote');
 
+let manager;
+beforeEach(() => {
+  manager = new PlayersManager();
+});
+
+const addPlayersAndAssignRoles = (number, _manager = manager) => {
+  addPlayersToManager(number, _manager);
+  assignRolesToManager(_manager);
+};
+
+const addPlayersToManager = (number, _manager = manager) => {
+  _.times(number, (i) => _manager.add(new Player(`user-${i}`)));
+};
+
+const assignRolesToManager = (_manager = manager) => {
+  _manager.assignRoles(new LevelPreset(_manager.getAll().length));
+};
+
 describe('adding players', () => {
   test('should add a player', () => {
-    const manager = new PlayersManager();
-
     expect(manager.getAll().length).toBeFalsy();
 
     manager.add(new Player());
@@ -17,8 +33,6 @@ describe('adding players', () => {
   });
 
   test('should get players', () => {
-    const manager = new PlayersManager();
-
     manager.add(new Player('user-1'));
     manager.add(new Player('user-2'));
 
@@ -26,18 +40,14 @@ describe('adding players', () => {
   });
 
   test('should not accept a "falsy" argument to add as a player', () => {
-    const manager = new PlayersManager();
-
-    const playersLength = manager._players.length;
+    const initialPlayersCount = manager.getAll().length;
 
     manager.add(null);
 
-    expect(manager._players.length).toStrictEqual(playersLength);
+    expect(manager.getAll().length).toStrictEqual(initialPlayersCount);
   });
 
   test('should prevent adding a new player with the same username', () => {
-    const manager = new PlayersManager();
-
     manager.add(new Player('some-username'));
 
     expect(() => {
@@ -46,16 +56,12 @@ describe('adding players', () => {
   });
 
   test('should prevent adding more than 10 players', () => {
-    const manager = new PlayersManager();
-
-    _.times(10, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(10);
 
     expect(() => manager.add(new Player('user-11'))).toThrow(errors.MAXIMUM_PLAYERS_REACHED);
   });
 
   test('should make the first player a "creator"', () => {
-    const manager = new PlayersManager();
-
     manager.add(new Player('username-1'));
     manager.add(new Player('username-2'));
 
@@ -65,11 +71,7 @@ describe('adding players', () => {
 
 describe('roles assignment', () => {
   test('should assign every player a role', () => {
-    const manager = new PlayersManager();
-
-    _.times(8, (i) => manager.add(new Player(`user-${i}`)));
-
-    manager.assignRoles(new LevelPreset(manager.getAll().length));
+    addPlayersAndAssignRoles(8);
 
     const roles = manager.getAll()
       .filter(p => !!p.getRole())
@@ -78,10 +80,8 @@ describe('roles assignment', () => {
     expect(roles.length).toEqual(8);
   });
 
-  test('should always have the default roles', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+  test('should always assign default roles to players', () => {
+    addPlayersToManager(7);
 
     manager.assignRoles(new LevelPreset(manager.getAll().length), {
       MERLIN: false,
@@ -92,12 +92,8 @@ describe('roles assignment', () => {
     expect(manager.getAll().find(p => p.getRole().getId() === 'ASSASSIN')).toBeTruthy();
   });
 
-  test('should have unique roles', () => {
-    const manager = new PlayersManager();
-
-    _.times(10, (i) => manager.add(new Player(`user-${i}`)));
-
-    manager.assignRoles(new LevelPreset(manager.getAll().length));
+  test('should assign every player a unique role', () => {
+    addPlayersAndAssignRoles(10);
 
     const roleIds = manager.getAll().map(p => p.getRole().getId());
 
@@ -108,9 +104,7 @@ describe('roles assignment', () => {
     for (let j = 5; j < 10; j++) {
       const manager = new PlayersManager();
 
-      _.times(j, (i) => manager.add(new Player(`user-${i}`)));
-
-      manager.assignRoles(new LevelPreset(manager.getAll().length));
+      addPlayersAndAssignRoles(j, manager);
 
       let goodCount = 0;
       let evilCount = 0;
@@ -126,36 +120,39 @@ describe('roles assignment', () => {
   });
 
   test('should have a team leader chosen', () => {
-    const manager = new PlayersManager();
-
-    _.times(8, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(8);
 
     expect(manager.getLeader()).toBeFalsy();
 
-    manager.assignRoles(new LevelPreset(manager.getAll().length));
+    assignRolesToManager();
 
-    expect(manager.getLeader()).toBeTruthy();
     expect(manager.getLeader().getIsLeader()).toBeTruthy();
   });
 
   test('should preserve a creator after the role assignment phase', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(7);
 
     const gameCreator = manager.getGameCreator();
 
-    manager.assignRoles(new LevelPreset(manager.getAll().length));
+    assignRolesToManager();
 
     expect(manager.getGameCreator()).toBe(gameCreator);
   });
 });
 
 describe('leader', () => {
-  test('should allow only one leader to exist', () => {
-    const manager = new PlayersManager();
+  test('should choose the next team leader', () => {
+    addPlayersToManager(5);
 
-    _.times(5, (i) => manager.add(new Player(`user-${i}`)));
+    expect(manager.getLeader()).toBeFalsy();
+
+    manager.nextLeader();
+
+    expect(manager.getLeader().getIsLeader()).toBeTruthy();
+  });
+
+  test('should allow only one leader to exist', () => {
+    addPlayersToManager(5);
 
     manager.nextLeader();
     manager.nextLeader();
@@ -166,23 +163,8 @@ describe('leader', () => {
     expect(leadersCount).toStrictEqual(1);
   });
 
-  test('should choose the next team leader', () => {
-    const manager = new PlayersManager();
-
-    _.times(5, (i) => manager.add(new Player(`user-${i}`)));
-
-    expect(manager.getLeader()).toBeFalsy();
-
-    manager.nextLeader();
-
-    expect(manager.getLeader()).toBeTruthy();
-    expect(manager.getLeader().getIsLeader()).toBeTruthy();
-  });
-
-  test('should choose a new leader that is located next to the old leader', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+  test('should choose a new leader that is located right next to the old leader', () => {
+    addPlayersToManager(7);
 
     manager.nextLeader();
     const oldLeaderIndex = manager.getAll()
@@ -198,9 +180,7 @@ describe('leader', () => {
 
 describe('team proposition and submission', () => {
   test('should return if a player has right to propose a teammate', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(7);
 
     expect(manager.isAllowedToProposePlayer('user-1')).toBeFalsy();
 
@@ -211,8 +191,6 @@ describe('team proposition and submission', () => {
   });
 
   test('should set and get proposed players', () => {
-    const manager = new PlayersManager();
-
     manager.add(new Player('user-1'));
     manager.add(new Player('user-2'));
 
@@ -226,9 +204,7 @@ describe('team proposition and submission', () => {
   });
 
   test('should return if a player has right to submit a team', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(7);
 
     expect(manager.isAllowedToProposeTeam('user-1')).toBeFalsy();
 
@@ -239,9 +215,7 @@ describe('team proposition and submission', () => {
   });
 
   test('should mark players as submitted', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(7);
 
     expect(manager.getIsSubmitted()).toStrictEqual(false);
 
@@ -255,9 +229,7 @@ describe('team proposition and submission', () => {
   });
 
   test('should reset votes', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(7);
 
     manager.setVote(new Vote('user-3', true));
     manager.setVote(new Vote('user-4', true));
@@ -271,9 +243,7 @@ describe('team proposition and submission', () => {
   });
 
   test('should reset propositions', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(7);
 
     manager.setVote(new Vote('user-3', true));
     manager.setVote(new Vote('user-4', true));
@@ -286,9 +256,7 @@ describe('team proposition and submission', () => {
 
 describe('voting', () => {
   test('should mark player as has voted', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(7);
 
     manager.setVote(new Vote('nonexistent', false));
 
@@ -302,9 +270,7 @@ describe('voting', () => {
   });
 
   test('should return if a player is allowed to vote for team', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(7);
 
     expect(manager.isAllowedToVoteForTeam('user-1')).toBeTruthy();
 
@@ -314,9 +280,7 @@ describe('voting', () => {
   });
 
   test('should return if a player is allowed to vote for quest', () => {
-    const manager = new PlayersManager();
-
-    _.times(7, (i) => manager.add(new Player(`user-${i}`)));
+    addPlayersToManager(7);
 
     expect(manager.isAllowedToVoteForQuest('user-1')).toBeFalsy();
 
