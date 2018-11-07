@@ -9,6 +9,7 @@ module.exports = {
   VOTED_ALREADY: 'the user has already voted',
   NO_PROPOSITION_TIME: 'not a time for proposition',
   NO_VOTING_TIME: 'not a voting time',
+  NO_ASSASSINATION_TIME: 'not a time for assassination',
   NO_RIGHT_TO_PROPOSE: 'has no right to propose a player',
   NO_RIGHT_TO_VOTE: 'has no right to vote',
   NO_RIGHT_TO_SUBMIT_TEAM: 'has no right to submit the team'
