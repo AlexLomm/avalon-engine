@@ -5,7 +5,43 @@ const Player         = require('./player');
 const PlayersManager = require('./players-manager');
 const QuestsManager  = require('./quests-manager');
 
+describe('initialization', () => {
+  test('should set creation date', () => {
+    const game = new Game();
+
+    expect(game.getCreatedAt() instanceof Date).toStrictEqual(true);
+  });
+
+  test('should mark the game as finished', () => {
+    const game = new Game();
+
+    expect(game.getFinishedAt()).toBeDefined();
+    expect(game.getFinishedAt()).toBeFalsy();
+
+    game.finish();
+
+    expect(game.getFinishedAt() instanceof Date).toStrictEqual(true);
+  });
+
+  test('should be assigned a unique id', () => {
+    const game1 = new Game();
+    const game2 = new Game();
+
+    expect(game1.getId()).not.toEqual(game2.getId());
+  });
+});
+
 describe('game start', () => {
+  test('should not add a player when the game is started', () => {
+    const game = new Game();
+
+    _.times(5, (i) => game.addPlayer(new Player(i)));
+
+    game.start();
+
+    expect(() => game.addPlayer(new Player('user-6'))).toThrow(errors.GAME_ALREADY_STARTED);
+  });
+
   test('should not start the game if the player count is not enough', () => {
     const game = new Game();
 
@@ -71,10 +107,6 @@ describe('game start', () => {
 });
 
 describe('reveal roles', () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
   test('should reveal the roles', () => {
     const game = new Game();
 
@@ -87,6 +119,8 @@ describe('reveal roles', () => {
   });
 
   test('should conceal roles after specified seconds', (done) => {
+    jest.useFakeTimers();
+
     const game = new Game();
 
     game.revealRoles(10);
@@ -101,6 +135,8 @@ describe('reveal roles', () => {
   });
 
   test('should return a promise which will resolve after the roles are concealed', (done) => {
+    jest.useFakeTimers();
+
     const game = new Game();
 
     const p = game.revealRoles(10).then(() => {
@@ -124,6 +160,8 @@ describe('reveal roles', () => {
   });
 
   test('should return a new promise if the old one has resolved', () => {
+    jest.useFakeTimers();
+
     const game = new Game();
 
     const p1 = game.revealRoles(10);
@@ -438,38 +476,4 @@ describe('post "reveal roles" phase', () => {
       expect(previousQuest).not.toBe(questsManager.getCurrentQuest());
     });
   });
-});
-
-test('should set creation date', () => {
-  const game = new Game();
-
-  expect(game.getCreatedAt() instanceof Date).toStrictEqual(true);
-});
-
-test('should mark the game as finished', () => {
-  const game = new Game();
-
-  expect(game.getFinishedAt()).toBeDefined();
-  expect(game.getFinishedAt()).toBeFalsy();
-
-  game.finish();
-
-  expect(game.getFinishedAt() instanceof Date).toStrictEqual(true);
-});
-
-test('should be assigned a unique id', () => {
-  const game1 = new Game();
-  const game2 = new Game();
-
-  expect(game1.getId()).not.toEqual(game2.getId());
-});
-
-test('should not add a player when the game is started', () => {
-  const game = new Game();
-
-  _.times(5, (i) => game.addPlayer(new Player(i)));
-
-  game.start();
-
-  expect(() => game.addPlayer(new Player('user-6'))).toThrow(errors.GAME_ALREADY_STARTED);
 });
