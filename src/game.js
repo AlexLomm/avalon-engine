@@ -1,5 +1,6 @@
 const crypto         = require('crypto');
 const errors         = require('./errors');
+const {roleIds}      = require('./roles.config');
 const LevelPreset    = require('./level-preset');
 const PlayersManager = require('./players-manager');
 const QuestsManager  = require('./quests-manager');
@@ -119,7 +120,8 @@ Game.prototype.voteForQuest = function (username, voteValue) {
   this._vote(username, voteValue);
 
   if (!this.questVotingIsOn()) {
-    this._playersManager.resetVotes();
+    this._resetFlags();
+
     this._questsManager.nextQuest();
   }
 };
@@ -144,10 +146,14 @@ Game.prototype.voteForTeam = function (username, voteValue) {
   }
 
   if (this._questsManager.teamVotingRoundIsOver()) {
-    this._playersManager.resetVotes();
-    this._playersManager.resetPropositions();
-    this._playersManager.unmarkAsSubmitted();
+    this._resetFlags();
   }
+};
+
+Game.prototype._resetFlags = function () {
+  this._playersManager.resetVotes();
+  this._playersManager.resetPropositions();
+  this._playersManager.unmarkAsSubmitted();
 };
 
 Game.prototype._vote = function (username, voteValue) {
@@ -166,6 +172,23 @@ Game.prototype.toggleIsProposed = function (leaderUsername, username) {
   }
 
   this._playersManager.toggleIsProposed(username);
+};
+
+Game.prototype.assassinate = function (assassinsUsername, victimsUsername) {
+  if (!this.assassinationIsOn()) {
+    throw new Error(errors.NO_ASSASSINATION_TIME);
+  }
+
+  this._playersManager.assassinate(assassinsUsername, victimsUsername);
+  this._questsManager.setAssassinationStatus(this._assassinationIsSuccessful());
+};
+
+Game.prototype.assassinationIsOn = function () {
+  return this._questsManager.assassinationIsAllowed();
+};
+
+Game.prototype._assassinationIsSuccessful = function () {
+  return this._playersManager.getVictim().getRole().getId() === roleIds.MERLIN;
 };
 
 Game.prototype.questVotingIsOn = function () {

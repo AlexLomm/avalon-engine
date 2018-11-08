@@ -1,14 +1,33 @@
-const _       = require('lodash');
-const errors  = require('./errors');
-const roleIds = require('./roles.config').roleIds;
-const Role    = require('./role');
+const _         = require('lodash');
+const errors    = require('./errors');
+const {roleIds} = require('./roles.config');
+const Role      = require('./role');
 
 const PlayersManager = function () {
   this._leaderIndex = -1;
   this._levelPreset = null;
   this._isSubmitted = false;
   this._gameCreator = null;
+  this._assassin    = null;
+  this._victim      = null;
   this._players     = [];
+};
+
+PlayersManager.prototype.getVictim = function () {
+  return this._victim;
+};
+
+PlayersManager.prototype.assassinate = function (assassinsUsername, victimsUsername) {
+  if (!this._assassin || this._assassin.getUsername() !== assassinsUsername) {
+    throw new Error(errors.NO_RIGHT_TO_ASSASSINATE);
+  }
+
+  this._victim = this.getAll()
+    .find((player) => player.getUsername() === victimsUsername);
+};
+
+PlayersManager.prototype.getAssassin = function () {
+  return this._assassin;
 };
 
 PlayersManager.prototype.getAll = function () {
@@ -71,7 +90,11 @@ PlayersManager.prototype.assignRoles = function (levelPreset, config = {}) {
 
   const roles = this._generateRoles(rolesConfig);
 
-  this._players.forEach(player => player.setRole(roles.pop()));
+  this._players.forEach((player) => player.setRole(roles.pop()));
+
+  this._assassin = this._players.find(
+    (player) => player.getRole().getId() === roleIds.ASSASSIN
+  );
 
   this.nextLeader();
 };
