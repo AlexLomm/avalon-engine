@@ -4,13 +4,13 @@ const Role    = require('./role');
 const Vote    = require('./vote');
 
 test('should return if is leader', () => {
-  const player = new Player(1);
+  const player = new Player('user-1');
 
   expect(player.getIsLeader()).toBeFalsy();
 });
 
 test('should mark as leader', () => {
-  const player = new Player(1);
+  const player = new Player('user-1');
 
   player.markAsLeader();
 
@@ -18,7 +18,7 @@ test('should mark as leader', () => {
 });
 
 test('should unmark as leader', () => {
-  const player = new Player(1);
+  const player = new Player('user-1');
 
   player.markAsLeader();
   player.unmarkAsLeader();
@@ -102,4 +102,14 @@ test('should test proposition to false', () => {
   player.setIsProposed(false);
 
   expect(player.getIsProposed()).toBeFalsy();
+});
+
+test('should be assassinated', () => {
+  const player = new Player('user-1');
+
+  expect(player.getIsAssassinated()).toBeFalsy();
+
+  player.markAsAssassinated();
+
+  expect(player.getIsAssassinated()).toBeTruthy();
 });

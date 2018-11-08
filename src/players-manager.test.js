@@ -129,6 +129,16 @@ describe('roles assignment', () => {
     expect(manager.getLeader().getIsLeader()).toBeTruthy();
   });
 
+  test('should have an assassin appointed', () => {
+    addPlayersToManager(7);
+
+    expect(manager.getAssassin()).toBeFalsy();
+
+    assignRolesToManager();
+
+    expect(manager.getAssassin()).toBeTruthy();
+  });
+
   test('should preserve a creator after the role assignment phase', () => {
     addPlayersToManager(7);
 
@@ -291,5 +301,24 @@ describe('voting', () => {
     manager.setVote(new Vote('user-1', true));
 
     expect(manager.isAllowedToVoteForQuest('user-1')).toBeFalsy();
+  });
+});
+
+describe('assassination', () => {
+  test('should throw if a non-assassin tries to perform assassination', () => {
+    addPlayersAndAssignRoles(7);
+
+    expect(() => manager.assassinate('nonexistent', 'user-1'))
+      .toThrow(errors.NO_RIGHT_TO_ASSASSINATE);
+  });
+
+  test('should assassinate a player', () => {
+    addPlayersAndAssignRoles(7);
+
+    expect(manager.getVictim()).toBeFalsy();
+
+    manager.assassinate(manager.getAssassin().getUsername(), 'user-1');
+
+    expect(manager.getVictim().getUsername()).toEqual('user-1');
   });
 });

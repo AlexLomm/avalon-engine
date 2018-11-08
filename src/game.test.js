@@ -1,5 +1,6 @@
 const _              = require('lodash');
 const errors         = require('./errors');
+const {roleIds}      = require('./roles.config');
 const Game           = require('./game.js');
 const Player         = require('./player');
 const PlayersManager = require('./players-manager');
@@ -35,7 +36,7 @@ describe('game start', () => {
   test('should not add a player when the game is started', () => {
     const game = new Game();
 
-    _.times(5, (i) => game.addPlayer(new Player(i)));
+    _.times(5, (i) => game.addPlayer(new Player(`user-${i}`)));
 
     game.start();
 
@@ -45,7 +46,7 @@ describe('game start', () => {
   test('should not start the game if the player count is not enough', () => {
     const game = new Game();
 
-    _.times(4, (i) => game.addPlayer(new Player(i)));
+    _.times(4, (i) => game.addPlayer(new Player(`user-${i}`)));
 
     expect(() => game.start()).toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
   });
@@ -53,7 +54,7 @@ describe('game start', () => {
   test('should mark the game as started', () => {
     const game = new Game();
 
-    _.times(8, (i) => game.addPlayer(new Player(i)));
+    _.times(8, (i) => game.addPlayer(new Player(`user-${i}`)));
 
     expect(game.getStartedAt()).toBeDefined();
     expect(game.getStartedAt()).toBeFalsy();
@@ -67,7 +68,7 @@ describe('game start', () => {
     const game        = new Game();
     const playerCount = 8;
 
-    _.times(playerCount, (i) => game.addPlayer(new Player(i)));
+    _.times(playerCount, (i) => game.addPlayer(new Player(`user-${i}`)));
 
     game.start();
 
@@ -82,7 +83,7 @@ describe('game start', () => {
     const game           = new Game(playersManager);
     jest.spyOn(playersManager, 'assignRoles');
 
-    _.times(5, (i) => game.addPlayer(new Player(i)));
+    _.times(5, (i) => game.addPlayer(new Player(`user-${i}`)));
 
     expect(playersManager.assignRoles).toBeCalledTimes(0);
 
@@ -96,7 +97,7 @@ describe('game start', () => {
     const game          = new Game(new PlayersManager(), questsManager);
     jest.spyOn(questsManager, 'init');
 
-    _.times(5, (i) => game.addPlayer(new Player(i)));
+    _.times(5, (i) => game.addPlayer(new Player(`user-${i}`)));
 
     expect(questsManager.init).toBeCalledTimes(0);
 
@@ -193,6 +194,23 @@ describe('post "reveal roles" phase', () => {
 
     jest.runAllTimers();
   });
+
+  const passQuestsWithResults = (results = []) => {
+    _.times(results.length, () => {
+      const usernames = [];
+
+      _.times(
+        questsManager.getCurrentQuest().getVotesNeeded(),
+        (i) => usernames.push(`user-${i}`)
+      );
+
+      proposeAndSubmitTeam(usernames);
+
+      voteAllForTeam(true);
+
+      voteAllForQuest(true);
+    });
+  };
 
   const proposeAndSubmitTeam = (usernames = []) => {
     const leaderUsername = playersManager.getLeader().getUsername();
@@ -474,6 +492,68 @@ describe('post "reveal roles" phase', () => {
       voteAllForQuest(false);
 
       expect(previousQuest).not.toBe(questsManager.getCurrentQuest());
+    });
+  });
+
+  describe('assassination', () => {
+    test('should return whether assassination is on', () => {
+      jest.spyOn(questsManager, 'assassinationIsAllowed');
+
+      const assassinationIsOn = game.assassinationIsOn();
+
+      expect(questsManager.assassinationIsAllowed).toBeCalledTimes(1);
+      expect(questsManager.assassinationIsAllowed()).toEqual(assassinationIsOn);
+    });
+
+    test('should throw if it is not an appropriate time for assassination', () => {
+      const assassin = playersManager.getAssassin();
+
+      expect(() => game.assassinate(assassin.getUsername(), 'user-2'))
+        .toThrow(errors.NO_ASSASSINATION_TIME);
+
+      passQuestsWithResults([true, true, true]);
+
+      expect(() => game.assassinate(assassin.getUsername(), 'user-2'))
+        .not
+        .toThrow(errors.NO_ASSASSINATION_TIME);
+    });
+
+    test('should persist assassination results', () => {
+      const assassin = playersManager.getAssassin();
+
+      passQuestsWithResults([true, true, true]);
+
+      jest.spyOn(playersManager, 'assassinate');
+      jest.spyOn(questsManager, 'setAssassinationStatus');
+
+      game.assassinate(assassin.getUsername(), 'user-1');
+
+      expect(playersManager.assassinate).toBeCalledTimes(1);
+      expect(questsManager.setAssassinationStatus).toBeCalledTimes(1);
+    });
+
+    test('should set the game status to "0", if the victim was Merlin', () => {
+      const assassin = playersManager.getAssassin();
+      const merlin   = playersManager.getAll()
+        .find(p => p.getRole().getId() === roleIds.MERLIN);
+
+      passQuestsWithResults([true, true, true]);
+
+      game.assassinate(assassin.getUsername(), merlin.getUsername());
+
+      expect(questsManager.getStatus()).toStrictEqual(0);
+    });
+
+    test('should set the game status to "1", if the victim was not Merlin', () => {
+      const assassin  = playersManager.getAssassin();
+      const nonMerlin = playersManager.getAll()
+        .find(p => p.getRole().getId() !== roleIds.MERLIN);
+
+      passQuestsWithResults([true, true, true]);
+
+      game.assassinate(assassin.getUsername(), nonMerlin.getUsername());
+
+      expect(questsManager.getStatus()).toStrictEqual(1);
     });
   });
 });

@@ -1,9 +1,14 @@
 const Player = function (username) {
-  this._username   = username;
-  this._role       = null;
-  this._isLeader   = false;
-  this._isProposed = false;
-  this._vote       = null;
+  this._username       = username;
+  this._role           = null;
+  this._isLeader       = false;
+  this._isProposed     = false;
+  this._isAssassinated = false;
+  this._vote           = null;
+};
+
+Player.prototype.markAsAssassinated = function () {
+  this._isAssassinated = true;
 };
 
 Player.prototype.markAsLeader = function () {
@@ -12,6 +17,10 @@ Player.prototype.markAsLeader = function () {
 
 Player.prototype.unmarkAsLeader = function () {
   this._isLeader = false;
+};
+
+Player.prototype.getIsAssassinated = function () {
+  return this._isAssassinated;
 };
 
 Player.prototype.getIsLeader = function () {
