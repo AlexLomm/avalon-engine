@@ -33,7 +33,7 @@ QuestsManager.prototype.init = function (levelPreset) {
     (config) => new Quest({
       votesNeeded: config.votesNeeded,
       failsNeeded: config.failsNeeded,
-      playerCount: this._levelPreset.getPlayerCount()
+      totalPlayers: this._levelPreset.getPlayerCount()
     })
   );
 };
@@ -42,12 +42,12 @@ QuestsManager.prototype.addVote = function (vote) {
   return this.getCurrentQuest().addVote(vote);
 };
 
-QuestsManager.prototype.teamVotingRoundIsOver = function () {
-  return this.getCurrentQuest().teamVotingRoundIsOver();
+QuestsManager.prototype.teamVotingRoundFinished = function () {
+  return this.getCurrentQuest().teamVotingRoundFinished();
 };
 
-QuestsManager.prototype.teamVotingWasSuccessful = function () {
-  return this.getCurrentQuest().teamVotingWasSuccessful();
+QuestsManager.prototype.teamVotingSucceeded = function () {
+  return this.getCurrentQuest().teamVotingSucceeded();
 };
 
 QuestsManager.prototype.getCurrentQuest = function () {

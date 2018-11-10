@@ -139,13 +139,13 @@ Game.prototype.voteForTeam = function (username, voteValue) {
 
   // TODO: add state freezing logic
 
-  if (this._questsManager.teamVotingWasSuccessful()) {
+  if (this._questsManager.teamVotingSucceeded()) {
     this._playersManager.resetVotes();
 
     return;
   }
 
-  if (this._questsManager.teamVotingRoundIsOver()) {
+  if (this._questsManager.teamVotingRoundFinished()) {
     this._resetFlags();
   }
 };
@@ -194,13 +194,13 @@ Game.prototype._assassinationIsSuccessful = function () {
 Game.prototype.questVotingIsOn = function () {
   return this._gameHasStarted()
          && this._playersManager.getIsSubmitted()
-         && this._questsManager.getCurrentQuest().questVotingIsAllowed();
+         && this._questsManager.getCurrentQuest().questVotingAllowed();
 };
 
 Game.prototype.teamVotingIsOn = function () {
   return this._gameHasStarted()
          && this._playersManager.getIsSubmitted()
-         && this._questsManager.getCurrentQuest().teamVotingIsAllowed();
+         && this._questsManager.getCurrentQuest().teamVotingAllowed();
 };
 
 Game.prototype.teamPropositionIsOn = function () {

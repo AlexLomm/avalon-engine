@@ -76,25 +76,25 @@ describe('team voting', () => {
   });
 
   test('should return whether the current team voting was successful or not', () => {
-    jest.spyOn(currentQuest, 'teamVotingWasSuccessful');
+    jest.spyOn(currentQuest, 'teamVotingSucceeded');
 
     _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(i, true)));
 
-    expect(currentQuest.teamVotingWasSuccessful())
-      .toStrictEqual(manager.teamVotingWasSuccessful());
+    expect(currentQuest.teamVotingSucceeded())
+      .toStrictEqual(manager.teamVotingSucceeded());
 
-    expect(currentQuest.teamVotingWasSuccessful).toBeCalled();
+    expect(currentQuest.teamVotingSucceeded).toBeCalled();
   });
 
   test('should return whether the team voting is over or not', () => {
-    jest.spyOn(currentQuest, 'teamVotingRoundIsOver');
+    jest.spyOn(currentQuest, 'teamVotingRoundFinished');
 
     _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(i, false)));
 
-    expect(currentQuest.teamVotingRoundIsOver())
-      .toStrictEqual(manager.teamVotingRoundIsOver());
+    expect(currentQuest.teamVotingRoundFinished())
+      .toStrictEqual(manager.teamVotingRoundFinished());
 
-    expect(currentQuest.teamVotingRoundIsOver).toBeCalled();
+    expect(currentQuest.teamVotingRoundFinished).toBeCalled();
   });
 
   test('should return whether it\'s the last round of team voting', () => {
