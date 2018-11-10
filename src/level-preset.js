@@ -20,7 +20,7 @@ LevelPreset.prototype.getEvilCount = function () {
   return this._evilCount;
 };
 
-LevelPreset.prototype.getQuests = function () {
+LevelPreset.prototype.getQuestsConfig = function () {
   return this._quests;
 };
 

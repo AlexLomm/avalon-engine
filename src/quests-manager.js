@@ -29,7 +29,7 @@ QuestsManager.prototype.getAll = function () {
 QuestsManager.prototype.init = function (levelPreset) {
   this._levelPreset = levelPreset;
 
-  this._quests = this._levelPreset.getQuests().map(
+  this._quests = this._levelPreset.getQuestsConfig().map(
     (config) => new Quest({
       votesNeeded: config.votesNeeded,
       failsNeeded: config.failsNeeded,
