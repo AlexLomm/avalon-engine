@@ -266,7 +266,7 @@ describe('post "reveal roles" phase', () => {
       const nonLeader = playersManager.getAll().find(player => !player.getIsLeader());
       expect(() => {
         game.toggleTeamProposition(nonLeader.getUsername(), 'user-3');
-      }).toThrow(errors.NO_RIGHT_TO_PROPOSE);
+      }).toThrow(errors.NO_RIGHT_TO_PROPOSE_TEAMMATE);
     });
 
     test('should toggle whether a player is proposed or not', () => {

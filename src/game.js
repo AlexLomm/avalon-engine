@@ -169,7 +169,7 @@ Game.prototype.toggleTeamProposition = function (leaderUsername, username) {
   }
 
   if (!this._playersManager.playerPropositionAllowedFor(leaderUsername)) {
-    throw new Error(errors.NO_RIGHT_TO_PROPOSE);
+    throw new Error(errors.NO_RIGHT_TO_PROPOSE_TEAMMATE);
   }
 
   this._playersManager.toggleTeamProposition(username);
