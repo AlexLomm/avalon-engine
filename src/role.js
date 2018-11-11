@@ -1,5 +1,5 @@
-const rolesConfig = require('./roles.config').rolesConfig;
-const errors      = require('./errors');
+const rolesConfig = require('../configs/roles.config').rolesConfig;
+const errors      = require('../configs/errors.config');
 
 const Role = function (id) {
   if (!rolesConfig[id]) {

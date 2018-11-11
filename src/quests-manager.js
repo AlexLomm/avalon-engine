@@ -1,4 +1,4 @@
-const errors = require('./errors');
+const errors = require('../configs/errors.config');
 const Quest  = require('./quest');
 
 const QuestsManager = function () {

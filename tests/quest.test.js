@@ -1,7 +1,7 @@
 const _      = require('lodash');
-const Quest  = require('./quest');
-const Vote   = require('./vote');
-const errors = require('./errors');
+const Quest  = require('../src/quest');
+const Vote   = require('../src/vote');
+const errors = require('../configs/errors.config');
 
 test('should throw error if incorrect number of arguments is supplied', () => {
   expect(() => new Quest()).toThrow(errors.INCORRECT_ARGUMENTS);

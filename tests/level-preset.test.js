@@ -1,5 +1,5 @@
-const errors      = require('./errors');
-const LevelPreset = require('./level-preset');
+const errors      = require('../configs/errors.config');
+const LevelPreset = require('../src/level-preset');
 
 test('should throw if the specified number of players is incorrect', () => {
   expect(() => new LevelPreset(100))

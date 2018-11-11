@@ -1,5 +1,5 @@
-const errors       = require('./errors');
-const levelPresets = require('./level-presets.config');
+const errors       = require('../configs/errors.config');
+const levelPresets = require('../configs/level-presets.config');
 
 const LevelPreset = function (playerCount) {
   const levelPreset = levelPresets[playerCount];

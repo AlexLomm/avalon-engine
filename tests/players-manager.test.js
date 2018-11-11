@@ -1,9 +1,9 @@
 const _              = require('lodash');
-const errors         = require('./errors');
-const LevelPreset    = require('./level-preset');
-const PlayersManager = require('./players-manager');
-const Player         = require('./player');
-const Vote           = require('./vote');
+const errors         = require('../configs/errors.config');
+const LevelPreset    = require('../src/level-preset');
+const PlayersManager = require('../src/players-manager');
+const Player         = require('../src/player');
+const Vote           = require('../src/vote');
 
 let manager;
 beforeEach(() => {

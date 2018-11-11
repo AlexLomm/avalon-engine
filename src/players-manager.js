@@ -1,6 +1,6 @@
 const _                    = require('lodash');
-const errors               = require('./errors');
-const {roleIds, loyalties} = require('./roles.config');
+const errors               = require('../configs/errors.config');
+const {roleIds, loyalties} = require('../configs/roles.config');
 const Role                 = require('./role');
 
 const PlayersManager = function () {

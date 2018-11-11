@@ -1,9 +1,9 @@
 const _             = require('lodash');
-const errors        = require('./errors');
-const QuestsManager = require('./quests-manager');
-const Quest         = require('./quest');
-const LevelPreset   = require('./level-preset');
-const Vote          = require('./vote');
+const errors        = require('../configs/errors.config');
+const QuestsManager = require('../src/quests-manager');
+const Quest         = require('../src/quest');
+const LevelPreset   = require('../src/level-preset');
+const Vote          = require('../src/vote');
 
 const resolveQuestsTimes = function (manager, vote, times) {
   _.times(times, () => {

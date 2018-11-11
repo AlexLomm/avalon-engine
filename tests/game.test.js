@@ -1,10 +1,10 @@
 const _              = require('lodash');
-const errors         = require('./errors');
-const {roleIds}      = require('./roles.config');
-const Game           = require('./game.js');
-const Player         = require('./player');
-const PlayersManager = require('./players-manager');
-const QuestsManager  = require('./quests-manager');
+const errors         = require('../configs/errors.config');
+const {roleIds}      = require('../configs/roles.config');
+const Game           = require('../src/game.js');
+const Player         = require('../src/player');
+const PlayersManager = require('../src/players-manager');
+const QuestsManager  = require('../src/quests-manager');
 
 describe('initialization', () => {
   test('should set creation date', () => {

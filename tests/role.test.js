@@ -1,6 +1,6 @@
-const errors  = require('./errors');
-const roleIds = require('./roles.config').roleIds;
-const Role    = require('./role');
+const errors  = require('../configs/errors.config');
+const roleIds = require('../configs/roles.config').roleIds;
+const Role    = require('../src/role');
 
 test('should throw an error if the specified id is incorrect', () => {
   expect(() => {

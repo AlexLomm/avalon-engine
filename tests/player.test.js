@@ -1,7 +1,7 @@
-const {roleIds} = require('./roles.config');
-const Player    = require('./player');
-const Role      = require('./role');
-const Vote      = require('./vote');
+const {roleIds} = require('../configs/roles.config');
+const Player    = require('../src/player');
+const Role      = require('../src/role');
+const Vote      = require('../src/vote');
 
 let player;
 beforeEach(() => {
