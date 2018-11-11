@@ -31,7 +31,7 @@ Player.prototype.setIsProposed = function (isProposed) {
   this._isProposed = isProposed;
 };
 
-Player.prototype.toggleIsProposed = function () {
+Player.prototype.toggleProposition = function () {
   this._isProposed = !this._isProposed;
 };
 
@@ -39,12 +39,8 @@ Player.prototype.getIsProposed = function () {
   return this._isProposed;
 };
 
-Player.prototype.markAsLeader = function () {
-  this._isLeader = true;
-};
-
-Player.prototype.unmarkAsLeader = function () {
-  this._isLeader = false;
+Player.prototype.setIsLeader = function (isLeader) {
+  this._isLeader = isLeader;
 };
 
 Player.prototype.getIsLeader = function () {

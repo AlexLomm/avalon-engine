@@ -88,7 +88,7 @@ Game.prototype.revealRoles = function (seconds) {
 };
 
 Game.prototype.submitTeam = function (username) {
-  if (!this._playersManager.isAllowedToProposeTeam(username)) {
+  if (!this._playersManager.teamProposalAllowedFor(username)) {
     throw new Error(errors.NO_RIGHT_TO_SUBMIT_TEAM);
   }
 
@@ -99,7 +99,7 @@ Game.prototype.submitTeam = function (username) {
     throw new Error(errors.INCORRECT_NUMBER_OF_PLAYERS);
   }
 
-  this._playersManager.markAsSubmitted();
+  this._playersManager.setIsSubmitted(true);
 
   if (this._questsManager.isLastRoundOfTeamVoting()) {
     this._playersManager
@@ -113,7 +113,7 @@ Game.prototype.voteForQuest = function (username, voteValue) {
     throw new Error(errors.NO_VOTING_TIME);
   }
 
-  if (!this._playersManager.isAllowedToVoteForQuest(username)) {
+  if (!this._playersManager.questVotingAllowedFor(username)) {
     throw new Error(errors.NO_RIGHT_TO_VOTE);
   }
 
@@ -131,7 +131,7 @@ Game.prototype.voteForTeam = function (username, voteValue) {
     throw new Error(errors.NO_VOTING_TIME);
   }
 
-  if (!this._playersManager.isAllowedToVoteForTeam(username)) {
+  if (!this._playersManager.teamVotingAllowedFor(username)) {
     throw new Error(errors.NO_RIGHT_TO_VOTE);
   }
 
@@ -153,7 +153,7 @@ Game.prototype.voteForTeam = function (username, voteValue) {
 Game.prototype._resetFlags = function () {
   this._playersManager.resetVotes();
   this._playersManager.resetPropositions();
-  this._playersManager.unmarkAsSubmitted();
+  this._playersManager.setIsSubmitted(false);
 };
 
 Game.prototype._vote = function (username, voteValue) {
@@ -162,16 +162,16 @@ Game.prototype._vote = function (username, voteValue) {
   this._questsManager.addVote(vote);
 };
 
-Game.prototype.toggleIsProposed = function (leaderUsername, username) {
+Game.prototype.toggleProposition = function (leaderUsername, username) {
   if (!this.teamPropositionIsOn()) {
     throw new Error(errors.NO_PROPOSITION_TIME);
   }
 
-  if (!this._playersManager.isAllowedToProposePlayer(leaderUsername)) {
+  if (!this._playersManager.playerProposalAllowedFor(leaderUsername)) {
     throw new Error(errors.NO_RIGHT_TO_PROPOSE);
   }
 
-  this._playersManager.toggleIsProposed(username);
+  this._playersManager.toggleProposition(username);
 };
 
 Game.prototype.assassinate = function (assassinsUsername, victimsUsername) {

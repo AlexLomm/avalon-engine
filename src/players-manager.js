@@ -1,16 +1,16 @@
-const _         = require('lodash');
-const errors    = require('./errors');
-const {roleIds} = require('./roles.config');
-const Role      = require('./role');
+const _                    = require('lodash');
+const errors               = require('./errors');
+const {roleIds, loyalties} = require('./roles.config');
+const Role                 = require('./role');
 
 const PlayersManager = function () {
-  this._leaderIndex = -1;
   this._levelPreset = null;
-  this._isSubmitted = false;
   this._gameCreator = null;
   this._assassin    = null;
-  this._victim      = null;
   this._players     = [];
+  this._victim      = null;
+  this._leaderIndex = -1;
+  this._isSubmitted = false;
 };
 
 PlayersManager.prototype.getVictim = function () {
@@ -34,6 +34,10 @@ PlayersManager.prototype.getAll = function () {
   return this._players;
 };
 
+PlayersManager.prototype.getProposedPlayers = function () {
+  return this._players.filter((p) => p.getIsProposed());
+};
+
 PlayersManager.prototype.getGameCreator = function () {
   return this._gameCreator;
 };
@@ -41,10 +45,7 @@ PlayersManager.prototype.getGameCreator = function () {
 PlayersManager.prototype.add = function (player) {
   if (!player) return;
 
-  const existingPlayer = this._players
-    .find(p => p.getUsername() === player.getUsername());
-
-  if (existingPlayer) {
+  if (this._findPlayer(player.getUsername())) {
     throw new Error(errors.USERNAME_ALREADY_EXISTS);
   }
 
@@ -52,31 +53,27 @@ PlayersManager.prototype.add = function (player) {
     throw new Error(errors.MAXIMUM_PLAYERS_REACHED);
   }
 
-  this._players.push(player);
-
   if (!this._gameCreator) {
-    this._gameCreator = this._players[0];
+    this._gameCreator = player;
   }
+
+  this._players.push(player);
 };
 
-PlayersManager.prototype.getProposedPlayers = function () {
-  return this._players.filter(player => player.getIsProposed());
+PlayersManager.prototype._findPlayer = function (username) {
+  return this._players.find((p) => p.getUsername() === username);
 };
 
-PlayersManager.prototype.toggleIsProposed = function (username) {
-  const player = this._players.find(p => p.getUsername() === username);
+PlayersManager.prototype.toggleProposition = function (username) {
+  const player = this._findPlayer(username);
 
   if (!player) return;
 
-  player.toggleIsProposed();
+  player.toggleProposition();
 };
 
-PlayersManager.prototype.markAsSubmitted = function () {
-  this._isSubmitted = true;
-};
-
-PlayersManager.prototype.unmarkAsSubmitted = function () {
-  this._isSubmitted = false;
+PlayersManager.prototype.setIsSubmitted = function (isSubmitted) {
+  this._isSubmitted = isSubmitted;
 };
 
 PlayersManager.prototype.getIsSubmitted = function () {
@@ -115,7 +112,9 @@ PlayersManager.prototype._generateRoles = function (config) {
   const roles = Object.keys(config).map(roleId => {
     const role = new Role(roleId);
 
-    role.getLoyalty() === 'GOOD' ? goodCount-- : evilCount--;
+    role.getLoyalty() === loyalties.GOOD
+      ? goodCount--
+      : evilCount--;
 
     return role;
   });
@@ -146,43 +145,46 @@ PlayersManager.prototype._generateMinions = function (count) {
 };
 
 PlayersManager.prototype.nextLeader = function () {
-  if (this._leaderIndex === -1) {
-    this._leaderIndex = _.random(0, this._players.length - 1);
-
-    this.getLeader().markAsLeader();
-
-    return;
-  }
-
-  this.getLeader().unmarkAsLeader();
-
-  this._leaderIndex = (this._leaderIndex + 1) % this._players.length;
-  this.getLeader().markAsLeader();
+  this.getLeader()
+    ? this._chooseNextPlayerAsLeader()
+    : this._chooseLeaderRandomly();
 };
 
 PlayersManager.prototype.getLeader = function () {
   return this._players[this._leaderIndex];
 };
 
-PlayersManager.prototype.isAllowedToVoteForQuest = function (username) {
-  const proposedPlayer = this.getProposedPlayers()
-    .find(p => p.getUsername() === username);
+PlayersManager.prototype._chooseLeaderRandomly = function () {
+  this._leaderIndex = _.random(0, this._players.length - 1);
 
-  return proposedPlayer && !proposedPlayer.getVote();
+  this.getLeader().setIsLeader(true);
 };
 
-PlayersManager.prototype.isAllowedToVoteForTeam = function (username) {
-  const player = this.getAll()
-    .find(p => p.getUsername() === username);
+PlayersManager.prototype._chooseNextPlayerAsLeader = function () {
+  this.getLeader().setIsLeader(false);
+
+  this._leaderIndex = (this._leaderIndex + 1) % this._players.length;
+
+  this.getLeader().setIsLeader(true);
+};
+
+PlayersManager.prototype.questVotingAllowedFor = function (username) {
+  const player = this._findPlayer(username);
+
+  return player && player.getIsProposed() && !player.getVote();
+};
+
+PlayersManager.prototype.teamVotingAllowedFor = function (username) {
+  const player = this._findPlayer(username);
 
   return player && !player.getVote();
 };
 
-PlayersManager.prototype.isAllowedToProposeTeam = function (username) {
-  return this.isAllowedToProposePlayer(username);
+PlayersManager.prototype.teamProposalAllowedFor = function (username) {
+  return this.playerProposalAllowedFor(username);
 };
 
-PlayersManager.prototype.isAllowedToProposePlayer = function (username) {
+PlayersManager.prototype.playerProposalAllowedFor = function (username) {
   const leader = this.getLeader();
 
   if (!leader) return false;
@@ -191,8 +193,7 @@ PlayersManager.prototype.isAllowedToProposePlayer = function (username) {
 };
 
 PlayersManager.prototype.setVote = function (vote) {
-  const player = this._players
-    .find(p => p.getUsername() === vote.getUsername());
+  const player = this._findPlayer(vote.getUsername());
 
   if (!player) return;
 

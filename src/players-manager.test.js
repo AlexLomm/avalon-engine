@@ -10,15 +10,18 @@ beforeEach(() => {
   manager = new PlayersManager();
 });
 
+// TODO: extract
 const addPlayersAndAssignRoles = (number, _manager = manager) => {
   addPlayersToManager(number, _manager);
   assignRolesToManager(_manager);
 };
 
+// TODO: extract
 const addPlayersToManager = (number, _manager = manager) => {
   _.times(number, (i) => _manager.add(new Player(`user-${i}`)));
 };
 
+// TODO: extract
 const assignRolesToManager = (_manager = manager) => {
   _manager.assignRoles(new LevelPreset(_manager.getAll().length));
 };
@@ -192,23 +195,23 @@ describe('team proposition and submission', () => {
   test('should return if a player has right to propose a teammate', () => {
     addPlayersToManager(7);
 
-    expect(manager.isAllowedToProposePlayer('user-1')).toBeFalsy();
+    expect(manager.playerProposalAllowedFor('user-1')).toBeFalsy();
 
     manager.nextLeader();
     const leader = manager.getLeader();
 
-    expect(manager.isAllowedToProposePlayer(leader.getUsername())).toBeTruthy();
+    expect(manager.playerProposalAllowedFor(leader.getUsername())).toBeTruthy();
   });
 
   test('should set and get proposed players', () => {
     manager.add(new Player('user-1'));
     manager.add(new Player('user-2'));
 
-    manager.toggleIsProposed(null);
+    manager.toggleProposition(null);
 
     expect(manager.getProposedPlayers().length).toBeFalsy();
 
-    manager.toggleIsProposed('user-2');
+    manager.toggleProposition('user-2');
 
     expect(manager.getProposedPlayers().pop().getUsername()).toEqual('user-2');
   });
@@ -216,12 +219,12 @@ describe('team proposition and submission', () => {
   test('should return if a player has right to submit a team', () => {
     addPlayersToManager(7);
 
-    expect(manager.isAllowedToProposeTeam('user-1')).toBeFalsy();
+    expect(manager.teamProposalAllowedFor('user-1')).toBeFalsy();
 
     manager.nextLeader();
     const leader = manager.getLeader();
 
-    expect(manager.isAllowedToProposeTeam(leader.getUsername())).toBeTruthy();
+    expect(manager.teamProposalAllowedFor(leader.getUsername())).toBeTruthy();
   });
 
   test('should mark players as submitted', () => {
@@ -229,11 +232,11 @@ describe('team proposition and submission', () => {
 
     expect(manager.getIsSubmitted()).toStrictEqual(false);
 
-    expect(manager.markAsSubmitted());
+    expect(manager.setIsSubmitted(true));
 
     expect(manager.getIsSubmitted()).toStrictEqual(true);
 
-    expect(manager.unmarkAsSubmitted());
+    expect(manager.setIsSubmitted(false));
 
     expect(manager.getIsSubmitted()).toStrictEqual(false);
   });
@@ -282,25 +285,25 @@ describe('voting', () => {
   test('should return if a player is allowed to vote for team', () => {
     addPlayersToManager(7);
 
-    expect(manager.isAllowedToVoteForTeam('user-1')).toBeTruthy();
+    expect(manager.teamVotingAllowedFor('user-1')).toBeTruthy();
 
     manager.setVote(new Vote('user-1', true));
 
-    expect(manager.isAllowedToVoteForTeam('user-1')).toBeFalsy();
+    expect(manager.teamVotingAllowedFor('user-1')).toBeFalsy();
   });
 
   test('should return if a player is allowed to vote for quest', () => {
     addPlayersToManager(7);
 
-    expect(manager.isAllowedToVoteForQuest('user-1')).toBeFalsy();
+    expect(manager.questVotingAllowedFor('user-1')).toBeFalsy();
 
-    manager.toggleIsProposed('user-1');
+    manager.toggleProposition('user-1');
 
-    expect(manager.isAllowedToVoteForQuest('user-1')).toBeTruthy();
+    expect(manager.questVotingAllowedFor('user-1')).toBeTruthy();
 
     manager.setVote(new Vote('user-1', true));
 
-    expect(manager.isAllowedToVoteForQuest('user-1')).toBeFalsy();
+    expect(manager.questVotingAllowedFor('user-1')).toBeFalsy();
   });
 });
 

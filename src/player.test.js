@@ -44,7 +44,7 @@ test('should assign a vote', () => {
 test('should reset player', () => {
   const player = new Player('user-1');
 
-  player.toggleIsProposed();
+  player.toggleProposition();
   player.setVote(new Vote('user-1', true));
 
   player.reset();
@@ -67,7 +67,7 @@ describe('leader', () => {
   test('should mark as leader', () => {
     const player = new Player('user-1');
 
-    player.markAsLeader();
+    player.setIsLeader(true);
 
     expect(player.getIsLeader()).toBeTruthy();
   });
@@ -75,8 +75,8 @@ describe('leader', () => {
   test('should unmark as leader', () => {
     const player = new Player('user-1');
 
-    player.markAsLeader();
-    player.unmarkAsLeader();
+    player.setIsLeader(true);
+    player.setIsLeader(false);
 
     expect(player.getIsLeader()).toBeFalsy();
   });
@@ -86,11 +86,11 @@ describe('proposal', () => {
   test('should toggle proposal', () => {
     const player = new Player('user-1');
 
-    player.toggleIsProposed();
+    player.toggleProposition();
 
     expect(player.getIsProposed()).toBeTruthy();
 
-    player.toggleIsProposed();
+    player.toggleProposition();
 
     expect(player.getIsProposed()).toBeFalsy();
   });
@@ -98,7 +98,7 @@ describe('proposal', () => {
   test('should test proposition to false', () => {
     const player = new Player('user-1');
 
-    player.toggleIsProposed();
+    player.toggleProposition();
     player.setIsProposed(false);
 
     expect(player.getIsProposed()).toBeFalsy();
