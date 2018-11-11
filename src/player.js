@@ -4,6 +4,8 @@ const Player = function (username) {
   this._vote           = null;
   this._isProposed     = false;
   this._isLeader       = false;
+  this._isAssassin     = false;
+  this._isVictim       = false;
   this._isAssassinated = false;
 };
 
@@ -29,6 +31,26 @@ Player.prototype.getVote = function () {
 
 Player.prototype.setIsProposed = function (isProposed) {
   this._isProposed = isProposed;
+};
+
+Player.prototype.getIsVictim = function () {
+  return this._isVictim;
+};
+
+Player.prototype.setIsVictim = function (isVictim) {
+  this._isVictim = isVictim;
+};
+
+Player.prototype.toggleIsVictim = function () {
+  this._isVictim = !this._isVictim;
+};
+
+Player.prototype.getIsAssassin = function () {
+  return this._isAssassin;
+};
+
+Player.prototype.markAsAssassin = function () {
+  this._isAssassin = true;
 };
 
 Player.prototype.toggleTeamProposition = function () {
@@ -57,11 +79,6 @@ Player.prototype.getIsAssassinated = function () {
 
 Player.prototype.canSee = function (anotherPlayer) {
   return this._role.canSee(anotherPlayer.getRole());
-};
-
-Player.prototype.reset = function () {
-  this._vote       = null;
-  this._isProposed = false;
 };
 
 module.exports = Player;

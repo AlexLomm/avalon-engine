@@ -175,6 +175,14 @@ Game.prototype.toggleTeamProposition = function (leaderUsername, username) {
   this._playersManager.toggleTeamProposition(username);
 };
 
+Game.prototype.toggleVictimProposition = function (assassinsUsername, victimsUsername) {
+  if (!this.assassinationIsOn()) {
+    throw new Error(errors.NO_VICTIM_PROPOSITION_TIME);
+  }
+
+  this._playersManager.toggleVictimProposition(assassinsUsername, victimsUsername);
+};
+
 Game.prototype.assassinate = function (assassinsUsername, victimsUsername) {
   if (!this.assassinationIsOn()) {
     throw new Error(errors.NO_ASSASSINATION_TIME);

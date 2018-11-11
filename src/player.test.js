@@ -3,15 +3,16 @@ const Player    = require('./player');
 const Role      = require('./role');
 const Vote      = require('./vote');
 
-test('should return a username', () => {
-  const player = new Player('user-1');
+let player;
+beforeEach(() => {
+  player = new Player('user-1');
+});
 
+test('should return a username', () => {
   expect(player.getUsername()).toEqual('user-1');
 });
 
 test('should return a role', () => {
-  const player = new Player('user-1');
-
   expect(player.getRole()).toBeFalsy();
 
   const role = new Role(roleIds.MERLIN);
@@ -32,8 +33,6 @@ test('should say if can see another player', () => {
 });
 
 test('should assign a vote', () => {
-  const player = new Player('user-1');
-
   expect(player.getVote()).toBeFalsy();
 
   player.setVote(new Vote('user-1', true));
@@ -41,41 +40,54 @@ test('should assign a vote', () => {
   expect(player.getVote()).toBeTruthy();
 });
 
-test('should reset player', () => {
-  const player = new Player('user-1');
+describe('assassination', () => {
+  test('should be marked as assassin', () => {
+    expect(player.getIsAssassin()).toBeFalsy();
 
-  player.toggleTeamProposition();
-  player.setVote(new Vote('user-1', true));
+    player.markAsAssassin();
 
-  player.reset();
+    expect(player.getIsAssassin()).toBeTruthy();
+  });
 
-  expect(player.getVote()).toBeFalsy();
-  expect(player.getIsProposed()).toBeFalsy();
-});
+  test('should be marked as victim', () => {
+    expect(player.getIsVictim()).toBeFalsy();
 
-test('should be assassinated', () => {
-  const player = new Player('user-1');
+    player.setIsVictim(true);
 
-  expect(player.getIsAssassinated()).toBeFalsy();
+    expect(player.getIsVictim()).toBeTruthy();
+  });
 
-  player.markAsAssassinated();
+  test('should toggle as victim', () => {
+    expect(player.getIsVictim()).toBeFalsy();
 
-  expect(player.getIsAssassinated()).toBeTruthy();
+    player.toggleIsVictim();
+
+    expect(player.getIsVictim()).toBeTruthy();
+
+    player.toggleIsVictim();
+
+    expect(player.getIsVictim()).toBeFalsy();
+  });
+
+  test('should be assassinated', () => {
+    expect(player.getIsAssassinated()).toBeFalsy();
+
+    player.markAsAssassinated();
+
+    expect(player.getIsAssassinated()).toBeTruthy();
+  });
 });
 
 describe('leader', () => {
   test('should mark as leader', () => {
-    const player = new Player('user-1');
-
     player.setIsLeader(true);
 
     expect(player.getIsLeader()).toBeTruthy();
   });
 
   test('should unmark as leader', () => {
-    const player = new Player('user-1');
-
     player.setIsLeader(true);
+
     player.setIsLeader(false);
 
     expect(player.getIsLeader()).toBeFalsy();
@@ -84,8 +96,6 @@ describe('leader', () => {
 
 describe('proposition', () => {
   test('should toggle proposition', () => {
-    const player = new Player('user-1');
-
     player.toggleTeamProposition();
 
     expect(player.getIsProposed()).toBeTruthy();
@@ -96,9 +106,8 @@ describe('proposition', () => {
   });
 
   test('should test proposition to false', () => {
-    const player = new Player('user-1');
-
     player.toggleTeamProposition();
+
     player.setIsProposed(false);
 
     expect(player.getIsProposed()).toBeFalsy();

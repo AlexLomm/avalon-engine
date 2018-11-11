@@ -6,28 +6,31 @@ const Role                 = require('./role');
 const PlayersManager = function () {
   this._levelPreset = null;
   this._gameCreator = null;
-  this._assassin    = null;
   this._players     = [];
-  this._victim      = null;
   this._leaderIndex = -1;
   this._isSubmitted = false;
 };
 
-PlayersManager.prototype.getVictim = function () {
-  return this._victim;
-};
-
-PlayersManager.prototype.assassinate = function (assassinsUsername, victimsUsername) {
-  if (!this._assassin || this._assassin.getUsername() !== assassinsUsername) {
+PlayersManager.prototype.assassinate = function (assassinsUsername) {
+  const assassin = this.getAssassin();
+  if (!assassin || assassin.getUsername() !== assassinsUsername) {
     throw new Error(errors.NO_RIGHT_TO_ASSASSINATE);
   }
 
-  this._victim = this.getAll()
-    .find((player) => player.getUsername() === victimsUsername);
+  const victim = this.getVictim();
+  if (!victim) {
+    throw new Error(errors.NO_VICTIM_CHOSEN);
+  }
+
+  victim.markAsAssassinated();
+};
+
+PlayersManager.prototype.getVictim = function () {
+  return this._players.find((p) => p.getIsVictim());
 };
 
 PlayersManager.prototype.getAssassin = function () {
-  return this._assassin;
+  return this._players.find((p) => p.getIsAssassin());
 };
 
 PlayersManager.prototype.getAll = function () {
@@ -64,6 +67,25 @@ PlayersManager.prototype._findPlayer = function (username) {
   return this._players.find((p) => p.getUsername() === username);
 };
 
+PlayersManager.prototype.toggleVictimProposition = function (
+  assassinsUsername,
+  victimUsername
+) {
+  if (this.getAssassin().getUsername() !== assassinsUsername) {
+    throw new Error(errors.NO_RIGHT_TO_PROPOSE_VICTIM);
+  }
+
+  if (this.getAssassin().getUsername() === victimUsername) {
+    throw new Error(errors.NO_RIGHT_TO_PROPOSE_HIMSELF);
+  }
+
+  this._players.forEach((p) => {
+    p.getUsername() === victimUsername
+      ? p.toggleIsVictim()
+      : p.setIsVictim(false);
+  });
+};
+
 PlayersManager.prototype.toggleTeamProposition = function (username) {
   const player = this._findPlayer(username);
 
@@ -89,9 +111,11 @@ PlayersManager.prototype.assignRoles = function (levelPreset, config = {}) {
 
   this._players.forEach((player) => player.setRole(roles.pop()));
 
-  this._assassin = this._players.find(
+  const player = this._players.find(
     (player) => player.getRole().getId() === roleIds.ASSASSIN
   );
+
+  player.markAsAssassin();
 
   this.nextLeader();
 };

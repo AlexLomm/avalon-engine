@@ -238,6 +238,26 @@ describe('post "reveal roles" phase', () => {
       .forEach(p => game.voteForQuest(p.getUsername(), voteValue));
   };
 
+  const getNonAssassin = () => {
+    return playersManager.getAll().find(
+      (p) => p.getUsername() !== playersManager.getAssassin().getUsername()
+    );
+  };
+
+  const getMerlin = () => {
+    return playersManager.getAll().find(
+      (p) => p.getRole().getId() === roleIds.MERLIN
+    );
+  };
+
+  const getNonAssassinNonMerlin = () => {
+    return playersManager.getAll()
+      .find(p => {
+        return p.getUsername() !== playersManager.getAssassin().getUsername()
+               && p.getRole().getId() !== roleIds.MERLIN;
+      });
+  };
+
   describe('team proposition', () => {
     test('should disallow anybody other then the party leader to propose a player', () => {
       const leader = playersManager.getLeader();
@@ -505,28 +525,67 @@ describe('post "reveal roles" phase', () => {
       expect(questsManager.assassinationAllowed()).toEqual(assassinationIsOn);
     });
 
+    test('should throw if it is not an appropriate time to propose a victim', () => {
+      const assassin = playersManager.getAssassin();
+      const victim   = getNonAssassin();
+
+      expect(() => game.toggleVictimProposition(
+        assassin.getUsername(),
+        victim.getUsername())
+      ).toThrow(errors.NO_VICTIM_PROPOSITION_TIME);
+
+      passQuestsWithResults([true, true, true]);
+
+      expect(() => game.toggleVictimProposition(
+        assassin.getUsername(),
+        victim.getUsername())
+      )
+        .not
+        .toThrow(errors.NO_VICTIM_PROPOSITION_TIME);
+    });
+
+    test('should toggle assassination victim', () => {
+      const assassin = playersManager.getAssassin();
+      const victim   = getNonAssassin();
+
+      passQuestsWithResults([true, true, true]);
+
+      jest.spyOn(playersManager, 'toggleVictimProposition');
+
+      game.toggleVictimProposition(
+        assassin.getUsername(),
+        victim.getUsername()
+      );
+
+      expect(playersManager.toggleVictimProposition).toBeCalledTimes(1);
+      expect(playersManager.toggleVictimProposition)
+        .toBeCalledWith(assassin.getUsername(), victim.getUsername());
+    });
+
     test('should throw if it is not an appropriate time for assassination', () => {
       const assassin = playersManager.getAssassin();
 
-      expect(() => game.assassinate(assassin.getUsername(), 'user-2'))
+      expect(() => game.assassinate(assassin.getUsername()))
         .toThrow(errors.NO_ASSASSINATION_TIME);
 
       passQuestsWithResults([true, true, true]);
 
-      expect(() => game.assassinate(assassin.getUsername(), 'user-2'))
+      expect(() => game.assassinate(assassin.getUsername()))
         .not
         .toThrow(errors.NO_ASSASSINATION_TIME);
     });
 
     test('should persist assassination results', () => {
       const assassin = playersManager.getAssassin();
+      const victim   = getNonAssassin();
 
       passQuestsWithResults([true, true, true]);
 
       jest.spyOn(playersManager, 'assassinate');
       jest.spyOn(questsManager, 'setAssassinationStatus');
 
-      game.assassinate(assassin.getUsername(), 'user-1');
+      game.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
+      game.assassinate(assassin.getUsername());
 
       expect(playersManager.assassinate).toBeCalledTimes(1);
       expect(questsManager.setAssassinationStatus).toBeCalledTimes(1);
@@ -534,24 +593,24 @@ describe('post "reveal roles" phase', () => {
 
     test('should set the game status to "0", if the victim was Merlin', () => {
       const assassin = playersManager.getAssassin();
-      const merlin   = playersManager.getAll()
-        .find(p => p.getRole().getId() === roleIds.MERLIN);
+      const merlin   = getMerlin();
 
       passQuestsWithResults([true, true, true]);
 
-      game.assassinate(assassin.getUsername(), merlin.getUsername());
+      game.toggleVictimProposition(assassin.getUsername(), merlin.getUsername());
+      game.assassinate(assassin.getUsername());
 
       expect(questsManager.getStatus()).toStrictEqual(0);
     });
 
     test('should set the game status to "1", if the victim was not Merlin', () => {
       const assassin  = playersManager.getAssassin();
-      const nonMerlin = playersManager.getAll()
-        .find(p => p.getRole().getId() !== roleIds.MERLIN);
+      const nonMerlin = getNonAssassinNonMerlin();
 
       passQuestsWithResults([true, true, true]);
 
-      game.assassinate(assassin.getUsername(), nonMerlin.getUsername());
+      game.toggleVictimProposition(assassin.getUsername(), nonMerlin.getUsername());
+      game.assassinate(assassin.getUsername());
 
       expect(questsManager.getStatus()).toStrictEqual(1);
     });

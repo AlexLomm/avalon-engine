@@ -308,20 +308,70 @@ describe('voting', () => {
 });
 
 describe('assassination', () => {
-  test('should throw if a non-assassin tries to perform assassination', () => {
+  test('should throw if a non-assassin tries to propose a victim', () => {
+    addPlayersAndAssignRoles(5);
+
+    const nonAssassins = manager.getAll().filter((p) => !p.getIsAssassin());
+
+    expect(() => {
+      manager.toggleVictimProposition(
+        nonAssassins[0].getUsername(),
+        nonAssassins[1].getUsername()
+      );
+    }).toThrow(errors.NO_RIGHT_TO_PROPOSE_VICTIM);
+  });
+
+  test('should throw if an assassin tries to propose himself', () => {
+    addPlayersAndAssignRoles(5);
+
+    expect(() => {
+      manager.toggleVictimProposition(
+        manager.getAssassin().getUsername(),
+        manager.getAssassin().getUsername()
+      );
+    }).toThrow(errors.NO_RIGHT_TO_PROPOSE_HIMSELF);
+  });
+
+  test('should toggle victim proposition', () => {
     addPlayersAndAssignRoles(7);
 
-    expect(() => manager.assassinate('nonexistent', 'user-1'))
-      .toThrow(errors.NO_RIGHT_TO_ASSASSINATE);
+    expect(manager.getVictim()).toBeFalsy();
+
+    const nonAssassin = manager.getAll().find((p) => !p.getIsAssassin());
+    manager.toggleVictimProposition(
+      manager.getAssassin().getUsername(),
+      nonAssassin.getUsername()
+    );
+
+    expect(manager.getVictim()).toBe(nonAssassin);
+
+    manager.toggleVictimProposition(
+      manager.getAssassin().getUsername(),
+      nonAssassin.getUsername()
+    );
+
+    expect(manager.getVictim()).toBeFalsy();
+  });
+
+  test('should throw for assassination attempt, when no victim is proposed', () => {
+    addPlayersAndAssignRoles(7);
+
+    expect(() => manager.assassinate(manager.getAssassin().getUsername()))
+      .toThrow(errors.NO_VICTIM_CHOSEN);
   });
 
   test('should assassinate a player', () => {
     addPlayersAndAssignRoles(7);
 
-    expect(manager.getVictim()).toBeFalsy();
+    const assassin = manager.getAssassin();
+    const victim   = manager.getAll().find((p) => !p.getIsAssassin());
 
-    manager.assassinate(manager.getAssassin().getUsername(), 'user-1');
+    manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
 
-    expect(manager.getVictim().getUsername()).toEqual('user-1');
+    expect(victim.getIsAssassinated()).toBeFalsy();
+
+    manager.assassinate(assassin.getUsername(), victim.getUsername());
+
+    expect(victim.getIsAssassinated()).toBeTruthy();
   });
 });
