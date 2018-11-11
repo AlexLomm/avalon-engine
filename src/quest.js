@@ -1,143 +1,145 @@
 const errors = require('../configs/errors.config');
 
-const Quest = function (config = {}) {
-  if (!config.votesNeeded || !config.failsNeeded || !config.totalPlayers) {
-    throw new Error(errors.INCORRECT_ARGUMENTS);
+class Quest {
+  constructor(config = {}) {
+    if (!config.votesNeeded || !config.failsNeeded || !config.totalPlayers) {
+      throw new Error(errors.INCORRECT_ARGUMENTS);
+    }
+
+    this._votesNeeded                 = config.votesNeeded;
+    this._failsNeeded                 = config.failsNeeded;
+    this._totalPlayers                = config.totalPlayers;
+    this._teamVoteRounds              = [[], [], [], [], []];
+    this._currentTeamVotingRoundIndex = 0;
+    this._questVotes                  = [];
+    this._tracker                     = 1;
   }
 
-  this._votesNeeded                 = config.votesNeeded;
-  this._failsNeeded                 = config.failsNeeded;
-  this._totalPlayers                = config.totalPlayers;
-  this._teamVoteRounds              = [[], [], [], [], []];
-  this._currentTeamVotingRoundIndex = 0;
-  this._questVotes                  = [];
-  this._tracker                     = 1;
-};
-
-Quest.prototype.getVotesNeeded = function () {
-  return this._votesNeeded;
-};
-
-Quest.prototype.getFailsNeeded = function () {
-  return this._failsNeeded;
-};
-
-Quest.prototype.getTracker = function () {
-  return this._tracker;
-};
-
-Quest.prototype.questVotingFinished = function () {
-  return this._questVotes.length === this._votesNeeded;
-};
-
-Quest.prototype.isComplete = function () {
-  return this.getStatus() !== -1;
-};
-
-Quest.prototype.getStatus = function () {
-  if (this.teamVotingAllowed() || this.questVotingAllowed()) {
-    return -1;
+  getVotesNeeded() {
+    return this._votesNeeded;
   }
 
-  return this._questVotingFailed() ? 1 : 0;
-};
-
-Quest.prototype._questVotingFailed = function () {
-  return this._failsCount() < this._failsNeeded;
-};
-
-Quest.prototype._failsCount = function () {
-  return this._questVotes.reduce(
-    (acc, vote) => vote.getValue() ? acc : acc + 1, 0
-  );
-};
-
-Quest.prototype.addVote = function (vote) {
-  this.teamVotingAllowed()
-    ? this._addVoteForTeam(vote)
-    : this._addVoteForQuest(vote);
-};
-
-Quest.prototype._addVoteForTeam = function (vote) {
-  const currentRound = this._getCurrentTeamVotingRound();
-
-  if (this._alreadyVotedFor(currentRound, vote)) {
-    throw new Error(errors.VOTED_ALREADY);
+  getFailsNeeded() {
+    return this._failsNeeded;
   }
 
-  currentRound.push(vote);
-
-  if (this._everybodyVotedFor(currentRound) && !this.teamVotingSucceeded()) {
-    this._nextTeamVotingRound();
-  }
-};
-
-Quest.prototype._nextTeamVotingRound = function () {
-  this._currentTeamVotingRoundIndex++;
-  this._tracker++;
-};
-
-Quest.prototype._addVoteForQuest = function (vote) {
-  if (this._alreadyVotedFor(this._questVotes, vote)) {
-    throw new Error(errors.VOTED_ALREADY);
+  getTracker() {
+    return this._tracker;
   }
 
-  this._questVotes.push(vote);
-};
+  questVotingFinished() {
+    return this._questVotes.length === this._votesNeeded;
+  }
 
-Quest.prototype._alreadyVotedFor = function (votes, vote) {
-  return !!votes.find((v) => v.getUsername() === vote.getUsername());
-};
+  isComplete() {
+    return this.getStatus() !== -1;
+  }
 
-Quest.prototype.questVotingAllowed = function () {
-  return this.teamVotingSucceeded()
-         && this._questVotes.length < this._votesNeeded;
-};
+  getStatus() {
+    if (this.teamVotingAllowed() || this.questVotingAllowed()) {
+      return -1;
+    }
 
-Quest.prototype.teamVotingSucceeded = function () {
-  return !this.teamVotingAllowed() && this._majorityApproved();
-};
+    return this._questVotingFailed() ? 1 : 0;
+  }
 
-Quest.prototype._majorityApproved = function () {
-  const currentRound = this._getCurrentTeamVotingRound();
+  _questVotingFailed() {
+    return this._failsCount() < this._failsNeeded;
+  }
 
-  const failsCount = currentRound.reduce(
-    (acc, vote) => vote.getValue() ? acc : acc + 1, 0
-  );
+  _failsCount() {
+    return this._questVotes.reduce(
+      (acc, vote) => vote.getValue() ? acc : acc + 1, 0
+    );
+  }
 
-  return failsCount < Math.ceil(currentRound.length / 2);
-};
+  addVote(vote) {
+    this.teamVotingAllowed()
+      ? this._addVoteForTeam(vote)
+      : this._addVoteForQuest(vote);
+  }
 
-Quest.prototype.teamVotingAllowed = function () {
-  return this._getCurrentTeamVotingRound().length < this._totalPlayers
-         || !this._majorityApproved();
-};
+  _addVoteForTeam(vote) {
+    const currentRound = this._getCurrentTeamVotingRound();
 
-Quest.prototype.teamVotingRoundFinished = function () {
-  if (this.teamVotingSucceeded()) return true;
+    if (this._alreadyVotedFor(currentRound, vote)) {
+      throw new Error(errors.VOTED_ALREADY);
+    }
 
-  const previousRound = this._getPreviousTeamVotingRound();
+    currentRound.push(vote);
 
-  if (!previousRound) return false;
+    if (this._everybodyVotedFor(currentRound) && !this.teamVotingSucceeded()) {
+      this._nextTeamVotingRound();
+    }
+  }
 
-  return this._everybodyVotedFor(previousRound)
-         && this._getCurrentTeamVotingRound().length === 0;
-};
+  _nextTeamVotingRound() {
+    this._currentTeamVotingRoundIndex++;
+    this._tracker++;
+  }
 
-Quest.prototype._getPreviousTeamVotingRound = function () {
-  return this._teamVoteRounds[this._currentTeamVotingRoundIndex - 1];
-};
+  _addVoteForQuest(vote) {
+    if (this._alreadyVotedFor(this._questVotes, vote)) {
+      throw new Error(errors.VOTED_ALREADY);
+    }
 
-Quest.prototype._everybodyVotedFor = function (round) {
-  return round.length === this._totalPlayers;
-};
+    this._questVotes.push(vote);
+  }
 
-Quest.prototype._getCurrentTeamVotingRound = function () {
-  return this._teamVoteRounds[this._currentTeamVotingRoundIndex];
-};
+  _alreadyVotedFor(votes, vote) {
+    return !!votes.find((v) => v.getUsername() === vote.getUsername());
+  }
 
-Quest.prototype.isLastRoundOfTeamVoting = function () {
-  return this._currentTeamVotingRoundIndex === this._teamVoteRounds.length - 1;
-};
+  questVotingAllowed() {
+    return this.teamVotingSucceeded()
+           && this._questVotes.length < this._votesNeeded;
+  }
+
+  teamVotingSucceeded() {
+    return !this.teamVotingAllowed() && this._majorityApproved();
+  }
+
+  _majorityApproved() {
+    const currentRound = this._getCurrentTeamVotingRound();
+
+    const failsCount = currentRound.reduce(
+      (acc, vote) => vote.getValue() ? acc : acc + 1, 0
+    );
+
+    return failsCount < Math.ceil(currentRound.length / 2);
+  }
+
+  teamVotingAllowed() {
+    return this._getCurrentTeamVotingRound().length < this._totalPlayers
+           || !this._majorityApproved();
+  }
+
+  teamVotingRoundFinished() {
+    if (this.teamVotingSucceeded()) return true;
+
+    const previousRound = this._getPreviousTeamVotingRound();
+
+    if (!previousRound) return false;
+
+    return this._everybodyVotedFor(previousRound)
+           && this._getCurrentTeamVotingRound().length === 0;
+  }
+
+  _getPreviousTeamVotingRound() {
+    return this._teamVoteRounds[this._currentTeamVotingRoundIndex - 1];
+  }
+
+  _everybodyVotedFor(round) {
+    return round.length === this._totalPlayers;
+  }
+
+  _getCurrentTeamVotingRound() {
+    return this._teamVoteRounds[this._currentTeamVotingRoundIndex];
+  }
+
+  isLastRoundOfTeamVoting() {
+    return this._currentTeamVotingRoundIndex === this._teamVoteRounds.length - 1;
+  }
+}
 
 module.exports = Quest;
