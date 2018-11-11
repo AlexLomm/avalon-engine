@@ -1,5 +1,5 @@
 const _                    = require('lodash');
-const errors               = require('../configs/errors.config');
+const errors               = require('./errors');
 const {roleIds, loyalties} = require('../configs/roles.config');
 const Role                 = require('./role');
 
@@ -15,12 +15,12 @@ class PlayersManager {
   assassinate(assassinsUsername) {
     const assassin = this.getAssassin();
     if (!assassin || assassin.getUsername() !== assassinsUsername) {
-      throw new Error(errors.NO_RIGHT_TO_ASSASSINATE);
+      throw new errors.DeniedAssassinationError();
     }
 
     const victim = this.getVictim();
     if (!victim) {
-      throw new Error(errors.NO_VICTIM_CHOSEN);
+      throw new errors.RequiredVictimError();
     }
 
     victim.markAsAssassinated();
@@ -50,11 +50,11 @@ class PlayersManager {
     if (!player) return;
 
     if (this._findPlayer(player.getUsername())) {
-      throw new Error(errors.USERNAME_ALREADY_EXISTS);
+      throw new errors.AlreadyExistsPlayerError();
     }
 
     if (this._players.length === 10) {
-      throw new Error(errors.MAXIMUM_PLAYERS_REACHED);
+      throw new errors.PlayersMaximumReachedError();
     }
 
     if (!this._gameCreator) {
@@ -73,11 +73,11 @@ class PlayersManager {
     victimUsername
   ) {
     if (this.getAssassin().getUsername() !== assassinsUsername) {
-      throw new Error(errors.NO_RIGHT_TO_PROPOSE_VICTIM);
+      throw new errors.DeniedVictimPropositionError();
     }
 
     if (this.getAssassin().getUsername() === victimUsername) {
-      throw new Error(errors.NO_RIGHT_TO_PROPOSE_HIMSELF);
+      throw new errors.DeniedSelfSacrificeError();
     }
 
     this._players.forEach((p) => {

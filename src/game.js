@@ -1,6 +1,6 @@
 const crypto         = require('crypto');
-const errors         = require('../configs/errors.config');
 const {roleIds}      = require('../configs/roles.config');
+const errors         = require('./errors');
 const LevelPreset    = require('./level-preset');
 const PlayersManager = require('./players-manager');
 const QuestsManager  = require('./quests-manager');
@@ -29,7 +29,7 @@ class Game {
 
   addPlayer(player) {
     if (this._startedAt) {
-      throw new Error(errors.GAME_ALREADY_STARTED);
+      throw new errors.AlreadyStartedGameError();
     }
 
     this._playersManager.add(player);
@@ -49,6 +49,8 @@ class Game {
 
   start(config = {}) {
     const playerCount = this._playersManager.getAll().length;
+
+
 
     this._levelPreset = new LevelPreset(playerCount);
     this._startedAt   = new Date();
@@ -90,14 +92,14 @@ class Game {
 
   submitTeam(username) {
     if (!this._playersManager.teamPropositionAllowedFor(username)) {
-      throw new Error(errors.NO_RIGHT_TO_SUBMIT_TEAM);
+      throw new errors.DeniedTeamSubmissionError();
     }
 
     const proposedPlayersCount = this._playersManager.getProposedPlayers().length;
     const votesNeededCount     = this._questsManager.getCurrentQuest().getVotesNeeded();
 
     if (proposedPlayersCount !== votesNeededCount) {
-      throw new Error(errors.INCORRECT_NUMBER_OF_PLAYERS);
+      throw new errors.RequiredCorrectTeammatesAmountError();
     }
 
     this._playersManager.setIsSubmitted(true);
@@ -111,11 +113,11 @@ class Game {
 
   voteForQuest(username, voteValue) {
     if (!this.questVotingIsOn()) {
-      throw new Error(errors.NO_VOTING_TIME);
+      throw new errors.NoTimeForQuestVotingError();
     }
 
     if (!this._playersManager.questVotingAllowedFor(username)) {
-      throw new Error(errors.NO_RIGHT_TO_VOTE);
+      throw new errors.DeniedQuestVotingError();
     }
 
     this._vote(username, voteValue);
@@ -129,11 +131,11 @@ class Game {
 
   voteForTeam(username, voteValue) {
     if (!this.teamVotingIsOn()) {
-      throw new Error(errors.NO_VOTING_TIME);
+      throw new errors.NoTimeForTeamVotingError();
     }
 
     if (!this._playersManager.teamVotingAllowedFor(username)) {
-      throw new Error(errors.NO_RIGHT_TO_VOTE);
+      throw new errors.DeniedTeamVotingError();
     }
 
     this._vote(username, voteValue);
@@ -166,11 +168,11 @@ class Game {
 
   toggleTeamProposition(leaderUsername, username) {
     if (!this.teamPropositionIsOn()) {
-      throw new Error(errors.NO_PROPOSITION_TIME);
+      throw new errors.NoTimeForTeammatePropositionError();
     }
 
     if (!this._playersManager.playerPropositionAllowedFor(leaderUsername)) {
-      throw new Error(errors.NO_RIGHT_TO_PROPOSE_TEAMMATE);
+      throw new errors.DeniedTeammatePropositionError();
     }
 
     this._playersManager.toggleTeamProposition(username);
@@ -178,15 +180,18 @@ class Game {
 
   toggleVictimProposition(assassinsUsername, victimsUsername) {
     if (!this.assassinationIsOn()) {
-      throw new Error(errors.NO_VICTIM_PROPOSITION_TIME);
+      throw new errors.NoTimeVictimPropositionError();
     }
 
-    this._playersManager.toggleVictimProposition(assassinsUsername, victimsUsername);
+    this._playersManager.toggleVictimProposition(
+      assassinsUsername,
+      victimsUsername
+    );
   }
 
   assassinate(assassinsUsername, victimsUsername) {
     if (!this.assassinationIsOn()) {
-      throw new Error(errors.NO_ASSASSINATION_TIME);
+      throw new errors.NoTimeForAssassinationError();
     }
 
     this._playersManager.assassinate(assassinsUsername, victimsUsername);

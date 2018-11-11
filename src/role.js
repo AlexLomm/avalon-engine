@@ -1,12 +1,7 @@
-const rolesConfig = require('../configs/roles.config').rolesConfig;
-const errors      = require('../configs/errors.config');
+const {rolesConfig} = require('../configs/roles.config');
 
 class Role {
   constructor(id) {
-    if (!rolesConfig[id]) {
-      throw new Error(errors.INCORRECT_ROLE_ID);
-    }
-
     this._id             = rolesConfig[id].id;
     this._name           = rolesConfig[id].name;
     this._description    = rolesConfig[id].description;

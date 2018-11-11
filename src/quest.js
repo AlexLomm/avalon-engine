@@ -1,11 +1,7 @@
-const errors = require('../configs/errors.config');
+const errors = require('./errors');
 
 class Quest {
   constructor(config = {}) {
-    if (!config.votesNeeded || !config.failsNeeded || !config.totalPlayers) {
-      throw new Error(errors.INCORRECT_ARGUMENTS);
-    }
-
     this._votesNeeded                 = config.votesNeeded;
     this._failsNeeded                 = config.failsNeeded;
     this._totalPlayers                = config.totalPlayers;
@@ -62,8 +58,9 @@ class Quest {
   _addVoteForTeam(vote) {
     const currentRound = this._getCurrentTeamVotingRound();
 
+    // TODO: voting validation is also handled by the players manager
     if (this._alreadyVotedFor(currentRound, vote)) {
-      throw new Error(errors.VOTED_ALREADY);
+      throw new errors.AlreadyVotedForTeamError();
     }
 
     currentRound.push(vote);
@@ -79,8 +76,9 @@ class Quest {
   }
 
   _addVoteForQuest(vote) {
+    // TODO: voting validation is also handled by the players manager
     if (this._alreadyVotedFor(this._questVotes, vote)) {
-      throw new Error(errors.VOTED_ALREADY);
+      throw new errors.AlreadyVotedForQuestError();
     }
 
     this._questVotes.push(vote);

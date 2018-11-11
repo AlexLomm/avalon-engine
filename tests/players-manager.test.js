@@ -1,5 +1,5 @@
 const _              = require('lodash');
-const errors         = require('../configs/errors.config');
+const errors         = require('../src/errors');
 const LevelPreset    = require('../src/level-preset');
 const PlayersManager = require('../src/players-manager');
 const Player         = require('../src/player');
@@ -55,13 +55,14 @@ describe('adding players', () => {
 
     expect(() => {
       manager.add(new Player('some-username'));
-    }).toThrow(errors.USERNAME_ALREADY_EXISTS);
+    }).toThrow(errors.AlreadyExistsPlayerError);
   });
 
   test('should prevent adding more than 10 players', () => {
     addPlayersToManager(10);
 
-    expect(() => manager.add(new Player('user-11'))).toThrow(errors.MAXIMUM_PLAYERS_REACHED);
+    expect(() => manager.add(new Player('user-11')))
+      .toThrow(errors.PlayersMaximumReachedError);
   });
 
   test('should make the first player a "creator"', () => {
@@ -318,7 +319,7 @@ describe('assassination', () => {
         nonAssassins[0].getUsername(),
         nonAssassins[1].getUsername()
       );
-    }).toThrow(errors.NO_RIGHT_TO_PROPOSE_VICTIM);
+    }).toThrow(errors.DeniedVictimPropositionError);
   });
 
   test('should throw if an assassin tries to propose himself', () => {
@@ -329,7 +330,7 @@ describe('assassination', () => {
         manager.getAssassin().getUsername(),
         manager.getAssassin().getUsername()
       );
-    }).toThrow(errors.NO_RIGHT_TO_PROPOSE_HIMSELF);
+    }).toThrow(errors.DeniedSelfSacrificeError);
   });
 
   test('should toggle victim proposition', () => {
@@ -357,7 +358,7 @@ describe('assassination', () => {
     addPlayersAndAssignRoles(7);
 
     expect(() => manager.assassinate(manager.getAssassin().getUsername()))
-      .toThrow(errors.NO_VICTIM_CHOSEN);
+      .toThrow(errors.RequiredVictimError);
   });
 
   test('should throw if a non-assassin tries to assassinate', () => {
@@ -372,7 +373,7 @@ describe('assassination', () => {
     );
 
     expect(() => manager.assassinate(nonAssassin.getUsername()))
-      .toThrow(errors.NO_RIGHT_TO_ASSASSINATE);
+      .toThrow(errors.DeniedAssassinationError);
   });
 
   test('should assassinate a player', () => {

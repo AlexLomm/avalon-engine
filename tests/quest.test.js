@@ -1,15 +1,7 @@
 const _      = require('lodash');
+const errors = require('../src/errors');
 const Quest  = require('../src/quest');
 const Vote   = require('../src/vote');
-const errors = require('../configs/errors.config');
-
-test('should throw error if incorrect number of arguments is supplied', () => {
-  expect(() => new Quest()).toThrow(errors.INCORRECT_ARGUMENTS);
-  expect(() => new Quest({votesNeeded: 1})).toThrow(errors.INCORRECT_ARGUMENTS);
-  expect(() => new Quest({votesNeeded: null, failsNeeded: 1})).toThrow(errors.INCORRECT_ARGUMENTS);
-  expect(() => new Quest({votesNeeded: 2, failsNeeded: 1})).toThrow(errors.INCORRECT_ARGUMENTS);
-  expect(() => new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 4})).not.toThrow(errors.INCORRECT_ARGUMENTS);
-});
 
 test('should return number of players needed', () => {
   const quest = new Quest({votesNeeded: 3, failsNeeded: 1, totalPlayers: 2});
@@ -112,7 +104,7 @@ describe('team voting', () => {
     quest.addVote(new Vote('user-1', true));
 
     expect(() => quest.addVote(new Vote('user-1', false)))
-      .toThrow(errors.VOTED_ALREADY);
+      .toThrow(errors.AlreadyVotedForTeamError);
   });
 
   test('should allow a player to vote again in the next team voting round', () => {
@@ -122,7 +114,7 @@ describe('team voting', () => {
     quest.addVote(new Vote('user-2', false));
 
     expect(() => quest.addVote(new Vote('user-1', false)))
-      .not.toThrow(errors.VOTED_ALREADY);
+      .not.toThrow(errors.AlreadyVotedForQuestError);
   });
 
   test('should increment the tracker if team voting has failed', () => {
@@ -192,7 +184,7 @@ describe('quest voting', () => {
 
     quest.addVote(new Vote('user-1', true));
     expect(() => quest.addVote(new Vote('user-1', false)))
-      .toThrow(errors.VOTED_ALREADY);
+      .toThrow(errors.AlreadyVotedForQuestError);
   });
 
   test('should return whether everybody has voted for the quest or not', () => {

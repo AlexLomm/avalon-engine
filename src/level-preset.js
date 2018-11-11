@@ -1,11 +1,11 @@
-const errors       = require('../configs/errors.config');
+const errors       = require('./errors');
 const levelPresets = require('../configs/level-presets.config');
 
 class LevelPreset {
   constructor(playerCount) {
     const levelPreset = levelPresets[playerCount];
     if (!levelPreset) {
-      throw new Error(errors.INCORRECT_NUMBER_OF_PLAYERS);
+      throw new errors.PlayersAmountIncorrectError();
     }
 
     this._goodCount = levelPresets[playerCount].goodCount;

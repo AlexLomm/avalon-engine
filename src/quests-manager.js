@@ -1,4 +1,4 @@
-const errors = require('../configs/errors.config');
+const errors = require('../src/errors');
 const Quest  = require('./quest');
 
 class QuestsManager {
@@ -10,10 +10,11 @@ class QuestsManager {
   }
 
   setAssassinationStatus(isSuccessful) {
-    if (this._getFailedQuestsCount() < 3
-        && this._getSucceededQuestsCount() < 3
+    if (
+      this._getFailedQuestsCount() < 3
+      && this._getSucceededQuestsCount() < 3
     ) {
-      throw new Error(errors.NO_ASSASSINATION_TIME);
+      throw new errors.NoTimeForAssassinationError();
     }
 
     this._assassinationStatus = isSuccessful ? 1 : 0;

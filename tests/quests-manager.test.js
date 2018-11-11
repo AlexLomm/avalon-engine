@@ -1,5 +1,5 @@
 const _             = require('lodash');
-const errors        = require('../configs/errors.config');
+const errors        = require('../src/errors');
 const QuestsManager = require('../src/quests-manager');
 const Quest         = require('../src/quest');
 const LevelPreset   = require('../src/level-preset');
@@ -141,10 +141,10 @@ describe('assassination', () => {
 
   test('should not allow assassination attempt to resolve too early', () => {
     expect(() => manager.setAssassinationStatus(false))
-      .toThrow(errors.NO_ASSASSINATION_TIME);
+      .toThrow(errors.NoTimeForAssassinationError);
 
     expect(() => manager.setAssassinationStatus(true))
-      .toThrow(errors.NO_ASSASSINATION_TIME);
+      .toThrow(errors.NoTimeForAssassinationError);
   });
 });
 
