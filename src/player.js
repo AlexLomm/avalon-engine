@@ -31,7 +31,7 @@ Player.prototype.setIsProposed = function (isProposed) {
   this._isProposed = isProposed;
 };
 
-Player.prototype.toggleProposition = function () {
+Player.prototype.toggleTeamProposition = function () {
   this._isProposed = !this._isProposed;
 };
 

@@ -88,7 +88,7 @@ Game.prototype.revealRoles = function (seconds) {
 };
 
 Game.prototype.submitTeam = function (username) {
-  if (!this._playersManager.teamProposalAllowedFor(username)) {
+  if (!this._playersManager.teamPropositionAllowedFor(username)) {
     throw new Error(errors.NO_RIGHT_TO_SUBMIT_TEAM);
   }
 
@@ -163,16 +163,16 @@ Game.prototype._vote = function (username, voteValue) {
   this._questsManager.addVote(vote);
 };
 
-Game.prototype.toggleProposition = function (leaderUsername, username) {
+Game.prototype.toggleTeamProposition = function (leaderUsername, username) {
   if (!this.teamPropositionIsOn()) {
     throw new Error(errors.NO_PROPOSITION_TIME);
   }
 
-  if (!this._playersManager.playerProposalAllowedFor(leaderUsername)) {
+  if (!this._playersManager.playerPropositionAllowedFor(leaderUsername)) {
     throw new Error(errors.NO_RIGHT_TO_PROPOSE);
   }
 
-  this._playersManager.toggleProposition(username);
+  this._playersManager.toggleTeamProposition(username);
 };
 
 Game.prototype.assassinate = function (assassinsUsername, victimsUsername) {

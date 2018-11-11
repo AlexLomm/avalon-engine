@@ -64,12 +64,12 @@ PlayersManager.prototype._findPlayer = function (username) {
   return this._players.find((p) => p.getUsername() === username);
 };
 
-PlayersManager.prototype.toggleProposition = function (username) {
+PlayersManager.prototype.toggleTeamProposition = function (username) {
   const player = this._findPlayer(username);
 
   if (!player) return;
 
-  player.toggleProposition();
+  player.toggleTeamProposition();
 };
 
 PlayersManager.prototype.setIsSubmitted = function (isSubmitted) {
@@ -180,11 +180,11 @@ PlayersManager.prototype.teamVotingAllowedFor = function (username) {
   return player && !player.getVote();
 };
 
-PlayersManager.prototype.teamProposalAllowedFor = function (username) {
-  return this.playerProposalAllowedFor(username);
+PlayersManager.prototype.teamPropositionAllowedFor = function (username) {
+  return this.playerPropositionAllowedFor(username);
 };
 
-PlayersManager.prototype.playerProposalAllowedFor = function (username) {
+PlayersManager.prototype.playerPropositionAllowedFor = function (username) {
   const leader = this.getLeader();
 
   if (!leader) return false;

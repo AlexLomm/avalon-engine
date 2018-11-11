@@ -224,7 +224,7 @@ describe('post "reveal roles" phase', () => {
     const leaderUsername = playersManager.getLeader().getUsername();
 
     usernames.forEach((username) => {
-      game.toggleProposition(leaderUsername, username);
+      game.toggleTeamProposition(leaderUsername, username);
     });
   };
 
@@ -238,31 +238,31 @@ describe('post "reveal roles" phase', () => {
       .forEach(p => game.voteForQuest(p.getUsername(), voteValue));
   };
 
-  describe('team proposal', () => {
+  describe('team proposition', () => {
     test('should disallow anybody other then the party leader to propose a player', () => {
       const leader = playersManager.getLeader();
-      expect(() => game.toggleProposition(leader.getUsername(), 'user-3')).not.toThrow();
+      expect(() => game.toggleTeamProposition(leader.getUsername(), 'user-3')).not.toThrow();
 
       const nonLeader = playersManager.getAll().find(player => !player.getIsLeader());
       expect(() => {
-        game.toggleProposition(nonLeader.getUsername(), 'user-3');
+        game.toggleTeamProposition(nonLeader.getUsername(), 'user-3');
       }).toThrow(errors.NO_RIGHT_TO_PROPOSE);
     });
 
     test('should toggle whether a player is proposed or not', () => {
       const leader = playersManager.getLeader();
 
-      jest.spyOn(playersManager, 'toggleProposition');
+      jest.spyOn(playersManager, 'toggleTeamProposition');
 
-      game.toggleProposition(leader.getUsername(), 'user-3');
+      game.toggleTeamProposition(leader.getUsername(), 'user-3');
 
-      expect(playersManager.toggleProposition).toBeCalledTimes(1);
+      expect(playersManager.toggleTeamProposition).toBeCalledTimes(1);
     });
 
-    test('should disallow any further proposals once the team is submitted', () => {
+    test('should disallow any further propositions once the team is submitted', () => {
       proposeAndSubmitTeam(['user-1', 'user-2']);
 
-      expect(() => game.toggleProposition(playersManager.getLeader().getUsername(), 'user-2'))
+      expect(() => game.toggleTeamProposition(playersManager.getLeader().getUsername(), 'user-2'))
         .toThrow(errors.NO_PROPOSITION_TIME);
     });
   });
@@ -279,12 +279,12 @@ describe('post "reveal roles" phase', () => {
       expect(() => game.submitTeam(playersManager.getLeader().getUsername()))
         .toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
 
-      game.toggleProposition(playersManager.getLeader().getUsername(), 'user-1');
+      game.toggleTeamProposition(playersManager.getLeader().getUsername(), 'user-1');
 
       expect(() => game.submitTeam(playersManager.getLeader().getUsername()))
         .toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
 
-      game.toggleProposition(playersManager.getLeader().getUsername(), 'user-2');
+      game.toggleTeamProposition(playersManager.getLeader().getUsername(), 'user-2');
 
       expect(game.submitTeam(playersManager.getLeader().getUsername()));
     });

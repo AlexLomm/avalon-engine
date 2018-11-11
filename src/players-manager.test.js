@@ -195,23 +195,23 @@ describe('team proposition and submission', () => {
   test('should return if a player has right to propose a teammate', () => {
     addPlayersToManager(7);
 
-    expect(manager.playerProposalAllowedFor('user-1')).toBeFalsy();
+    expect(manager.playerPropositionAllowedFor('user-1')).toBeFalsy();
 
     manager.nextLeader();
     const leader = manager.getLeader();
 
-    expect(manager.playerProposalAllowedFor(leader.getUsername())).toBeTruthy();
+    expect(manager.playerPropositionAllowedFor(leader.getUsername())).toBeTruthy();
   });
 
   test('should set and get proposed players', () => {
     manager.add(new Player('user-1'));
     manager.add(new Player('user-2'));
 
-    manager.toggleProposition(null);
+    manager.toggleTeamProposition(null);
 
     expect(manager.getProposedPlayers().length).toBeFalsy();
 
-    manager.toggleProposition('user-2');
+    manager.toggleTeamProposition('user-2');
 
     expect(manager.getProposedPlayers().pop().getUsername()).toEqual('user-2');
   });
@@ -219,12 +219,12 @@ describe('team proposition and submission', () => {
   test('should return if a player has right to submit a team', () => {
     addPlayersToManager(7);
 
-    expect(manager.teamProposalAllowedFor('user-1')).toBeFalsy();
+    expect(manager.teamPropositionAllowedFor('user-1')).toBeFalsy();
 
     manager.nextLeader();
     const leader = manager.getLeader();
 
-    expect(manager.teamProposalAllowedFor(leader.getUsername())).toBeTruthy();
+    expect(manager.teamPropositionAllowedFor(leader.getUsername())).toBeTruthy();
   });
 
   test('should mark players as submitted', () => {
@@ -297,7 +297,7 @@ describe('voting', () => {
 
     expect(manager.questVotingAllowedFor('user-1')).toBeFalsy();
 
-    manager.toggleProposition('user-1');
+    manager.toggleTeamProposition('user-1');
 
     expect(manager.questVotingAllowedFor('user-1')).toBeTruthy();
 
