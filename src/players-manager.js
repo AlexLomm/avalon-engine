@@ -106,7 +106,7 @@ class PlayersManager {
   assignRoles(levelPreset, config = {}) {
     this._levelPreset = levelPreset;
 
-    const rolesConfig = this._generateRolesConfig(config);
+    const rolesConfig = PlayersManager._generateRolesConfig(config);
 
     const roles = this._generateRoles(rolesConfig);
 
@@ -121,7 +121,7 @@ class PlayersManager {
     this.nextLeader();
   }
 
-  _generateRolesConfig(config) {
+  static _generateRolesConfig(config) {
     const defaultRolesConfig = {
       [roleIds.MERLIN]: true,
       [roleIds.ASSASSIN]: true,
@@ -146,12 +146,12 @@ class PlayersManager {
 
     return _.shuffle(_.concat(
       roles,
-      this._generateServants(goodCount),
-      this._generateMinions(evilCount)
+      PlayersManager._generateServants(goodCount),
+      PlayersManager._generateMinions(evilCount)
     ));
   }
 
-  _generateServants(count) {
+  static _generateServants(count) {
     return _.shuffle([
       new Role(roleIds.SERVANT_1),
       new Role(roleIds.SERVANT_2),
@@ -161,7 +161,7 @@ class PlayersManager {
     ]).slice(0, count);
   }
 
-  _generateMinions(count) {
+  static _generateMinions(count) {
     return _.shuffle([
       new Role(roleIds.MINION_1),
       new Role(roleIds.MINION_2),
