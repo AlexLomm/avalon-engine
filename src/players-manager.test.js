@@ -360,6 +360,21 @@ describe('assassination', () => {
       .toThrow(errors.NO_VICTIM_CHOSEN);
   });
 
+  test('should throw if a non-assassin tries to assassinate', () => {
+    addPlayersAndAssignRoles(7);
+
+    const assassin    = manager.getAssassin();
+    const nonAssassin = manager.getAll().find((p) => !p.getIsAssassin());
+
+    manager.toggleVictimProposition(
+      assassin.getUsername(),
+      nonAssassin.getUsername()
+    );
+
+    expect(() => manager.assassinate(nonAssassin.getUsername()))
+      .toThrow(errors.NO_RIGHT_TO_ASSASSINATE);
+  });
+
   test('should assassinate a player', () => {
     addPlayersAndAssignRoles(7);
 
