@@ -158,6 +158,7 @@ Game.prototype._resetFlags = function () {
 
 Game.prototype._vote = function (username, voteValue) {
   const vote = new Vote(username, voteValue);
+
   this._playersManager.setVote(vote);
   this._questsManager.addVote(vote);
 };
@@ -180,35 +181,35 @@ Game.prototype.assassinate = function (assassinsUsername, victimsUsername) {
   }
 
   this._playersManager.assassinate(assassinsUsername, victimsUsername);
-  this._questsManager.setAssassinationStatus(this._assassinationIsSuccessful());
+  this._questsManager.setAssassinationStatus(this._assassinationSucceeded());
 };
 
 Game.prototype.assassinationIsOn = function () {
-  return this._questsManager.assassinationIsAllowed();
+  return this._questsManager.assassinationAllowed();
 };
 
-Game.prototype._assassinationIsSuccessful = function () {
+Game.prototype._assassinationSucceeded = function () {
   return this._playersManager.getVictim().getRole().getId() === roleIds.MERLIN;
 };
 
 Game.prototype.questVotingIsOn = function () {
-  return this._gameHasStarted()
+  return this._gameStarted()
          && this._playersManager.getIsSubmitted()
          && this._questsManager.getCurrentQuest().questVotingAllowed();
 };
 
 Game.prototype.teamVotingIsOn = function () {
-  return this._gameHasStarted()
+  return this._gameStarted()
          && this._playersManager.getIsSubmitted()
          && this._questsManager.getCurrentQuest().teamVotingAllowed();
 };
 
 Game.prototype.teamPropositionIsOn = function () {
-  return this._gameHasStarted()
+  return this._gameStarted()
          && !this._playersManager.getIsSubmitted();
 };
 
-Game.prototype._gameHasStarted = function () {
+Game.prototype._gameStarted = function () {
   return this._startedAt
          && this._rolesLastRevealedAt
          && !this._rolesAreRevealed;

@@ -72,7 +72,7 @@ QuestsManager.prototype.getStatus = function () {
   return -1;
 };
 
-QuestsManager.prototype.assassinationIsAllowed = function () {
+QuestsManager.prototype.assassinationAllowed = function () {
   return this._getSucceededQuestsCount() >= 3
          && this._assassinationStatus === -1;
 };

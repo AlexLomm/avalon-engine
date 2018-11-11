@@ -118,11 +118,11 @@ describe('assassination', () => {
   });
 
   test('should return that assassination is allowed after three successful quests', () => {
-    expect(manager.assassinationIsAllowed()).toBeFalsy();
+    expect(manager.assassinationAllowed()).toBeFalsy();
 
     succeedQuestsTimes(manager, 3);
 
-    expect(manager.assassinationIsAllowed()).toBeTruthy();
+    expect(manager.assassinationAllowed()).toBeTruthy();
   });
 
   test('should return that assassination is not allowed if one has already occurred', () => {
@@ -130,13 +130,13 @@ describe('assassination', () => {
 
     manager.setAssassinationStatus(true);
 
-    expect(manager.assassinationIsAllowed()).toBeFalsy();
+    expect(manager.assassinationAllowed()).toBeFalsy();
   });
 
   test('should not allow assassination if the team "evil" has already won', () => {
     failQuestsTimes(manager, 3);
 
-    expect(manager.assassinationIsAllowed()).toBeFalsy();
+    expect(manager.assassinationAllowed()).toBeFalsy();
   });
 
   test('should not allow assassination attempt to resolve too early', () => {

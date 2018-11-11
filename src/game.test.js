@@ -497,12 +497,12 @@ describe('post "reveal roles" phase', () => {
 
   describe('assassination', () => {
     test('should return whether assassination is on', () => {
-      jest.spyOn(questsManager, 'assassinationIsAllowed');
+      jest.spyOn(questsManager, 'assassinationAllowed');
 
       const assassinationIsOn = game.assassinationIsOn();
 
-      expect(questsManager.assassinationIsAllowed).toBeCalledTimes(1);
-      expect(questsManager.assassinationIsAllowed()).toEqual(assassinationIsOn);
+      expect(questsManager.assassinationAllowed).toBeCalledTimes(1);
+      expect(questsManager.assassinationAllowed()).toEqual(assassinationIsOn);
     });
 
     test('should throw if it is not an appropriate time for assassination', () => {
