@@ -1,14 +1,16 @@
-const Vote = function (username, vote) {
-  this._username = username;
-  this._vote     = vote;
-};
+class Vote {
+  constructor(username, vote) {
+    this._username = username;
+    this._vote     = vote;
+  }
 
-Vote.prototype.getUsername = function () {
-  return this._username;
-};
+  getUsername() {
+    return this._username;
+  }
 
-Vote.prototype.getValue = function () {
-  return this._vote;
-};
+  getValue() {
+    return this._vote;
+  }
+}
 
 module.exports = Vote;

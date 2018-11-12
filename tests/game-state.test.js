@@ -1,6 +1,6 @@
 const _         = require('lodash');
-const Game      = require('./game');
-const GameState = require('./game-state');
+const Game      = require('../src/game');
+const GameState = require('../src/game-state');
 
 test('should make a deep copy of an object', () => {
   const game = new Game();

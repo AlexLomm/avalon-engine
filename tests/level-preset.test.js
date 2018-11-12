@@ -1,9 +1,9 @@
-const errors      = require('./errors');
-const LevelPreset = require('./level-preset');
+const errors      = require('../src/errors');
+const LevelPreset = require('../src/level-preset');
 
 test('should throw if the specified number of players is incorrect', () => {
   expect(() => new LevelPreset(100))
-    .toThrow(errors.INCORRECT_NUMBER_OF_PLAYERS);
+    .toThrow(errors.PlayersInsufficientError);
 });
 
 test('should create a level preset for specified number of players', () => {
@@ -15,8 +15,8 @@ test('should create a level preset for specified number of players', () => {
 test('should get quests', () => {
   const levelPreset = new LevelPreset(7);
 
-  expect(levelPreset.getQuests()).toBeTruthy();
-  expect(levelPreset.getQuests().length).toBeTruthy();
+  expect(levelPreset.getQuestsConfig()).toBeTruthy();
+  expect(levelPreset.getQuestsConfig().length).toBeTruthy();
 });
 
 test('should get total number of players', () => {

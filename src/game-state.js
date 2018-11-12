@@ -1,31 +1,33 @@
 const _ = require('lodash');
 
-const GameState = function (obj) {
-  this._data = Object.assign({}, _.cloneDeep(obj));
+class GameState {
+  constructor(obj) {
+    this._data = Object.assign({}, _.cloneDeep(obj));
 
-  this._omitUselessFields(this._data, (val) => {
-    return _.isFunction(val) || val instanceof Promise;
-  });
-};
+    this._omitUselessFields(this._data, (val) => {
+      return _.isFunction(val) || val instanceof Promise;
+    });
+  }
 
-GameState.prototype._omitUselessFields = function (obj, iteratee) {
-  _.each(obj, (v, k) => {
-    _.unset(obj, k);
+  _omitUselessFields(obj, iteratee) {
+    _.each(obj, (v, k) => {
+      _.unset(obj, k);
 
-    if (iteratee(v, k)) return;
+      if (iteratee(v, k)) return;
 
-    obj[k.replace(/_/, '')] = v;
+      obj[k.replace(/_/, '')] = v;
 
-    if (_.isObject(v)) {
-      this._omitUselessFields(v, iteratee);
-    }
-  });
+      if (_.isObject(v)) {
+        this._omitUselessFields(v, iteratee);
+      }
+    });
 
-  return obj;
-};
+    return obj;
+  }
 
-GameState.prototype.get = function () {
-  return this._data;
-};
+  get() {
+    return this._data;
+  }
+}
 
 module.exports = GameState;

@@ -1,210 +1,237 @@
-const _         = require('lodash');
-const errors    = require('./errors');
-const {roleIds} = require('./roles.config');
-const Role      = require('./role');
+const _                    = require('lodash');
+const errors               = require('./errors');
+const {roleIds, loyalties} = require('../configs/roles.config');
+const Role                 = require('./role');
 
-const PlayersManager = function () {
-  this._leaderIndex = -1;
-  this._levelPreset = null;
-  this._isSubmitted = false;
-  this._gameCreator = null;
-  this._assassin    = null;
-  this._victim      = null;
-  this._players     = [];
-};
-
-PlayersManager.prototype.getVictim = function () {
-  return this._victim;
-};
-
-PlayersManager.prototype.assassinate = function (assassinsUsername, victimsUsername) {
-  if (!this._assassin || this._assassin.getUsername() !== assassinsUsername) {
-    throw new Error(errors.NO_RIGHT_TO_ASSASSINATE);
+class PlayersManager {
+  constructor() {
+    this._levelPreset = null;
+    this._gameCreator = null;
+    this._players     = [];
+    this._leaderIndex = -1;
+    this._isSubmitted = false;
   }
 
-  this._victim = this.getAll()
-    .find((player) => player.getUsername() === victimsUsername);
-};
+  assassinate(assassinsUsername) {
+    const assassin = this.getAssassin();
+    if (!assassin || assassin.getUsername() !== assassinsUsername) {
+      throw new errors.DeniedAssassinationError();
+    }
 
-PlayersManager.prototype.getAssassin = function () {
-  return this._assassin;
-};
+    const victim = this.getVictim();
+    if (!victim) {
+      throw new errors.RequiredVictimError();
+    }
 
-PlayersManager.prototype.getAll = function () {
-  return this._players;
-};
-
-PlayersManager.prototype.getGameCreator = function () {
-  return this._gameCreator;
-};
-
-PlayersManager.prototype.add = function (player) {
-  if (!player) return;
-
-  const existingPlayer = this._players
-    .find(p => p.getUsername() === player.getUsername());
-
-  if (existingPlayer) {
-    throw new Error(errors.USERNAME_ALREADY_EXISTS);
+    victim.markAsAssassinated();
   }
 
-  if (this._players.length === 10) {
-    throw new Error(errors.MAXIMUM_PLAYERS_REACHED);
+  getVictim() {
+    return this._players.find((p) => p.getIsVictim());
   }
 
-  this._players.push(player);
-
-  if (!this._gameCreator) {
-    this._gameCreator = this._players[0];
+  getAssassin() {
+    return this._players.find((p) => p.getIsAssassin());
   }
-};
 
-PlayersManager.prototype.getProposedPlayers = function () {
-  return this._players.filter(player => player.getIsProposed());
-};
+  getAll() {
+    return this._players;
+  }
 
-PlayersManager.prototype.toggleIsProposed = function (username) {
-  const player = this._players.find(p => p.getUsername() === username);
+  getProposedPlayers() {
+    return this._players.filter((p) => p.getIsProposed());
+  }
 
-  if (!player) return;
+  getGameCreator() {
+    return this._gameCreator;
+  }
 
-  player.toggleIsProposed();
-};
+  add(player) {
+    if (!player) return;
 
-PlayersManager.prototype.markAsSubmitted = function () {
-  this._isSubmitted = true;
-};
+    if (this._findPlayer(player.getUsername())) {
+      throw new errors.AlreadyExistsPlayerError();
+    }
 
-PlayersManager.prototype.unmarkAsSubmitted = function () {
-  this._isSubmitted = false;
-};
+    if (this._players.length === 10) {
+      throw new errors.PlayersMaximumReachedError();
+    }
 
-PlayersManager.prototype.getIsSubmitted = function () {
-  return this._isSubmitted;
-};
+    if (!this._gameCreator) {
+      this._gameCreator = player;
+    }
 
-PlayersManager.prototype.assignRoles = function (levelPreset, config = {}) {
-  this._levelPreset = levelPreset;
+    this._players.push(player);
+  }
 
-  const rolesConfig = this._generateRolesConfig(config);
+  _findPlayer(username) {
+    return this._players.find((p) => p.getUsername() === username);
+  }
 
-  const roles = this._generateRoles(rolesConfig);
+  toggleVictimProposition(
+    assassinsUsername,
+    victimUsername
+  ) {
+    if (this.getAssassin().getUsername() !== assassinsUsername) {
+      throw new errors.DeniedVictimPropositionError();
+    }
 
-  this._players.forEach((player) => player.setRole(roles.pop()));
+    if (this.getAssassin().getUsername() === victimUsername) {
+      throw new errors.DeniedSelfSacrificeError();
+    }
 
-  this._assassin = this._players.find(
-    (player) => player.getRole().getId() === roleIds.ASSASSIN
-  );
+    this._players.forEach((p) => {
+      p.getUsername() === victimUsername
+        ? p.toggleIsVictim()
+        : p.setIsVictim(false);
+    });
+  }
 
-  this.nextLeader();
-};
+  toggleTeamProposition(username) {
+    const player = this._findPlayer(username);
 
-PlayersManager.prototype._generateRolesConfig = function (config) {
-  const defaultRolesConfig = {
-    [roleIds.MERLIN]: true,
-    [roleIds.ASSASSIN]: true,
-  };
+    if (!player) return;
 
-  return Object.assign({}, config, defaultRolesConfig);
-};
+    player.toggleTeamProposition();
+  }
 
-PlayersManager.prototype._generateRoles = function (config) {
-  let goodCount = this._levelPreset.getGoodCount();
-  let evilCount = this._levelPreset.getEvilCount();
+  setIsSubmitted(isSubmitted) {
+    this._isSubmitted = isSubmitted;
+  }
 
-  const roles = Object.keys(config).map(roleId => {
-    const role = new Role(roleId);
+  getIsSubmitted() {
+    return this._isSubmitted;
+  }
 
-    role.getLoyalty() === 'GOOD' ? goodCount-- : evilCount--;
+  assignRoles(levelPreset, config = {}) {
+    this._levelPreset = levelPreset;
 
-    return role;
-  });
+    const rolesConfig = PlayersManager._generateRolesConfig(config);
 
-  return _.shuffle(_.concat(
-    roles,
-    this._generateServants(goodCount),
-    this._generateMinions(evilCount)
-  ));
-};
+    const roles = this._generateRoles(rolesConfig);
 
-PlayersManager.prototype._generateServants = function (count) {
-  return _.shuffle([
-    new Role(roleIds.SERVANT_1),
-    new Role(roleIds.SERVANT_2),
-    new Role(roleIds.SERVANT_3),
-    new Role(roleIds.SERVANT_4),
-    new Role(roleIds.SERVANT_5),
-  ]).slice(0, count);
-};
+    this._players.forEach((player) => player.setRole(roles.pop()));
 
-PlayersManager.prototype._generateMinions = function (count) {
-  return _.shuffle([
-    new Role(roleIds.MINION_1),
-    new Role(roleIds.MINION_2),
-    new Role(roleIds.MINION_3),
-  ]).slice(0, count);
-};
+    const player = this._players.find(
+      (player) => player.getRole().getId() === roleIds.ASSASSIN
+    );
 
-PlayersManager.prototype.nextLeader = function () {
-  if (this._leaderIndex === -1) {
+    player.markAsAssassin();
+
+    this.nextLeader();
+  }
+
+  static _generateRolesConfig(config) {
+    const defaultRolesConfig = {
+      [roleIds.MERLIN]: true,
+      [roleIds.ASSASSIN]: true,
+    };
+
+    return Object.assign({}, config, defaultRolesConfig);
+  }
+
+  _generateRoles(config) {
+    let goodCount = this._levelPreset.getGoodCount();
+    let evilCount = this._levelPreset.getEvilCount();
+
+    const roles = Object.keys(config).map(roleId => {
+      const role = new Role(roleId);
+
+      role.getLoyalty() === loyalties.GOOD
+        ? goodCount--
+        : evilCount--;
+
+      return role;
+    });
+
+    return _.shuffle(_.concat(
+      roles,
+      PlayersManager._generateServants(goodCount),
+      PlayersManager._generateMinions(evilCount)
+    ));
+  }
+
+  static _generateServants(count) {
+    return _.shuffle([
+      new Role(roleIds.SERVANT_1),
+      new Role(roleIds.SERVANT_2),
+      new Role(roleIds.SERVANT_3),
+      new Role(roleIds.SERVANT_4),
+      new Role(roleIds.SERVANT_5),
+    ]).slice(0, count);
+  }
+
+  static _generateMinions(count) {
+    return _.shuffle([
+      new Role(roleIds.MINION_1),
+      new Role(roleIds.MINION_2),
+      new Role(roleIds.MINION_3),
+    ]).slice(0, count);
+  }
+
+  nextLeader() {
+    this.getLeader()
+      ? this._chooseNextPlayerAsLeader()
+      : this._chooseLeaderRandomly();
+  }
+
+  getLeader() {
+    return this._players[this._leaderIndex];
+  }
+
+  _chooseLeaderRandomly() {
     this._leaderIndex = _.random(0, this._players.length - 1);
 
-    this.getLeader().markAsLeader();
-
-    return;
+    this.getLeader().setIsLeader(true);
   }
 
-  this.getLeader().unmarkAsLeader();
+  _chooseNextPlayerAsLeader() {
+    this.getLeader().setIsLeader(false);
 
-  this._leaderIndex = (this._leaderIndex + 1) % this._players.length;
-  this.getLeader().markAsLeader();
-};
+    this._leaderIndex = (this._leaderIndex + 1) % this._players.length;
 
-PlayersManager.prototype.getLeader = function () {
-  return this._players[this._leaderIndex];
-};
+    this.getLeader().setIsLeader(true);
+  }
 
-PlayersManager.prototype.isAllowedToVoteForQuest = function (username) {
-  const proposedPlayer = this.getProposedPlayers()
-    .find(p => p.getUsername() === username);
+  questVotingAllowedFor(username) {
+    const player = this._findPlayer(username);
 
-  return proposedPlayer && !proposedPlayer.getVote();
-};
+    return player && player.getIsProposed() && !player.getVote();
+  }
 
-PlayersManager.prototype.isAllowedToVoteForTeam = function (username) {
-  const player = this.getAll()
-    .find(p => p.getUsername() === username);
+  teamVotingAllowedFor(username) {
+    const player = this._findPlayer(username);
 
-  return player && !player.getVote();
-};
+    return player && !player.getVote();
+  }
 
-PlayersManager.prototype.isAllowedToProposeTeam = function (username) {
-  return this.isAllowedToProposePlayer(username);
-};
+  teamPropositionAllowedFor(username) {
+    return this.playerPropositionAllowedFor(username);
+  }
 
-PlayersManager.prototype.isAllowedToProposePlayer = function (username) {
-  const leader = this.getLeader();
+  playerPropositionAllowedFor(username) {
+    const leader = this.getLeader();
 
-  if (!leader) return false;
+    if (!leader) return false;
 
-  return leader.getUsername() === username;
-};
+    return leader.getUsername() === username;
+  }
 
-PlayersManager.prototype.setVote = function (vote) {
-  const player = this._players
-    .find(p => p.getUsername() === vote.getUsername());
+  setVote(vote) {
+    const player = this._findPlayer(vote.getUsername());
 
-  if (!player) return;
+    if (!player) return;
 
-  player.setVote(vote);
-};
+    player.setVote(vote);
+  }
 
-PlayersManager.prototype.resetVotes = function () {
-  this._players.forEach((player) => player.setVote(null));
-};
+  resetVotes() {
+    this._players.forEach((player) => player.setVote(null));
+  }
 
-PlayersManager.prototype.resetPropositions = function () {
-  this._players.forEach((player) => player.setIsProposed(false));
-};
+  resetPropositions() {
+    this._players.forEach((player) => player.setIsProposed(false));
+  }
+}
 
 module.exports = PlayersManager;

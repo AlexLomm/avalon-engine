@@ -1,4 +1,4 @@
-const Vote = require('./vote');
+const Vote = require('../src/vote');
 
 test('should get vote', () => {
   const vote = new Vote('user-1', true);

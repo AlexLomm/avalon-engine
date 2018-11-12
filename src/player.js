@@ -1,71 +1,86 @@
-const Player = function (username) {
-  this._username       = username;
-  this._role           = null;
-  this._isLeader       = false;
-  this._isProposed     = false;
-  this._isAssassinated = false;
-  this._vote           = null;
-};
+class Player {
+  constructor(username) {
+    this._username       = username;
+    this._role           = null;
+    this._vote           = null;
+    this._isProposed     = false;
+    this._isLeader       = false;
+    this._isAssassin     = false;
+    this._isVictim       = false;
+    this._isAssassinated = false;
+  }
 
-Player.prototype.markAsAssassinated = function () {
-  this._isAssassinated = true;
-};
+  getUsername() {
+    return this._username;
+  }
 
-Player.prototype.markAsLeader = function () {
-  this._isLeader = true;
-};
+  setRole(role) {
+    this._role = role;
+  }
 
-Player.prototype.unmarkAsLeader = function () {
-  this._isLeader = false;
-};
+  getRole() {
+    return this._role;
+  }
 
-Player.prototype.getIsAssassinated = function () {
-  return this._isAssassinated;
-};
+  setVote(vote) {
+    this._vote = vote;
+  }
 
-Player.prototype.getIsLeader = function () {
-  return this._isLeader;
-};
+  getVote() {
+    return this._vote;
+  }
 
-Player.prototype.getUsername = function () {
-  return this._username;
-};
+  setIsProposed(isProposed) {
+    this._isProposed = isProposed;
+  }
 
-Player.prototype.setRole = function (role) {
-  this._role = role;
-};
+  getIsVictim() {
+    return this._isVictim;
+  }
 
-Player.prototype.getRole = function () {
-  return this._role;
-};
+  setIsVictim(isVictim) {
+    this._isVictim = isVictim;
+  }
 
-Player.prototype.getVote = function () {
-  return this._vote;
-};
+  toggleIsVictim() {
+    this._isVictim = !this._isVictim;
+  }
 
-Player.prototype.getIsProposed = function () {
-  return this._isProposed;
-};
+  getIsAssassin() {
+    return this._isAssassin;
+  }
 
-Player.prototype.toggleIsProposed = function () {
-  this._isProposed = !this._isProposed;
-};
+  markAsAssassin() {
+    this._isAssassin = true;
+  }
 
-Player.prototype.setIsProposed = function (isProposed) {
-  this._isProposed = isProposed;
-};
+  toggleTeamProposition() {
+    this._isProposed = !this._isProposed;
+  }
 
-Player.prototype.canSee = function (anotherPlayer) {
-  return this._role.canSee(anotherPlayer.getRole());
-};
+  getIsProposed() {
+    return this._isProposed;
+  }
 
-Player.prototype.setVote = function (vote) {
-  this._vote = vote;
-};
+  setIsLeader(isLeader) {
+    this._isLeader = isLeader;
+  }
 
-Player.prototype.reset = function () {
-  this._vote       = null;
-  this._isProposed = false;
-};
+  getIsLeader() {
+    return this._isLeader;
+  }
+
+  markAsAssassinated() {
+    this._isAssassinated = true;
+  }
+
+  getIsAssassinated() {
+    return this._isAssassinated;
+  }
+
+  canSee(anotherPlayer) {
+    return this._role.canSee(anotherPlayer.getRole());
+  }
+}
 
 module.exports = Player;

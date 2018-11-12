@@ -1,9 +1,9 @@
 const _             = require('lodash');
-const errors        = require('./errors');
-const QuestsManager = require('./quests-manager');
-const Quest         = require('./quest');
-const LevelPreset   = require('./level-preset');
-const Vote          = require('./vote');
+const errors        = require('../src/errors');
+const QuestsManager = require('../src/quests-manager');
+const Quest         = require('../src/quest');
+const LevelPreset   = require('../src/level-preset');
+const Vote          = require('../src/vote');
 
 const resolveQuestsTimes = function (manager, vote, times) {
   _.times(times, () => {
@@ -76,25 +76,25 @@ describe('team voting', () => {
   });
 
   test('should return whether the current team voting was successful or not', () => {
-    jest.spyOn(currentQuest, 'teamVotingWasSuccessful');
+    jest.spyOn(currentQuest, 'teamVotingSucceeded');
 
     _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(i, true)));
 
-    expect(currentQuest.teamVotingWasSuccessful())
-      .toStrictEqual(manager.teamVotingWasSuccessful());
+    expect(currentQuest.teamVotingSucceeded())
+      .toStrictEqual(manager.teamVotingSucceeded());
 
-    expect(currentQuest.teamVotingWasSuccessful).toBeCalled();
+    expect(currentQuest.teamVotingSucceeded).toBeCalled();
   });
 
   test('should return whether the team voting is over or not', () => {
-    jest.spyOn(currentQuest, 'teamVotingRoundIsOver');
+    jest.spyOn(currentQuest, 'teamVotingRoundFinished');
 
     _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(i, false)));
 
-    expect(currentQuest.teamVotingRoundIsOver())
-      .toStrictEqual(manager.teamVotingRoundIsOver());
+    expect(currentQuest.teamVotingRoundFinished())
+      .toStrictEqual(manager.teamVotingRoundFinished());
 
-    expect(currentQuest.teamVotingRoundIsOver).toBeCalled();
+    expect(currentQuest.teamVotingRoundFinished).toBeCalled();
   });
 
   test('should return whether it\'s the last round of team voting', () => {
@@ -118,11 +118,11 @@ describe('assassination', () => {
   });
 
   test('should return that assassination is allowed after three successful quests', () => {
-    expect(manager.assassinationIsAllowed()).toBeFalsy();
+    expect(manager.assassinationAllowed()).toBeFalsy();
 
     succeedQuestsTimes(manager, 3);
 
-    expect(manager.assassinationIsAllowed()).toBeTruthy();
+    expect(manager.assassinationAllowed()).toBeTruthy();
   });
 
   test('should return that assassination is not allowed if one has already occurred', () => {
@@ -130,21 +130,21 @@ describe('assassination', () => {
 
     manager.setAssassinationStatus(true);
 
-    expect(manager.assassinationIsAllowed()).toBeFalsy();
+    expect(manager.assassinationAllowed()).toBeFalsy();
   });
 
   test('should not allow assassination if the team "evil" has already won', () => {
     failQuestsTimes(manager, 3);
 
-    expect(manager.assassinationIsAllowed()).toBeFalsy();
+    expect(manager.assassinationAllowed()).toBeFalsy();
   });
 
   test('should not allow assassination attempt to resolve too early', () => {
     expect(() => manager.setAssassinationStatus(false))
-      .toThrow(errors.NO_ASSASSINATION_TIME);
+      .toThrow(errors.NoTimeForAssassinationError);
 
     expect(() => manager.setAssassinationStatus(true))
-      .toThrow(errors.NO_ASSASSINATION_TIME);
+      .toThrow(errors.NoTimeForAssassinationError);
   });
 });
 

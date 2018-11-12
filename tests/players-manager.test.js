@@ -1,24 +1,27 @@
 const _              = require('lodash');
-const errors         = require('./errors');
-const LevelPreset    = require('./level-preset');
-const PlayersManager = require('./players-manager');
-const Player         = require('./player');
-const Vote           = require('./vote');
+const errors         = require('../src/errors');
+const LevelPreset    = require('../src/level-preset');
+const PlayersManager = require('../src/players-manager');
+const Player         = require('../src/player');
+const Vote           = require('../src/vote');
 
 let manager;
 beforeEach(() => {
   manager = new PlayersManager();
 });
 
+// TODO: extract
 const addPlayersAndAssignRoles = (number, _manager = manager) => {
   addPlayersToManager(number, _manager);
   assignRolesToManager(_manager);
 };
 
+// TODO: extract
 const addPlayersToManager = (number, _manager = manager) => {
   _.times(number, (i) => _manager.add(new Player(`user-${i}`)));
 };
 
+// TODO: extract
 const assignRolesToManager = (_manager = manager) => {
   _manager.assignRoles(new LevelPreset(_manager.getAll().length));
 };
@@ -52,13 +55,14 @@ describe('adding players', () => {
 
     expect(() => {
       manager.add(new Player('some-username'));
-    }).toThrow(errors.USERNAME_ALREADY_EXISTS);
+    }).toThrow(errors.AlreadyExistsPlayerError);
   });
 
   test('should prevent adding more than 10 players', () => {
     addPlayersToManager(10);
 
-    expect(() => manager.add(new Player('user-11'))).toThrow(errors.MAXIMUM_PLAYERS_REACHED);
+    expect(() => manager.add(new Player('user-11')))
+      .toThrow(errors.PlayersMaximumReachedError);
   });
 
   test('should make the first player a "creator"', () => {
@@ -192,23 +196,23 @@ describe('team proposition and submission', () => {
   test('should return if a player has right to propose a teammate', () => {
     addPlayersToManager(7);
 
-    expect(manager.isAllowedToProposePlayer('user-1')).toBeFalsy();
+    expect(manager.playerPropositionAllowedFor('user-1')).toBeFalsy();
 
     manager.nextLeader();
     const leader = manager.getLeader();
 
-    expect(manager.isAllowedToProposePlayer(leader.getUsername())).toBeTruthy();
+    expect(manager.playerPropositionAllowedFor(leader.getUsername())).toBeTruthy();
   });
 
   test('should set and get proposed players', () => {
     manager.add(new Player('user-1'));
     manager.add(new Player('user-2'));
 
-    manager.toggleIsProposed(null);
+    manager.toggleTeamProposition(null);
 
     expect(manager.getProposedPlayers().length).toBeFalsy();
 
-    manager.toggleIsProposed('user-2');
+    manager.toggleTeamProposition('user-2');
 
     expect(manager.getProposedPlayers().pop().getUsername()).toEqual('user-2');
   });
@@ -216,12 +220,12 @@ describe('team proposition and submission', () => {
   test('should return if a player has right to submit a team', () => {
     addPlayersToManager(7);
 
-    expect(manager.isAllowedToProposeTeam('user-1')).toBeFalsy();
+    expect(manager.teamPropositionAllowedFor('user-1')).toBeFalsy();
 
     manager.nextLeader();
     const leader = manager.getLeader();
 
-    expect(manager.isAllowedToProposeTeam(leader.getUsername())).toBeTruthy();
+    expect(manager.teamPropositionAllowedFor(leader.getUsername())).toBeTruthy();
   });
 
   test('should mark players as submitted', () => {
@@ -229,11 +233,11 @@ describe('team proposition and submission', () => {
 
     expect(manager.getIsSubmitted()).toStrictEqual(false);
 
-    expect(manager.markAsSubmitted());
+    expect(manager.setIsSubmitted(true));
 
     expect(manager.getIsSubmitted()).toStrictEqual(true);
 
-    expect(manager.unmarkAsSubmitted());
+    expect(manager.setIsSubmitted(false));
 
     expect(manager.getIsSubmitted()).toStrictEqual(false);
   });
@@ -282,43 +286,108 @@ describe('voting', () => {
   test('should return if a player is allowed to vote for team', () => {
     addPlayersToManager(7);
 
-    expect(manager.isAllowedToVoteForTeam('user-1')).toBeTruthy();
+    expect(manager.teamVotingAllowedFor('user-1')).toBeTruthy();
 
     manager.setVote(new Vote('user-1', true));
 
-    expect(manager.isAllowedToVoteForTeam('user-1')).toBeFalsy();
+    expect(manager.teamVotingAllowedFor('user-1')).toBeFalsy();
   });
 
   test('should return if a player is allowed to vote for quest', () => {
     addPlayersToManager(7);
 
-    expect(manager.isAllowedToVoteForQuest('user-1')).toBeFalsy();
+    expect(manager.questVotingAllowedFor('user-1')).toBeFalsy();
 
-    manager.toggleIsProposed('user-1');
+    manager.toggleTeamProposition('user-1');
 
-    expect(manager.isAllowedToVoteForQuest('user-1')).toBeTruthy();
+    expect(manager.questVotingAllowedFor('user-1')).toBeTruthy();
 
     manager.setVote(new Vote('user-1', true));
 
-    expect(manager.isAllowedToVoteForQuest('user-1')).toBeFalsy();
+    expect(manager.questVotingAllowedFor('user-1')).toBeFalsy();
   });
 });
 
 describe('assassination', () => {
-  test('should throw if a non-assassin tries to perform assassination', () => {
+  test('should throw if a non-assassin tries to propose a victim', () => {
+    addPlayersAndAssignRoles(5);
+
+    const nonAssassins = manager.getAll().filter((p) => !p.getIsAssassin());
+
+    expect(() => {
+      manager.toggleVictimProposition(
+        nonAssassins[0].getUsername(),
+        nonAssassins[1].getUsername()
+      );
+    }).toThrow(errors.DeniedVictimPropositionError);
+  });
+
+  test('should throw if an assassin tries to propose himself', () => {
+    addPlayersAndAssignRoles(5);
+
+    expect(() => {
+      manager.toggleVictimProposition(
+        manager.getAssassin().getUsername(),
+        manager.getAssassin().getUsername()
+      );
+    }).toThrow(errors.DeniedSelfSacrificeError);
+  });
+
+  test('should toggle victim proposition', () => {
     addPlayersAndAssignRoles(7);
 
-    expect(() => manager.assassinate('nonexistent', 'user-1'))
-      .toThrow(errors.NO_RIGHT_TO_ASSASSINATE);
+    expect(manager.getVictim()).toBeFalsy();
+
+    const nonAssassin = manager.getAll().find((p) => !p.getIsAssassin());
+    manager.toggleVictimProposition(
+      manager.getAssassin().getUsername(),
+      nonAssassin.getUsername()
+    );
+
+    expect(manager.getVictim()).toBe(nonAssassin);
+
+    manager.toggleVictimProposition(
+      manager.getAssassin().getUsername(),
+      nonAssassin.getUsername()
+    );
+
+    expect(manager.getVictim()).toBeFalsy();
+  });
+
+  test('should throw for assassination attempt, when no victim is proposed', () => {
+    addPlayersAndAssignRoles(7);
+
+    expect(() => manager.assassinate(manager.getAssassin().getUsername()))
+      .toThrow(errors.RequiredVictimError);
+  });
+
+  test('should throw if a non-assassin tries to assassinate', () => {
+    addPlayersAndAssignRoles(7);
+
+    const assassin    = manager.getAssassin();
+    const nonAssassin = manager.getAll().find((p) => !p.getIsAssassin());
+
+    manager.toggleVictimProposition(
+      assassin.getUsername(),
+      nonAssassin.getUsername()
+    );
+
+    expect(() => manager.assassinate(nonAssassin.getUsername()))
+      .toThrow(errors.DeniedAssassinationError);
   });
 
   test('should assassinate a player', () => {
     addPlayersAndAssignRoles(7);
 
-    expect(manager.getVictim()).toBeFalsy();
+    const assassin = manager.getAssassin();
+    const victim   = manager.getAll().find((p) => !p.getIsAssassin());
 
-    manager.assassinate(manager.getAssassin().getUsername(), 'user-1');
+    manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
 
-    expect(manager.getVictim().getUsername()).toEqual('user-1');
+    expect(victim.getIsAssassinated()).toBeFalsy();
+
+    manager.assassinate(assassin.getUsername(), victim.getUsername());
+
+    expect(victim.getIsAssassinated()).toBeTruthy();
   });
 });
