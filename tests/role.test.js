@@ -1,5 +1,5 @@
-const roleIds = require('../configs/roles.config').roleIds;
-const Role    = require('../src/role');
+const {roleIds, rolesConfig} = require('../configs/roles.config');
+const Role                   = require('../src/role');
 
 test('should get id', () => {
   const role = new Role(roleIds.MERLIN);
@@ -37,4 +37,19 @@ test('should say if can see another role', () => {
 
   expect(role1.canSee(role2)).toBeTruthy();
   expect(role2.canSee(role1)).toBeTruthy();
+});
+
+test('should return a serialized role', () => {
+  const role = new Role(roleIds.MERLIN);
+
+  const expected = {
+    id: roleIds.MERLIN,
+    name: rolesConfig[roleIds.MERLIN].name,
+    description: rolesConfig[roleIds.MERLIN].description,
+    loyalty: rolesConfig[roleIds.MERLIN].loyalty,
+  };
+
+  const actual = role.serialize();
+
+  expect(expected).toEqual(actual);
 });
