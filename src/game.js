@@ -50,8 +50,6 @@ class Game {
   start(config = {}) {
     const playerCount = this._playersManager.getAll().length;
 
-
-
     this._levelPreset = new LevelPreset(playerCount);
     this._startedAt   = new Date();
 

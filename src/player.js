@@ -81,6 +81,19 @@ class Player {
   canSee(anotherPlayer) {
     return this._role.canSee(anotherPlayer.getRole());
   }
+
+  serialize() {
+    return {
+      username: this._username,
+      role: this._role ? this._role.serialize() : null,
+      vote: this._vote ? this._vote.serialize() : null,
+      isProposed: this._isProposed,
+      isLeader: this._isLeader,
+      isAssassin: this._isAssassin,
+      isVictim: this._isVictim,
+      isAssassinated: this._isAssassinated,
+    };
+  }
 }
 
 module.exports = Player;
