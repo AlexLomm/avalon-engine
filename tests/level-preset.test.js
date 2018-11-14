@@ -24,3 +24,16 @@ test('should get total number of players', () => {
 
   expect(levelPreset.getPlayerCount()).toEqual(7);
 });
+
+test('should be serialized', () => {
+  const levelPreset = new LevelPreset(7);
+
+  const expected = {
+    goodCount: levelPreset.getGoodCount(),
+    evilCount: levelPreset.getEvilCount()
+  };
+
+  const actual = levelPreset.serialize();
+
+  expect(expected).toEqual(actual);
+});

@@ -28,6 +28,13 @@ class LevelPreset {
   getPlayerCount() {
     return this._goodCount + this._evilCount;
   }
+
+  serialize() {
+    return {
+      goodCount: this._goodCount,
+      evilCount: this._evilCount
+    };
+  }
 }
 
 module.exports = LevelPreset;
