@@ -11,6 +11,13 @@ class Vote {
   getValue() {
     return this._vote;
   }
+
+  serialize() {
+    return {
+      username: this._username,
+      vote: this._vote,
+    };
+  }
 }
 
 module.exports = Vote;
