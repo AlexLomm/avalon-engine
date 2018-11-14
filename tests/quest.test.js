@@ -204,3 +204,44 @@ describe('quest voting', () => {
     expect(quest.questVotingFinished()).toBeTruthy();
   });
 });
+
+describe('serialization', () => {
+  test('should serialize an empty quest', () => {
+    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+
+    const expected = {
+      votesNeeded: 2,
+      failsNeeded: 1,
+      teamVotes: [],
+      questVotes: []
+    };
+
+    const actual = quest.serialize();
+
+    expect(expected).toEqual(actual);
+  });
+
+  test('should contain serialized votes of the current team voting round', () => {
+    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+
+    const vote = new Vote('user-1', true);
+    quest.addVote(new Vote('user-1', true));
+
+    expect(quest.serialize().teamVotes[0]).toEqual(vote.serialize());
+  });
+
+  test('should contain the quest votes', () => {
+    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+
+    // team votes
+    quest.addVote(new Vote('user-1', true));
+    quest.addVote(new Vote('user-2', true));
+    quest.addVote(new Vote('user-3', true));
+
+    // quest votes
+    const vote = new Vote('user-3', true);
+    quest.addVote(vote);
+
+    expect(quest.serialize().questVotes[0]).toEqual(vote.serialize());
+  });
+});
