@@ -49,7 +49,7 @@ describe('game start', () => {
 
     _.times(4, (i) => game.addPlayer(new Player(`user-${i}`)));
 
-    expect(() => game.start()).toThrow(errors.PlayersInsufficientError);
+    expect(() => game.start()).toThrow(errors.PlayersAmountIncorrectError);
   });
 
   test('should mark the game as started', () => {
@@ -304,12 +304,12 @@ describe('post "reveal roles" phase', () => {
       const leaderUsername = playersManager.getLeader().getUsername();
 
       expect(() => game.submitTeam(leaderUsername))
-        .toThrow(errors.PlayersInsufficientError);
+        .toThrow(errors.RequiredCorrectTeammatesAmountError);
 
       game.toggleTeamProposition(leaderUsername, 'user-1');
 
       expect(() => game.submitTeam(leaderUsername))
-        .toThrow(errors.PlayersInsufficientError);
+        .toThrow(errors.RequiredCorrectTeammatesAmountError);
 
       game.toggleTeamProposition(leaderUsername, 'user-2');
 

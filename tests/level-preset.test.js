@@ -3,7 +3,7 @@ const LevelPreset = require('../src/level-preset');
 
 test('should throw if the specified number of players is incorrect', () => {
   expect(() => new LevelPreset(100))
-    .toThrow(errors.PlayersInsufficientError);
+    .toThrow(errors.PlayersAmountIncorrectError);
 });
 
 test('should create a level preset for specified number of players', () => {
