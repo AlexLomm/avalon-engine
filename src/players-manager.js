@@ -5,8 +5,6 @@ const Role                 = require('./role');
 
 class PlayersManager {
   constructor() {
-    // TODO: is out of place
-    this._gameCreator = null;
     this._players     = [];
     // TODO: is out of place
     this._leaderIndex = -1;
@@ -44,7 +42,7 @@ class PlayersManager {
   }
 
   getGameCreator() {
-    return this._gameCreator;
+    return this._players.find((p) => p.getIsGameCreator());
   }
 
   add(player) {
@@ -58,8 +56,8 @@ class PlayersManager {
       throw new errors.PlayersMaximumReachedError();
     }
 
-    if (!this._gameCreator) {
-      this._gameCreator = player;
+    if (!this.getGameCreator()) {
+      player.markAsGameCreator();
     }
 
     this._players.push(player);
@@ -238,9 +236,11 @@ class PlayersManager {
   }
 
   serialize() {
+    const gameCreator = this.getGameCreator();
+
     return {
       isSubmitted: this._isSubmitted,
-      gameCreator: this._gameCreator ? this._gameCreator.serialize() : null,
+      gameCreator: gameCreator ? gameCreator.serialize() : null,
       players: this._players.map(p => p.serialize()),
     };
   }
