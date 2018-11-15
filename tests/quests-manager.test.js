@@ -29,6 +29,30 @@ const succeedQuestsTimes = function (manager, times) {
   resolveQuestsTimes(manager, true, times);
 };
 
+describe('initialization', () => {
+  test('should initialize quests', () => {
+    const manager = new QuestsManager();
+
+    expect(manager.getAll().length).toBeFalsy();
+
+    manager.init(new LevelPreset(5));
+
+    expect(manager.getAll().length).toEqual(5);
+    expect(manager.getAll()[0] instanceof Quest).toBeTruthy();
+  });
+
+  test('should get level preset', () => {
+    const manager = new QuestsManager();
+
+    expect(manager.getLevelPreset()).toBeFalsy();
+
+    const preset = new LevelPreset(5);
+    manager.init(preset);
+
+    expect(manager.getLevelPreset()).toBe(preset);
+  });
+});
+
 describe('current quest', () => {
   let manager;
   let preset;
@@ -194,24 +218,40 @@ describe('winner', () => {
   });
 });
 
-test('should initialize quests', () => {
-  const manager = new QuestsManager();
+describe('serialization', () => {
+  test('should return an empty state', () => {
+    const manager = new QuestsManager();
 
-  expect(manager.getAll().length).toBeFalsy();
+    const expected = {
+      quests: [],
+      tracker: 0,
+      assassinationStatus: -1,
+    };
 
-  manager.init(new LevelPreset(5));
+    const actual = manager.serialize();
 
-  expect(manager.getAll().length).toEqual(5);
-  expect(manager.getAll()[0] instanceof Quest).toBeTruthy();
-});
+    expect(expected).toEqual(actual);
+  });
 
-test('should get level preset', () => {
-  const manager = new QuestsManager();
+  test('should contain serialized quests', () => {
+    const manager = new QuestsManager();
+    manager.init(new LevelPreset(5));
 
-  expect(manager.getLevelPreset()).toBeFalsy();
+    const serializedQuest = manager.getAll()[0].serialize();
 
-  const preset = new LevelPreset(5);
-  manager.init(preset);
+    expect(manager.serialize().quests[0]).toEqual(serializedQuest);
+  });
 
-  expect(manager.getLevelPreset()).toBe(preset);
+  test('should contain a tracker', () => {
+    const manager = new QuestsManager();
+    const preset  = new LevelPreset(5);
+    manager.init(preset);
+
+    const currentQuest = manager.getCurrentQuest();
+    _.times(preset.getPlayerCount(), (i) => {
+      currentQuest.addVote(new Vote(`user-${i}`, false));
+    });
+
+    expect(manager.serialize().tracker).toEqual(currentQuest.getTracker());
+  });
 });

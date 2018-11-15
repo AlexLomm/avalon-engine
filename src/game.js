@@ -15,10 +15,10 @@ class Game {
     this._createdAt           = new Date();
     this._startedAt           = null;
     this._finishedAt          = null;
-    this._levelPreset         = null;
     this._rolesLastRevealedAt = null;
     this._rolesAreRevealed    = false;
     this._revealRolesPromise  = null;
+    this._levelPreset         = LevelPreset.null();
     this._playersManager      = playersManager;
     this._questsManager       = questsManager;
   }
@@ -49,8 +49,6 @@ class Game {
 
   start(config = {}) {
     const playerCount = this._playersManager.getAll().length;
-
-
 
     this._levelPreset = new LevelPreset(playerCount);
     this._startedAt   = new Date();
@@ -227,6 +225,18 @@ class Game {
     return this._startedAt
            && this._rolesLastRevealedAt
            && !this._rolesAreRevealed;
+  }
+
+  serialize() {
+    return {
+      meta: {
+        startedAt: this._startedAt,
+        finishedAt: this._finishedAt,
+        ...this._levelPreset.serialize(),
+      },
+      ...this._questsManager.serialize(),
+      ...this._playersManager.serialize(),
+    };
   }
 }
 

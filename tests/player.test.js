@@ -113,3 +113,35 @@ describe('proposition', () => {
     expect(player.getIsProposed()).toBeFalsy();
   });
 });
+
+describe('serialization', () => {
+  test('should return it\'s field values as an object', () => {
+    const actual   = player.serialize();
+    const expected = {
+      username: 'user-1',
+      role: null,
+      vote: null,
+      isProposed: false,
+      isLeader: false,
+      isAssassin: false,
+      isVictim: false,
+      isAssassinated: false,
+    };
+
+    expect(actual).toEqual(expected);
+  });
+
+  test('should contain a serialized vote', () => {
+    const vote = new Vote('user-1', true);
+    player.setVote(vote);
+
+    expect(player.serialize().vote).toEqual(vote.serialize());
+  });
+
+  test('should contain a serialized role', () => {
+    const role = new Role(roleIds.MORDRED);
+    player.setRole(role);
+
+    expect(player.serialize().role).toEqual(role.serialize());
+  });
+});

@@ -6,6 +6,7 @@ class Quest {
     this._failsNeeded                 = config.failsNeeded;
     this._totalPlayers                = config.totalPlayers;
     this._teamVoteRounds              = [[], [], [], [], []];
+    // TODO remove either this or _tracker
     this._currentTeamVotingRoundIndex = 0;
     this._questVotes                  = [];
     this._tracker                     = 1;
@@ -137,6 +138,15 @@ class Quest {
 
   isLastRoundOfTeamVoting() {
     return this._currentTeamVotingRoundIndex === this._teamVoteRounds.length - 1;
+  }
+
+  serialize() {
+    return {
+      failsNeeded: this._failsNeeded,
+      votesNeeded: this._votesNeeded,
+      teamVotes: this._getCurrentTeamVotingRound().map(vote => vote.serialize()),
+      questVotes: this._questVotes.map(vote => vote.serialize()),
+    };
   }
 }
 

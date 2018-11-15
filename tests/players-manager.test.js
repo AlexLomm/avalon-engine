@@ -391,3 +391,45 @@ describe('assassination', () => {
     expect(victim.getIsAssassinated()).toBeTruthy();
   });
 });
+
+describe('serialization', () => {
+  test('should return an empty state', () => {
+    const expected = {
+      gameCreator: null,
+      isSubmitted: false,
+      players: [],
+    };
+
+    const actual = manager.serialize();
+
+    expect(expected).toEqual(actual);
+  });
+
+  test('should contain serialized players', () => {
+    addPlayersAndAssignRoles(5);
+
+    const serialized            = manager.serialize();
+    const firstPlayerSerialized = manager.getAll()[0].serialize();
+
+    expect(serialized.players.length).toEqual(manager.getAll().length);
+    expect(serialized.players[0]).toEqual(firstPlayerSerialized);
+  });
+
+  test('should contain serialized players', () => {
+    addPlayersAndAssignRoles(5);
+
+    const serializedState       = manager.serialize();
+    const serializedGameCreator = manager.getGameCreator().serialize();
+
+    expect(serializedState.gameCreator).toEqual(serializedGameCreator);
+  });
+
+  test('should contain whether the team is submitted', () => {
+    addPlayersAndAssignRoles(5);
+    manager.setIsSubmitted(true);
+
+    const serialized = manager.serialize();
+
+    expect(serialized.isSubmitted).toStrictEqual(true);
+  });
+});

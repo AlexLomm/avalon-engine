@@ -13,6 +13,11 @@ class LevelPreset {
     this._quests    = levelPresets[playerCount].quests;
   }
 
+  // TODO: cache
+  static null() {
+    return new LevelPreset(-1);
+  }
+
   getGoodCount() {
     return this._goodCount;
   }
@@ -27,6 +32,13 @@ class LevelPreset {
 
   getPlayerCount() {
     return this._goodCount + this._evilCount;
+  }
+
+  serialize() {
+    return {
+      goodCount: this._goodCount,
+      evilCount: this._evilCount
+    };
   }
 }
 

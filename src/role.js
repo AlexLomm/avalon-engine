@@ -35,6 +35,15 @@ class Role {
 
     return index > -1;
   }
+
+  serialize() {
+    return {
+      id: this._id,
+      name: this._name,
+      description: this._description,
+      loyalty: this._loyalty
+    };
+  }
 }
 
 module.exports = Role;

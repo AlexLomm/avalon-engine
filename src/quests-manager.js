@@ -86,6 +86,14 @@ class QuestsManager {
   _getSucceededQuestsCount() {
     return this.getAll().filter(q => q.getStatus() === 1).length;
   };
+
+  serialize() {
+    return {
+      assassinationStatus: this._assassinationStatus,
+      quests: this._quests.map(q => q.serialize()),
+      tracker: this.getCurrentQuest() ? this.getCurrentQuest().getTracker() : 0,
+    };
+  }
 }
 
 module.exports = QuestsManager;

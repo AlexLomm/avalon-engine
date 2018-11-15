@@ -5,6 +5,7 @@ const Game           = require('../src/game.js');
 const Player         = require('../src/player');
 const PlayersManager = require('../src/players-manager');
 const QuestsManager  = require('../src/quests-manager');
+const LevelPreset    = require('../src/level-preset');
 
 describe('initialization', () => {
   test('should set creation date', () => {
@@ -49,7 +50,7 @@ describe('game start', () => {
 
     _.times(4, (i) => game.addPlayer(new Player(`user-${i}`)));
 
-    expect(() => game.start()).toThrow(errors.PlayersInsufficientError);
+    expect(() => game.start()).toThrow(errors.PlayersAmountIncorrectError);
   });
 
   test('should mark the game as started', () => {
@@ -304,12 +305,12 @@ describe('post "reveal roles" phase', () => {
       const leaderUsername = playersManager.getLeader().getUsername();
 
       expect(() => game.submitTeam(leaderUsername))
-        .toThrow(errors.PlayersInsufficientError);
+        .toThrow(errors.RequiredCorrectTeammatesAmountError);
 
       game.toggleTeamProposition(leaderUsername, 'user-1');
 
       expect(() => game.submitTeam(leaderUsername))
-        .toThrow(errors.PlayersInsufficientError);
+        .toThrow(errors.RequiredCorrectTeammatesAmountError);
 
       game.toggleTeamProposition(leaderUsername, 'user-2');
 
@@ -630,6 +631,62 @@ describe('post "reveal roles" phase', () => {
       game.assassinate(assassin.getUsername());
 
       expect(questsManager.getStatus()).toStrictEqual(1);
+    });
+  });
+
+  describe('serialization', () => {
+    test('should serialize initial game object', () => {
+      const playersManager = new PlayersManager();
+      const questsManager  = new QuestsManager();
+      const game           = new Game(playersManager, questsManager);
+
+      const expected = {
+        meta: {
+          finishedAt: game.getFinishedAt(),
+          startedAt: game.getStartedAt(),
+          ...(LevelPreset.null().serialize()),
+        },
+        ...playersManager.serialize(),
+        ...questsManager.serialize(),
+      };
+
+      const actual = game.serialize();
+
+      expect(actual).toEqual(expected);
+    });
+
+    test('should contain the correct meta', () => {
+      passQuestsWithResults([true, true, true]);
+
+      const serializedState = game.serialize();
+
+      expect(serializedState.meta).toEqual({
+        finishedAt: game.getFinishedAt(),
+        startedAt: game.getStartedAt(),
+        ...(game.getLevelPreset().serialize()),
+      });
+    });
+
+    test('should contain serialized players manager', () => {
+      passQuestsWithResults([true, true, false]);
+
+      const serializedState = game.serialize();
+
+      expect(serializedState).toEqual({
+        ...serializedState,
+        ...playersManager.serialize()
+      });
+    });
+
+    test('should contain serialized quests manager', () => {
+      passQuestsWithResults([true, true, false]);
+
+      const serializedState = game.serialize();
+
+      expect(serializedState).toEqual({
+        ...serializedState,
+        ...questsManager.serialize()
+      });
     });
   });
 });

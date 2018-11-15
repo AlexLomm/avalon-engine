@@ -11,3 +11,15 @@ test('should get username', () => {
 
   expect(vote.getValue()).toStrictEqual(true);
 });
+
+test('should serialize', () => {
+  const vote = new Vote('some-user', false);
+
+  const actual   = vote.serialize();
+  const expected = {
+    username: 'some-user',
+    vote: false,
+  };
+
+  expect(vote.serialize()).toEqual(expected);
+});

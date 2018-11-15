@@ -6,8 +6,10 @@ const Role                 = require('./role');
 class PlayersManager {
   constructor() {
     this._levelPreset = null;
+    // TODO: is out of place
     this._gameCreator = null;
     this._players     = [];
+    // TODO: is out of place
     this._leaderIndex = -1;
     this._isSubmitted = false;
   }
@@ -231,6 +233,14 @@ class PlayersManager {
 
   resetPropositions() {
     this._players.forEach((player) => player.setIsProposed(false));
+  }
+
+  serialize() {
+    return {
+      isSubmitted: this._isSubmitted,
+      gameCreator: this._gameCreator ? this._gameCreator.serialize() : null,
+      players: this._players.map(p => p.serialize()),
+    };
   }
 }
 
