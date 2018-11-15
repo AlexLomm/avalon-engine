@@ -5,7 +5,6 @@ const Role                 = require('./role');
 
 class PlayersManager {
   constructor() {
-    this._levelPreset = null;
     // TODO: is out of place
     this._gameCreator = null;
     this._players     = [];
@@ -106,24 +105,22 @@ class PlayersManager {
   }
 
   assignRoles(levelPreset, config = {}) {
-    this._levelPreset = levelPreset;
-
     const rolesConfig = PlayersManager._generateRolesConfig(config);
-
-    const roles = this._generateRoles(rolesConfig);
+    const roles       = PlayersManager._generateRoles(
+      rolesConfig,
+      levelPreset.getGoodCount(),
+      levelPreset.getEvilCount(),
+    );
 
     this._players.forEach((player) => player.setRole(roles.pop()));
 
-    const player = this._players.find(
-      (player) => player.getRole().getId() === roleIds.ASSASSIN
-    );
-
-    player.markAsAssassin();
+    this._initAssassin();
 
     this.nextLeader();
   }
 
   static _generateRolesConfig(config) {
+    // TODO: convert to an array?
     const defaultRolesConfig = {
       [roleIds.MERLIN]: true,
       [roleIds.ASSASSIN]: true,
@@ -132,10 +129,7 @@ class PlayersManager {
     return Object.assign({}, config, defaultRolesConfig);
   }
 
-  _generateRoles(config) {
-    let goodCount = this._levelPreset.getGoodCount();
-    let evilCount = this._levelPreset.getEvilCount();
-
+  static _generateRoles(config, goodCount, evilCount) {
     const roles = Object.keys(config).map(roleId => {
       const role = new Role(roleId);
 
@@ -169,6 +163,14 @@ class PlayersManager {
       new Role(roleIds.MINION_2),
       new Role(roleIds.MINION_3),
     ]).slice(0, count);
+  }
+
+  _initAssassin() {
+    const player = this._players.find(
+      (player) => player.getRole().getId() === roleIds.ASSASSIN
+    );
+
+    player.markAsAssassin();
   }
 
   nextLeader() {
