@@ -37,3 +37,17 @@ test('should be serialized', () => {
 
   expect(expected).toEqual(actual);
 });
+
+test('should return a null object if called with -1 parameter', () => {
+  let levelPreset;
+
+  expect(() => levelPreset = new LevelPreset(-1)).not.toThrow();
+
+  expect(levelPreset.getGoodCount()).toStrictEqual(null);
+  expect(levelPreset.getEvilCount()).toStrictEqual(null);
+  expect(levelPreset.getQuestsConfig()).toStrictEqual([]);
+});
+
+test('should return a null object', () => {
+  expect(LevelPreset.null()).toEqual(new LevelPreset(-1));
+});

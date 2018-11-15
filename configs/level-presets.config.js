@@ -1,4 +1,9 @@
 module.exports = {
+  '-1': {
+    goodCount: null,
+    evilCount: null,
+    quests: [],
+  },
   5: {
     goodCount: 3,
     evilCount: 2,
