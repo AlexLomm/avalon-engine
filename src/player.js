@@ -1,4 +1,5 @@
 const {roleIds} = require('../configs/roles.config');
+const Role      = require('./role');
 const Vote      = require('./vote');
 
 class Player {
@@ -42,11 +43,23 @@ class Player {
     return this._role.canSee(anotherPlayer.getRole());
   }
 
-  serialize() {
+  // TODO: refactor
+  serialize(roleRevealed, voteRevealed) {
+    const serializedRole = !(this._role && roleRevealed)
+      ? new Role(roleIds.UNKNOWN).serialize()
+      : this._role.serialize();
+
+    let serializedVote = null;
+    if (this._vote && !voteRevealed) {
+      serializedVote = new Vote(this._username, null).serialize();
+    } else if (this._vote && voteRevealed) {
+      serializedVote = this._vote.serialize();
+    }
+
     return {
       username: this._username,
-      role: this._role ? this._role.serialize() : null,
-      vote: this._vote ? this._vote.serialize() : null,
+      role: serializedRole,
+      vote: serializedVote,
     };
   }
 }

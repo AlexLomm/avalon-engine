@@ -1,5 +1,6 @@
 const {rolesConfig} = require('../configs/roles.config');
 
+// TODO: cache roles
 class Role {
   constructor(id) {
     this._id             = rolesConfig[id].id;
@@ -29,6 +30,7 @@ class Role {
     return this._visibleRoleIds;
   };
 
+  // TODO: cache in a table-like data structure
   canSee(anotherRole) {
     const index = this._visibleRoleIds
       .findIndex((roleId) => roleId === anotherRole.getId());

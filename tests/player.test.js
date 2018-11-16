@@ -56,28 +56,52 @@ describe('voting', () => {
 });
 
 describe('serialization', () => {
-  test('should return it\'s field values as an object', () => {
-    const actual   = player.serialize();
-    const expected = {
-      username: 'user-1',
-      role: null,
-      vote: null,
-    };
+  test('should return necessary values', () => {
+    const expected = ['username', 'role', 'vote'].sort();
+    const actual   = Object.keys(player.serialize(false, false)).sort();
+
+    expect(expected).toEqual(actual);
+  });
+
+  test('should contain a hidden role when no role is assigned', () => {
+    const expected = new Role(roleIds.UNKNOWN).serialize();
+    const actual   = player.serialize(true, false).role;
+
+    expect(expected).toEqual(actual);
+  });
+
+  test('should contain a hidden role, despite it being assigned', () => {
+    player.setRole(new Role(roleIds.MERLIN));
+
+    const expected = new Role(roleIds.UNKNOWN).serialize();
+    const actual   = player.serialize(false, false).role;
+
+    expect(expected).toEqual(actual);
+  });
+
+  test('should contain a revealed role when role is assigned', () => {
+    const role = new Role(roleIds.MORDRED);
+    player.setRole(role);
+
+    const expected = role.serialize();
+    const actual   = player.serialize(true, false).role;
 
     expect(actual).toEqual(expected);
   });
 
-  test('should contain a serialized vote', () => {
-    const vote = new Vote('user-1', true);
-    player.vote(vote);
-
-    expect(player.serialize().vote).toEqual(vote.serialize());
+  test('should contain `null` if a vote hasn\'t been cast', () => {
+    expect(player.serialize(false, false).vote).toStrictEqual(null);
   });
 
-  test('should contain a serialized role', () => {
-    const role = new Role(roleIds.MORDRED);
-    player.setRole(role);
+  test('should contain `null` as a vote value if the vote has not been yet revealed', () => {
+    player.vote(true);
 
-    expect(player.serialize().role).toEqual(role.serialize());
+    expect(player.serialize(false, false).vote.vote).toStrictEqual(null);
+  });
+
+  test('should reveal the vote value', () => {
+    player.vote(true);
+
+    expect(player.serialize(false, true).vote.vote).toStrictEqual(true);
   });
 });
