@@ -5,11 +5,12 @@ const RolesAssigner = require('./roles-assigner');
 
 class PlayersManager {
   constructor() {
-    this._players     = [];
-    this._isSubmitted = false;
+    this._players         = [];
+    this._isSubmitted     = false;
     //
-    this._leaderIndex = -1;
-    this._gameCreator = null;
+    this._proposedPlayers = [];
+    this._leaderIndex     = -1;
+    this._gameCreator     = null;
   }
 
   assassinate(assassinsUsername) {
@@ -39,7 +40,7 @@ class PlayersManager {
   }
 
   getProposedPlayers() {
-    return this._players.filter((p) => p.getIsProposed());
+    return this._proposedPlayers;
   }
 
   getGameCreator() {
@@ -92,7 +93,11 @@ class PlayersManager {
 
     if (!player) return;
 
-    player.toggleTeamProposition();
+    const index = this._proposedPlayers.findIndex((p) => p === player);
+
+    index > -1
+      ? this._proposedPlayers.splice(index, 1)
+      : this._proposedPlayers.push(player);
   }
 
   setIsSubmitted(isSubmitted) {
@@ -143,7 +148,11 @@ class PlayersManager {
   questVotingAllowedFor(username) {
     const player = this._findPlayer(username);
 
-    return player && player.getIsProposed() && !player.getVote();
+    return player && this._isProposed(player) && !player.getVote();
+  }
+
+  _isProposed(player) {
+    return !!this._proposedPlayers.find((p) => p === player);
   }
 
   teamVotingAllowedFor(username) {
@@ -152,6 +161,7 @@ class PlayersManager {
     return player && !player.getVote();
   }
 
+  // TODO: remove
   teamPropositionAllowedFor(username) {
     return this.playerPropositionAllowedFor(username);
   }
@@ -159,9 +169,7 @@ class PlayersManager {
   playerPropositionAllowedFor(username) {
     const leader = this.getLeader();
 
-    if (!leader) return false;
-
-    return leader.getUsername() === username;
+    return leader && leader.getUsername() === username;
   }
 
   setVote(vote) {
@@ -177,7 +185,7 @@ class PlayersManager {
   }
 
   resetPropositions() {
-    this._players.forEach((player) => player.setIsProposed(false));
+    this._proposedPlayers = [];
   }
 
   serialize() {

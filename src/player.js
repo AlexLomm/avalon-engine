@@ -5,10 +5,10 @@ class Player {
     this._vote     = null;
 
     // TODO: extract the fields below
-    this._isProposed     = false;
-    this._isAssassin     = false;
     this._isVictim       = false;
     this._isAssassinated = false;
+    // TODO: extract to role
+    this._isAssassin     = false;
   }
 
   getUsername() {
@@ -31,10 +31,6 @@ class Player {
     return this._vote;
   }
 
-  setIsProposed(isProposed) {
-    this._isProposed = isProposed;
-  }
-
   getIsVictim() {
     return this._isVictim;
   }
@@ -55,14 +51,6 @@ class Player {
     this._isAssassin = true;
   }
 
-  toggleTeamProposition() {
-    this._isProposed = !this._isProposed;
-  }
-
-  getIsProposed() {
-    return this._isProposed;
-  }
-
   markAsAssassinated() {
     this._isAssassinated = true;
   }
@@ -80,7 +68,6 @@ class Player {
       username: this._username,
       role: this._role ? this._role.serialize() : null,
       vote: this._vote ? this._vote.serialize() : null,
-      isProposed: this._isProposed,
       isAssassin: this._isAssassin,
       isVictim: this._isVictim,
       isAssassinated: this._isAssassinated,

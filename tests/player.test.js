@@ -78,26 +78,6 @@ describe('assassination', () => {
   });
 });
 
-describe('proposition', () => {
-  test('should toggle proposition', () => {
-    player.toggleTeamProposition();
-
-    expect(player.getIsProposed()).toBeTruthy();
-
-    player.toggleTeamProposition();
-
-    expect(player.getIsProposed()).toBeFalsy();
-  });
-
-  test('should test proposition to false', () => {
-    player.toggleTeamProposition();
-
-    player.setIsProposed(false);
-
-    expect(player.getIsProposed()).toBeFalsy();
-  });
-});
-
 describe('serialization', () => {
   test('should return it\'s field values as an object', () => {
     const actual   = player.serialize();
@@ -105,7 +85,6 @@ describe('serialization', () => {
       username: 'user-1',
       role: null,
       vote: null,
-      isProposed: false,
       isAssassin: false,
       isVictim: false,
       isAssassinated: false,

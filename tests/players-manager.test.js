@@ -156,6 +156,15 @@ describe('team proposition and submission', () => {
     expect(manager.getProposedPlayers().pop().getUsername()).toEqual('user-2');
   });
 
+  test('should toggle a proposed player', () => {
+    manager.add(new Player('user-1'));
+
+    manager.toggleTeamProposition('user-1');
+    manager.toggleTeamProposition('user-1');
+
+    expect(manager.getProposedPlayers().length).toStrictEqual(0);
+  });
+
   test('should return if a player has right to submit a team', () => {
     addPlayersToManager(7);
 
