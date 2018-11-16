@@ -168,12 +168,12 @@ describe('team proposition and submission', () => {
   test('should return if a player has right to submit a team', () => {
     addPlayersToManager(7);
 
-    expect(manager.teamPropositionAllowedFor('user-1')).toBeFalsy();
+    expect(manager.playerPropositionAllowedFor('user-1')).toBeFalsy();
 
     manager.nextLeader();
     const leader = manager.getLeader();
 
-    expect(manager.teamPropositionAllowedFor(leader.getUsername())).toBeTruthy();
+    expect(manager.playerPropositionAllowedFor(leader.getUsername())).toBeTruthy();
   });
 
   test('should mark players as submitted', () => {

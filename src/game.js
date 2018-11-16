@@ -89,7 +89,7 @@ class Game {
   }
 
   submitTeam(username) {
-    if (!this._playersManager.teamPropositionAllowedFor(username)) {
+    if (!this._playersManager.playerPropositionAllowedFor(username)) {
       throw new errors.DeniedTeamSubmissionError();
     }
 

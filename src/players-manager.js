@@ -161,11 +161,6 @@ class PlayersManager {
     return player && !player.getVote();
   }
 
-  // TODO: remove
-  teamPropositionAllowedFor(username) {
-    return this.playerPropositionAllowedFor(username);
-  }
-
   playerPropositionAllowedFor(username) {
     const leader = this.getLeader();
 
