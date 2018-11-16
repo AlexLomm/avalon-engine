@@ -149,7 +149,7 @@ describe('team proposition and submission', () => {
 
     manager.toggleTeamProposition(null);
 
-    expect(manager.getProposedPlayers().length).toBeFalsy();
+    expect(manager.getProposedPlayers().length).toStrictEqual(0);
 
     manager.toggleTeamProposition('user-2');
 
@@ -332,11 +332,11 @@ describe('assassination', () => {
 
     manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
 
-    expect(victim.getIsAssassinated()).toBeFalsy();
+    expect(manager.isAssassinated(victim)).toBeFalsy();
 
     manager.assassinate(assassin.getUsername(), victim.getUsername());
 
-    expect(victim.getIsAssassinated()).toBeTruthy();
+    expect(manager.isAssassinated(victim)).toBeTruthy();
   });
 });
 

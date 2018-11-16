@@ -5,9 +5,6 @@ class Player {
     this._username = username;
     this._role     = null;
     this._vote     = null;
-
-    // TODO: extract the fields below
-    this._isAssassinated = false;
   }
 
   getUsername() {
@@ -34,14 +31,6 @@ class Player {
     return !!(this._role && this._role.getId() === roleIds.ASSASSIN);
   }
 
-  markAsAssassinated() {
-    this._isAssassinated = true;
-  }
-
-  getIsAssassinated() {
-    return this._isAssassinated;
-  }
-
   canSee(anotherPlayer) {
     return this._role.canSee(anotherPlayer.getRole());
   }
@@ -51,7 +40,6 @@ class Player {
       username: this._username,
       role: this._role ? this._role.serialize() : null,
       vote: this._vote ? this._vote.serialize() : null,
-      isAssassinated: this._isAssassinated,
     };
   }
 }

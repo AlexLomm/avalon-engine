@@ -5,12 +5,13 @@ const RolesAssigner = require('./roles-assigner');
 class PlayersManager {
   constructor() {
     this._players         = [];
-    this._isSubmitted     = false;
-    //
     this._gameCreator     = null;
+    this._isSubmitted     = false;
     this._proposedPlayers = [];
     this._leaderIndex     = -1;
+    // TODO: replace with player proposition
     this._victim          = null;
+    this._isAssassinated  = false;
   }
 
   assassinate(assassinsUsername) {
@@ -23,11 +24,15 @@ class PlayersManager {
       throw new errors.RequiredVictimError();
     }
 
-    this._victim.markAsAssassinated();
+    this._isAssassinated = true;
   }
 
   getVictim() {
     return this._victim;
+  }
+
+  isAssassinated(player) {
+    return this._victim === player && this._isAssassinated;
   }
 
   getAssassin() {

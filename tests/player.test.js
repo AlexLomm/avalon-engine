@@ -40,16 +40,6 @@ test('should assign a vote', () => {
   expect(player.getVote()).toBeTruthy();
 });
 
-describe('assassination', () => {
-  test('should be assassinated', () => {
-    expect(player.getIsAssassinated()).toBeFalsy();
-
-    player.markAsAssassinated();
-
-    expect(player.getIsAssassinated()).toBeTruthy();
-  });
-});
-
 describe('serialization', () => {
   test('should return it\'s field values as an object', () => {
     const actual   = player.serialize();
@@ -57,7 +47,6 @@ describe('serialization', () => {
       username: 'user-1',
       role: null,
       vote: null,
-      isAssassinated: false,
     };
 
     expect(actual).toEqual(expected);
