@@ -9,6 +9,8 @@ class PlayersManager {
     // TODO: is out of place
     this._leaderIndex = -1;
     this._isSubmitted = false;
+    //
+    this._gameCreator = null;
   }
 
   assassinate(assassinsUsername) {
@@ -42,7 +44,7 @@ class PlayersManager {
   }
 
   getGameCreator() {
-    return this._players.find((p) => p.getIsGameCreator());
+    return this._gameCreator;
   }
 
   add(player) {
@@ -56,8 +58,8 @@ class PlayersManager {
       throw new errors.PlayersMaximumReachedError();
     }
 
-    if (!this.getGameCreator()) {
-      player.markAsGameCreator();
+    if (!this._gameCreator) {
+      this._gameCreator = player;
     }
 
     this._players.push(player);
@@ -186,11 +188,10 @@ class PlayersManager {
   }
 
   serialize() {
-    const gameCreator = this.getGameCreator();
-
     return {
       isSubmitted: this._isSubmitted,
-      gameCreator: gameCreator ? gameCreator.serialize() : null,
+      // TODO: maybe replace with a null object?
+      gameCreator: this._gameCreator ? this._gameCreator.serialize() : null,
       players: this._players.map(p => p.serialize()),
     };
   }

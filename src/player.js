@@ -1,9 +1,10 @@
 class Player {
   constructor(username) {
-    this._username       = username;
-    this._role           = null;
-    this._vote           = null;
-    this._isGameCreator  = false;
+    this._username = username;
+    this._role     = null;
+    this._vote     = null;
+
+    // TODO: extract the fields below
     this._isProposed     = false;
     this._isLeader       = false;
     this._isAssassin     = false;
@@ -29,14 +30,6 @@ class Player {
 
   getVote() {
     return this._vote;
-  }
-
-  markAsGameCreator() {
-    this._isGameCreator = true;
-  }
-
-  getIsGameCreator() {
-    return this._isGameCreator;
   }
 
   setIsProposed(isProposed) {
