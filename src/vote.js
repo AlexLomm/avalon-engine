@@ -12,10 +12,10 @@ class Vote {
     return this._vote;
   }
 
-  serialize() {
+  serialize(isRevealed) {
     return {
       username: this._username,
-      vote: this._vote,
+      vote: isRevealed ? this._vote : null,
     };
   }
 }
