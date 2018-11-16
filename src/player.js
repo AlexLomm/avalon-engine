@@ -6,7 +6,6 @@ class Player {
 
     // TODO: extract the fields below
     this._isProposed     = false;
-    this._isLeader       = false;
     this._isAssassin     = false;
     this._isVictim       = false;
     this._isAssassinated = false;
@@ -64,14 +63,6 @@ class Player {
     return this._isProposed;
   }
 
-  setIsLeader(isLeader) {
-    this._isLeader = isLeader;
-  }
-
-  getIsLeader() {
-    return this._isLeader;
-  }
-
   markAsAssassinated() {
     this._isAssassinated = true;
   }
@@ -90,7 +81,6 @@ class Player {
       role: this._role ? this._role.serialize() : null,
       vote: this._vote ? this._vote.serialize() : null,
       isProposed: this._isProposed,
-      isLeader: this._isLeader,
       isAssassin: this._isAssassin,
       isVictim: this._isVictim,
       isAssassinated: this._isAssassinated,

@@ -6,10 +6,9 @@ const RolesAssigner = require('./roles-assigner');
 class PlayersManager {
   constructor() {
     this._players     = [];
-    // TODO: is out of place
-    this._leaderIndex = -1;
     this._isSubmitted = false;
     //
+    this._leaderIndex = -1;
     this._gameCreator = null;
   }
 
@@ -135,16 +134,10 @@ class PlayersManager {
 
   _chooseLeaderRandomly() {
     this._leaderIndex = _.random(0, this._players.length - 1);
-
-    this.getLeader().setIsLeader(true);
   }
 
   _chooseNextPlayerAsLeader() {
-    this.getLeader().setIsLeader(false);
-
     this._leaderIndex = (this._leaderIndex + 1) % this._players.length;
-
-    this.getLeader().setIsLeader(true);
   }
 
   questVotingAllowedFor(username) {

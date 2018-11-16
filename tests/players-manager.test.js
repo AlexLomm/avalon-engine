@@ -81,7 +81,7 @@ describe('roles assignment', () => {
 
     assignRolesToManager();
 
-    expect(manager.getLeader().getIsLeader()).toBeTruthy();
+    expect(manager.getLeader()).toBeTruthy();
   });
 
   test('should have an assassin appointed', () => {
@@ -113,19 +113,7 @@ describe('leader', () => {
 
     manager.nextLeader();
 
-    expect(manager.getLeader().getIsLeader()).toBeTruthy();
-  });
-
-  test('should allow only one leader to exist', () => {
-    addPlayersToManager(5);
-
-    manager.nextLeader();
-    manager.nextLeader();
-
-    const leadersCount = manager.getAll()
-      .reduce((acc, player) => player.getIsLeader() ? acc + 1 : acc, 0);
-
-    expect(leadersCount).toStrictEqual(1);
+    expect(manager.getLeader()).toBeTruthy();
   });
 
   test('should choose a new leader that is located right next to the old leader', () => {

@@ -267,7 +267,9 @@ describe('post "reveal roles" phase', () => {
         .not
         .toThrow();
 
-      const nonLeader = playersManager.getAll().find(player => !player.getIsLeader());
+      const nonLeader = playersManager.getAll()
+        .find(player => player.getUsername() !== leader.getUsername());
+
       expect(() => {
         game.toggleTeamProposition(nonLeader.getUsername(), 'user-3');
       }).toThrow(errors.DeniedTeammatePropositionError);
@@ -295,7 +297,9 @@ describe('post "reveal roles" phase', () => {
 
   describe('team submission', () => {
     test('should disallow team submission by a non-leader player', () => {
-      const nonLeaderUsername = playersManager.getAll().find(p => !p.getIsLeader());
+      const leader            = playersManager.getLeader();
+      const nonLeaderUsername = playersManager.getAll()
+        .find(p => p.getUsername() !== leader.getUsername());
 
       expect(() => game.submitTeam(nonLeaderUsername))
         .toThrow(errors.DeniedTeamSubmissionError);

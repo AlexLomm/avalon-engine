@@ -78,22 +78,6 @@ describe('assassination', () => {
   });
 });
 
-describe('leader', () => {
-  test('should mark as leader', () => {
-    player.setIsLeader(true);
-
-    expect(player.getIsLeader()).toBeTruthy();
-  });
-
-  test('should unmark as leader', () => {
-    player.setIsLeader(true);
-
-    player.setIsLeader(false);
-
-    expect(player.getIsLeader()).toBeFalsy();
-  });
-});
-
 describe('proposition', () => {
   test('should toggle proposition', () => {
     player.toggleTeamProposition();
@@ -122,7 +106,6 @@ describe('serialization', () => {
       role: null,
       vote: null,
       isProposed: false,
-      isLeader: false,
       isAssassin: false,
       isVictim: false,
       isAssassinated: false,
