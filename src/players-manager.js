@@ -1,7 +1,7 @@
-const _                    = require('lodash');
-const errors               = require('./errors');
-const {roleIds, loyalties} = require('../configs/roles.config');
-const Role                 = require('./role');
+const _             = require('lodash');
+const errors        = require('./errors');
+const {roleIds}     = require('../configs/roles.config');
+const RolesAssigner = require('./roles-assigner');
 
 class PlayersManager {
   constructor() {
@@ -103,64 +103,14 @@ class PlayersManager {
   }
 
   assignRoles(levelPreset, config = {}) {
-    const rolesConfig = PlayersManager._generateRolesConfig(config);
-    const roles       = PlayersManager._generateRoles(
-      rolesConfig,
-      levelPreset.getGoodCount(),
-      levelPreset.getEvilCount(),
-    );
-
-    this._players.forEach((player) => player.setRole(roles.pop()));
+    this._players = new RolesAssigner(
+      this._players,
+      levelPreset
+    ).assignRoles(config);
 
     this._initAssassin();
 
     this.nextLeader();
-  }
-
-  static _generateRolesConfig(config) {
-    // TODO: convert to an array?
-    const defaultRolesConfig = {
-      [roleIds.MERLIN]: true,
-      [roleIds.ASSASSIN]: true,
-    };
-
-    return Object.assign({}, config, defaultRolesConfig);
-  }
-
-  static _generateRoles(config, goodCount, evilCount) {
-    const roles = Object.keys(config).map(roleId => {
-      const role = new Role(roleId);
-
-      role.getLoyalty() === loyalties.GOOD
-        ? goodCount--
-        : evilCount--;
-
-      return role;
-    });
-
-    return _.shuffle(_.concat(
-      roles,
-      PlayersManager._generateServants(goodCount),
-      PlayersManager._generateMinions(evilCount)
-    ));
-  }
-
-  static _generateServants(count) {
-    return _.shuffle([
-      new Role(roleIds.SERVANT_1),
-      new Role(roleIds.SERVANT_2),
-      new Role(roleIds.SERVANT_3),
-      new Role(roleIds.SERVANT_4),
-      new Role(roleIds.SERVANT_5),
-    ]).slice(0, count);
-  }
-
-  static _generateMinions(count) {
-    return _.shuffle([
-      new Role(roleIds.MINION_1),
-      new Role(roleIds.MINION_2),
-      new Role(roleIds.MINION_3),
-    ]).slice(0, count);
   }
 
   _initAssassin() {
