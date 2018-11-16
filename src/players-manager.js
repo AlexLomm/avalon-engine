@@ -27,26 +27,32 @@ class PlayersManager {
     this._isAssassinated = true;
   }
 
+  // TODO: remove
   getVictim() {
     return this._victim;
   }
 
+  // TODO: make private
   isAssassinated(player) {
     return this._victim === player && this._isAssassinated;
   }
 
+  // TODO: make private
   getAssassin() {
     return this._players.find((p) => p.isAssassin());
   }
 
+  // TODO: remove
   getAll() {
     return this._players;
   }
 
+  // TODO: remove
   getProposedPlayers() {
     return this._proposedPlayers;
   }
 
+  // TODO: remove
   getGameCreator() {
     return this._gameCreator;
   }
@@ -92,7 +98,7 @@ class PlayersManager {
       : player;
   }
 
-  toggleTeamProposition(username) {
+  togglePlayerProposition(username) {
     const player = this._findPlayer(username);
 
     if (!player) return;
@@ -177,13 +183,33 @@ class PlayersManager {
     this._proposedPlayers = [];
   }
 
-  serialize() {
+  serializeFor(forPlayerUsername, votesRevealed) {
+    const forPlayer = this._findPlayer(forPlayerUsername);
+    if (!forPlayer) {
+      throw new errors.PlayerMissingError();
+    }
+
     return {
+      players: this._serializePlayers(forPlayer, votesRevealed),
+      proposedPlayerUsernames: this._proposedPlayers.map(p => p.getUsername()),
+      gameCreatorUsername: PlayersManager._getUsernameOrNull(this._gameCreator),
+      leaderUsername: PlayersManager._getUsernameOrNull(this.getLeader()),
       isSubmitted: this._isSubmitted,
-      // TODO: maybe replace with a null object?
-      gameCreator: this._gameCreator ? this._gameCreator.serialize() : null,
-      players: this._players.map(p => p.serialize()),
+      victimUsername: PlayersManager._getUsernameOrNull(this.getVictim()),
+      isAssassinated: this._isAssassinated,
     };
+  }
+
+  _serializePlayers(forPlayer, votesRevealed) {
+    return this._players.map((p) => {
+      const roleRevealed = forPlayer.canSee(p);
+
+      return p.serialize(roleRevealed, votesRevealed);
+    });
+  }
+
+  static _getUsernameOrNull(player) {
+    return player ? player.getUsername() : null;
   }
 }
 

@@ -43,6 +43,15 @@ class AlreadyVotedForQuestError extends BaseError {
   }
 }
 
+class PlayerMissingError extends BaseError {
+  constructor() {
+    super(
+      'The specified player does not exist.',
+      'ERR_PLAYER_MISSING'
+    );
+  }
+}
+
 class PlayersMaximumReachedError extends BaseError {
   constructor() {
     super(
@@ -192,6 +201,7 @@ module.exports = {
   AlreadyExistsPlayerError,
   AlreadyVotedForTeamError,
   AlreadyVotedForQuestError,
+  PlayerMissingError,
   PlayersMaximumReachedError,
   PlayersAmountIncorrectError,
   RequiredCorrectTeammatesAmountError,

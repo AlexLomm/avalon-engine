@@ -226,7 +226,7 @@ describe('post "reveal roles" phase', () => {
     const leaderUsername = playersManager.getLeader().getUsername();
 
     usernames.forEach((username) => {
-      game.toggleTeamProposition(leaderUsername, username);
+      game.toggleTeammateProposition(leaderUsername, username);
     });
   };
 
@@ -263,7 +263,7 @@ describe('post "reveal roles" phase', () => {
   describe('team proposition', () => {
     test('should disallow anybody other then the party leader to propose a player', () => {
       const leader = playersManager.getLeader();
-      expect(() => game.toggleTeamProposition(leader.getUsername(), 'user-3'))
+      expect(() => game.toggleTeammateProposition(leader.getUsername(), 'user-3'))
         .not
         .toThrow();
 
@@ -271,24 +271,24 @@ describe('post "reveal roles" phase', () => {
         .find(player => player.getUsername() !== leader.getUsername());
 
       expect(() => {
-        game.toggleTeamProposition(nonLeader.getUsername(), 'user-3');
+        game.toggleTeammateProposition(nonLeader.getUsername(), 'user-3');
       }).toThrow(errors.DeniedTeammatePropositionError);
     });
 
     test('should toggle whether a player is proposed or not', () => {
       const leader = playersManager.getLeader();
 
-      jest.spyOn(playersManager, 'toggleTeamProposition');
+      jest.spyOn(playersManager, 'togglePlayerProposition');
 
-      game.toggleTeamProposition(leader.getUsername(), 'user-3');
+      game.toggleTeammateProposition(leader.getUsername(), 'user-3');
 
-      expect(playersManager.toggleTeamProposition).toBeCalledTimes(1);
+      expect(playersManager.togglePlayerProposition).toBeCalledTimes(1);
     });
 
     test('should disallow any further propositions once the team is submitted', () => {
       proposeAndSubmitTeam(['user-1', 'user-2']);
 
-      expect(() => game.toggleTeamProposition(
+      expect(() => game.toggleTeammateProposition(
         playersManager.getLeader().getUsername(),
         'user-2'
       )).toThrow(errors.NoTimeForTeammatePropositionError);
@@ -311,12 +311,12 @@ describe('post "reveal roles" phase', () => {
       expect(() => game.submitTeam(leaderUsername))
         .toThrow(errors.RequiredCorrectTeammatesAmountError);
 
-      game.toggleTeamProposition(leaderUsername, 'user-1');
+      game.toggleTeammateProposition(leaderUsername, 'user-1');
 
       expect(() => game.submitTeam(leaderUsername))
         .toThrow(errors.RequiredCorrectTeammatesAmountError);
 
-      game.toggleTeamProposition(leaderUsername, 'user-2');
+      game.toggleTeammateProposition(leaderUsername, 'user-2');
 
       expect(game.submitTeam(leaderUsername));
     });
@@ -644,13 +644,15 @@ describe('post "reveal roles" phase', () => {
       const questsManager  = new QuestsManager();
       const game           = new Game(playersManager, questsManager);
 
+      fail();
+
       const expected = {
         meta: {
           finishedAt: game.getFinishedAt(),
           startedAt: game.getStartedAt(),
           ...(LevelPreset.null().serialize()),
         },
-        ...playersManager.serialize(),
+        // ...playersManager.serializeFor(),
         ...questsManager.serialize(),
       };
 
@@ -676,9 +678,11 @@ describe('post "reveal roles" phase', () => {
 
       const serializedState = game.serialize();
 
+      fail();
+
       expect(serializedState).toEqual({
         ...serializedState,
-        ...playersManager.serialize()
+        // ...playersManager.serializeFor()
       });
     });
 

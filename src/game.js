@@ -162,7 +162,7 @@ class Game {
     this._questsManager.addVote(vote);
   }
 
-  toggleTeamProposition(leaderUsername, username) {
+  toggleTeammateProposition(leaderUsername, username) {
     if (!this.teamPropositionIsOn()) {
       throw new errors.NoTimeForTeammatePropositionError();
     }
@@ -171,7 +171,7 @@ class Game {
       throw new errors.DeniedTeammatePropositionError();
     }
 
-    this._playersManager.toggleTeamProposition(username);
+    this._playersManager.togglePlayerProposition(username);
   }
 
   toggleVictimProposition(assassinsUsername, victimsUsername) {
@@ -225,7 +225,7 @@ class Game {
            && !this._rolesAreRevealed;
   }
 
-  serialize() {
+  serialize(forUsername) {
     return {
       meta: {
         startedAt: this._startedAt,
@@ -233,7 +233,8 @@ class Game {
         ...this._levelPreset.serialize(),
       },
       ...this._questsManager.serialize(),
-      ...this._playersManager.serialize(),
+      // TODO: implement
+      // ...this._playersManager.serializeFor(forUsername),
     };
   }
 }
