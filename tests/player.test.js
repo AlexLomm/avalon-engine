@@ -96,12 +96,12 @@ describe('serialization', () => {
   test('should contain `null` as a vote value if the vote has not been yet revealed', () => {
     player.vote(true);
 
-    expect(player.serialize(false, false).vote.vote).toStrictEqual(null);
+    expect(player.serialize(false, false).vote.value).toStrictEqual(null);
   });
 
   test('should reveal the vote value', () => {
     player.vote(true);
 
-    expect(player.serialize(false, true).vote.vote).toStrictEqual(true);
+    expect(player.serialize(false, true).vote.value).toStrictEqual(true);
   });
 });

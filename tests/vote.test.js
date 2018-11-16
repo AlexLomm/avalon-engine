@@ -18,7 +18,7 @@ test('should serialize', () => {
   const actual   = vote.serialize();
   const expected = {
     username: 'some-user',
-    vote: false,
+    value: false,
   };
 
   expect(actual).toEqual(expected);

@@ -1,7 +1,7 @@
 class Vote {
-  constructor(username, vote) {
+  constructor(username, value) {
     this._username = username;
-    this._vote     = vote;
+    this._value    = value;
   }
 
   getUsername() {
@@ -9,14 +9,13 @@ class Vote {
   }
 
   getValue() {
-    return this._vote;
+    return this._value;
   }
 
   serialize() {
     return {
       username: this._username,
-      // TODO: rename to value
-      vote: this._vote,
+      value: this._value,
     };
   }
 }
