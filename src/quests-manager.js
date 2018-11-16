@@ -91,7 +91,9 @@ class QuestsManager {
     return {
       assassinationStatus: this._assassinationStatus,
       quests: this._quests.map(q => q.serialize()),
-      tracker: this.getCurrentQuest() ? this.getCurrentQuest().getTracker() : 0,
+      teamVotingRoundIndex: this.getCurrentQuest()
+        ? this.getCurrentQuest().getTeamVotingRoundIndex()
+        : 0,
     };
   }
 }

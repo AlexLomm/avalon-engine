@@ -2,14 +2,12 @@ const errors = require('./errors');
 
 class Quest {
   constructor(config) {
-    this._votesNeeded                 = config.votesNeeded;
-    this._failsNeeded                 = config.failsNeeded;
-    this._totalPlayers                = config.totalPlayers;
-    this._teamVoteRounds              = [[], [], [], [], []];
-    // TODO remove either this or _tracker
-    this._currentTeamVotingRoundIndex = 0;
-    this._questVotes                  = [];
-    this._tracker                     = 1;
+    this._votesNeeded          = config.votesNeeded;
+    this._failsNeeded          = config.failsNeeded;
+    this._totalPlayers         = config.totalPlayers;
+    this._teamVoteRounds       = [[], [], [], [], []];
+    this._teamVotingRoundIndex = 0;
+    this._questVotes           = [];
   }
 
   getVotesNeeded() {
@@ -20,8 +18,9 @@ class Quest {
     return this._failsNeeded;
   }
 
-  getTracker() {
-    return this._tracker;
+  // a.k.a "vote tracker"
+  getTeamVotingRoundIndex() {
+    return this._teamVotingRoundIndex;
   }
 
   questVotingFinished() {
@@ -67,13 +66,8 @@ class Quest {
     currentRound.push(vote);
 
     if (this._everybodyVotedFor(currentRound) && !this.teamVotingSucceeded()) {
-      this._nextTeamVotingRound();
+      this._teamVotingRoundIndex++;
     }
-  }
-
-  _nextTeamVotingRound() {
-    this._currentTeamVotingRoundIndex++;
-    this._tracker++;
   }
 
   _addVoteForQuest(vote) {
@@ -125,7 +119,7 @@ class Quest {
   }
 
   _getPreviousTeamVotingRound() {
-    return this._teamVoteRounds[this._currentTeamVotingRoundIndex - 1];
+    return this._teamVoteRounds[this._teamVotingRoundIndex - 1];
   }
 
   _everybodyVotedFor(round) {
@@ -133,11 +127,11 @@ class Quest {
   }
 
   _getCurrentTeamVotingRound() {
-    return this._teamVoteRounds[this._currentTeamVotingRoundIndex];
+    return this._teamVoteRounds[this._teamVotingRoundIndex];
   }
 
   isLastRoundOfTeamVoting() {
-    return this._currentTeamVotingRoundIndex === this._teamVoteRounds.length - 1;
+    return this._teamVotingRoundIndex === this._teamVoteRounds.length - 1;
   }
 
   serialize() {
