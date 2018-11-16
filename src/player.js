@@ -1,3 +1,5 @@
+const {roleIds} = require('../configs/roles.config');
+
 class Player {
   constructor(username) {
     this._username = username;
@@ -6,8 +8,6 @@ class Player {
 
     // TODO: extract the fields below
     this._isAssassinated = false;
-    // TODO: extract to role
-    this._isAssassin     = false;
   }
 
   getUsername() {
@@ -30,12 +30,8 @@ class Player {
     return this._vote;
   }
 
-  getIsAssassin() {
-    return this._isAssassin;
-  }
-
-  markAsAssassin() {
-    this._isAssassin = true;
+  isAssassin() {
+    return !!(this._role && this._role.getId() === roleIds.ASSASSIN);
   }
 
   markAsAssassinated() {
@@ -55,7 +51,6 @@ class Player {
       username: this._username,
       role: this._role ? this._role.serialize() : null,
       vote: this._vote ? this._vote.serialize() : null,
-      isAssassin: this._isAssassin,
       isAssassinated: this._isAssassinated,
     };
   }

@@ -41,14 +41,6 @@ test('should assign a vote', () => {
 });
 
 describe('assassination', () => {
-  test('should be marked as assassin', () => {
-    expect(player.getIsAssassin()).toBeFalsy();
-
-    player.markAsAssassin();
-
-    expect(player.getIsAssassin()).toBeTruthy();
-  });
-
   test('should be assassinated', () => {
     expect(player.getIsAssassinated()).toBeFalsy();
 
@@ -65,7 +57,6 @@ describe('serialization', () => {
       username: 'user-1',
       role: null,
       vote: null,
-      isAssassin: false,
       isAssassinated: false,
     };
 

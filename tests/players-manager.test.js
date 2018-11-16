@@ -260,7 +260,7 @@ describe('assassination', () => {
   test('should throw if a non-assassin tries to propose a victim', () => {
     addPlayersAndAssignRoles(5);
 
-    const nonAssassins = manager.getAll().filter((p) => !p.getIsAssassin());
+    const nonAssassins = manager.getAll().filter((p) => !p.isAssassin());
 
     expect(() => {
       manager.toggleVictimProposition(
@@ -286,7 +286,7 @@ describe('assassination', () => {
 
     expect(manager.getVictim()).toBeFalsy();
 
-    const nonAssassin = manager.getAll().find((p) => !p.getIsAssassin());
+    const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
       manager.getAssassin().getUsername(),
       nonAssassin.getUsername()
@@ -313,7 +313,7 @@ describe('assassination', () => {
     addPlayersAndAssignRoles(7);
 
     const assassin    = manager.getAssassin();
-    const nonAssassin = manager.getAll().find((p) => !p.getIsAssassin());
+    const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
 
     manager.toggleVictimProposition(
       assassin.getUsername(),
@@ -328,7 +328,7 @@ describe('assassination', () => {
     addPlayersAndAssignRoles(7);
 
     const assassin = manager.getAssassin();
-    const victim   = manager.getAll().find((p) => !p.getIsAssassin());
+    const victim   = manager.getAll().find((p) => !p.isAssassin());
 
     manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
 

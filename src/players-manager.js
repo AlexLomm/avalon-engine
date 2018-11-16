@@ -1,6 +1,5 @@
 const _             = require('lodash');
 const errors        = require('./errors');
-const {roleIds}     = require('../configs/roles.config');
 const RolesAssigner = require('./roles-assigner');
 
 class PlayersManager {
@@ -32,7 +31,7 @@ class PlayersManager {
   }
 
   getAssassin() {
-    return this._players.find((p) => p.getIsAssassin());
+    return this._players.find((p) => p.isAssassin());
   }
 
   getAll() {
@@ -114,17 +113,7 @@ class PlayersManager {
       levelPreset
     ).assignRoles(config);
 
-    this._initAssassin();
-
     this.nextLeader();
-  }
-
-  _initAssassin() {
-    const player = this._players.find(
-      (player) => player.getRole().getId() === roleIds.ASSASSIN
-    );
-
-    player.markAsAssassin();
   }
 
   nextLeader() {
