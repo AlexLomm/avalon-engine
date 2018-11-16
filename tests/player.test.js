@@ -40,6 +40,14 @@ test('should assign a vote', () => {
   expect(player.getVote()).toBeTruthy();
 });
 
+test('should return if is a game creator', () => {
+  expect(player.getIsGameCreator()).toBeFalsy();
+
+  player.markAsGameCreator();
+
+  expect(player.getIsGameCreator()).toBeTruthy();
+});
+
 describe('assassination', () => {
   test('should be marked as assassin', () => {
     expect(player.getIsAssassin()).toBeFalsy();

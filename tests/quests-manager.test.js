@@ -224,7 +224,7 @@ describe('serialization', () => {
 
     const expected = {
       quests: [],
-      tracker: 0,
+      teamVotingRoundIndex: 0,
       assassinationStatus: -1,
     };
 
@@ -242,7 +242,7 @@ describe('serialization', () => {
     expect(manager.serialize().quests[0]).toEqual(serializedQuest);
   });
 
-  test('should contain a tracker', () => {
+  test('should contain a team voting round tracker', () => {
     const manager = new QuestsManager();
     const preset  = new LevelPreset(5);
     manager.init(preset);
@@ -252,6 +252,7 @@ describe('serialization', () => {
       currentQuest.addVote(new Vote(`user-${i}`, false));
     });
 
-    expect(manager.serialize().tracker).toEqual(currentQuest.getTracker());
+    expect(manager.serialize().teamVotingRoundIndex)
+      .toEqual(currentQuest.getTeamVotingRoundIndex());
   });
 });

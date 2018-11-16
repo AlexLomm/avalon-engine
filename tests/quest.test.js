@@ -120,17 +120,17 @@ describe('team voting', () => {
   test('should increment the tracker if team voting has failed', () => {
     const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
 
-    expect(quest.getTracker()).toEqual(1);
+    expect(quest.getTeamVotingRoundIndex()).toEqual(0);
 
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', false));
 
-    expect(quest.getTracker()).toEqual(2);
+    expect(quest.getTeamVotingRoundIndex()).toEqual(1);
 
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', true));
 
-    expect(quest.getTracker()).toEqual(2);
+    expect(quest.getTeamVotingRoundIndex()).toEqual(1);
   });
 
   test('should return whether team voting round is over if the round failed', () => {

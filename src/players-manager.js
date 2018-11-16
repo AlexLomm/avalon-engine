@@ -1,13 +1,10 @@
-const _                    = require('lodash');
-const errors               = require('./errors');
-const {roleIds, loyalties} = require('../configs/roles.config');
-const Role                 = require('./role');
+const _             = require('lodash');
+const errors        = require('./errors');
+const {roleIds}     = require('../configs/roles.config');
+const RolesAssigner = require('./roles-assigner');
 
 class PlayersManager {
   constructor() {
-    this._levelPreset = null;
-    // TODO: is out of place
-    this._gameCreator = null;
     this._players     = [];
     // TODO: is out of place
     this._leaderIndex = -1;
@@ -45,7 +42,7 @@ class PlayersManager {
   }
 
   getGameCreator() {
-    return this._gameCreator;
+    return this._players.find((p) => p.getIsGameCreator());
   }
 
   add(player) {
@@ -59,8 +56,8 @@ class PlayersManager {
       throw new errors.PlayersMaximumReachedError();
     }
 
-    if (!this._gameCreator) {
-      this._gameCreator = player;
+    if (!this.getGameCreator()) {
+      player.markAsGameCreator();
     }
 
     this._players.push(player);
@@ -106,69 +103,22 @@ class PlayersManager {
   }
 
   assignRoles(levelPreset, config = {}) {
-    this._levelPreset = levelPreset;
+    this._players = new RolesAssigner(
+      this._players,
+      levelPreset
+    ).assignRoles(config);
 
-    const rolesConfig = PlayersManager._generateRolesConfig(config);
+    this._initAssassin();
 
-    const roles = this._generateRoles(rolesConfig);
+    this.nextLeader();
+  }
 
-    this._players.forEach((player) => player.setRole(roles.pop()));
-
+  _initAssassin() {
     const player = this._players.find(
       (player) => player.getRole().getId() === roleIds.ASSASSIN
     );
 
     player.markAsAssassin();
-
-    this.nextLeader();
-  }
-
-  static _generateRolesConfig(config) {
-    const defaultRolesConfig = {
-      [roleIds.MERLIN]: true,
-      [roleIds.ASSASSIN]: true,
-    };
-
-    return Object.assign({}, config, defaultRolesConfig);
-  }
-
-  _generateRoles(config) {
-    let goodCount = this._levelPreset.getGoodCount();
-    let evilCount = this._levelPreset.getEvilCount();
-
-    const roles = Object.keys(config).map(roleId => {
-      const role = new Role(roleId);
-
-      role.getLoyalty() === loyalties.GOOD
-        ? goodCount--
-        : evilCount--;
-
-      return role;
-    });
-
-    return _.shuffle(_.concat(
-      roles,
-      PlayersManager._generateServants(goodCount),
-      PlayersManager._generateMinions(evilCount)
-    ));
-  }
-
-  static _generateServants(count) {
-    return _.shuffle([
-      new Role(roleIds.SERVANT_1),
-      new Role(roleIds.SERVANT_2),
-      new Role(roleIds.SERVANT_3),
-      new Role(roleIds.SERVANT_4),
-      new Role(roleIds.SERVANT_5),
-    ]).slice(0, count);
-  }
-
-  static _generateMinions(count) {
-    return _.shuffle([
-      new Role(roleIds.MINION_1),
-      new Role(roleIds.MINION_2),
-      new Role(roleIds.MINION_3),
-    ]).slice(0, count);
   }
 
   nextLeader() {
@@ -236,9 +186,11 @@ class PlayersManager {
   }
 
   serialize() {
+    const gameCreator = this.getGameCreator();
+
     return {
       isSubmitted: this._isSubmitted,
-      gameCreator: this._gameCreator ? this._gameCreator.serialize() : null,
+      gameCreator: gameCreator ? gameCreator.serialize() : null,
       players: this._players.map(p => p.serialize()),
     };
   }

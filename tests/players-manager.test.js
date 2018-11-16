@@ -74,55 +74,6 @@ describe('adding players', () => {
 });
 
 describe('roles assignment', () => {
-  test('should assign every player a role', () => {
-    addPlayersAndAssignRoles(8);
-
-    const roles = manager.getAll()
-      .filter(p => !!p.getRole())
-      .map(p => p.getRole());
-
-    expect(roles.length).toEqual(8);
-  });
-
-  test('should always assign default roles to players', () => {
-    addPlayersToManager(7);
-
-    manager.assignRoles(new LevelPreset(manager.getAll().length), {
-      MERLIN: false,
-      ASSASSIN: false,
-    });
-
-    expect(manager.getAll().find(p => p.getRole().getId() === 'MERLIN')).toBeTruthy();
-    expect(manager.getAll().find(p => p.getRole().getId() === 'ASSASSIN')).toBeTruthy();
-  });
-
-  test('should assign every player a unique role', () => {
-    addPlayersAndAssignRoles(10);
-
-    const roleIds = manager.getAll().map(p => p.getRole().getId());
-
-    expect(_.uniqBy(roleIds, v => v).length).toEqual(roleIds.length);
-  });
-
-  test('should have a correct number of good and evil players', () => {
-    for (let j = 5; j < 10; j++) {
-      const manager = new PlayersManager();
-
-      addPlayersAndAssignRoles(j, manager);
-
-      let goodCount = 0;
-      let evilCount = 0;
-      manager.getAll().forEach(p => {
-        const loyalty = p.getRole().getLoyalty();
-
-        loyalty === 'GOOD' ? goodCount++ : evilCount++;
-      });
-
-      expect((new LevelPreset(j)).getGoodCount()).toEqual(goodCount);
-      expect((new LevelPreset(j)).getEvilCount()).toEqual(evilCount);
-    }
-  });
-
   test('should have a team leader chosen', () => {
     addPlayersToManager(8);
 
