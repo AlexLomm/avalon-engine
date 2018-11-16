@@ -49,26 +49,6 @@ describe('assassination', () => {
     expect(player.getIsAssassin()).toBeTruthy();
   });
 
-  test('should be marked as victim', () => {
-    expect(player.getIsVictim()).toBeFalsy();
-
-    player.setIsVictim(true);
-
-    expect(player.getIsVictim()).toBeTruthy();
-  });
-
-  test('should toggle as victim', () => {
-    expect(player.getIsVictim()).toBeFalsy();
-
-    player.toggleIsVictim();
-
-    expect(player.getIsVictim()).toBeTruthy();
-
-    player.toggleIsVictim();
-
-    expect(player.getIsVictim()).toBeFalsy();
-  });
-
   test('should be assassinated', () => {
     expect(player.getIsAssassinated()).toBeFalsy();
 
@@ -86,7 +66,6 @@ describe('serialization', () => {
       role: null,
       vote: null,
       isAssassin: false,
-      isVictim: false,
       isAssassinated: false,
     };
 

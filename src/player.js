@@ -5,7 +5,6 @@ class Player {
     this._vote     = null;
 
     // TODO: extract the fields below
-    this._isVictim       = false;
     this._isAssassinated = false;
     // TODO: extract to role
     this._isAssassin     = false;
@@ -29,18 +28,6 @@ class Player {
 
   getVote() {
     return this._vote;
-  }
-
-  getIsVictim() {
-    return this._isVictim;
-  }
-
-  setIsVictim(isVictim) {
-    this._isVictim = isVictim;
-  }
-
-  toggleIsVictim() {
-    this._isVictim = !this._isVictim;
   }
 
   getIsAssassin() {
@@ -69,7 +56,6 @@ class Player {
       role: this._role ? this._role.serialize() : null,
       vote: this._vote ? this._vote.serialize() : null,
       isAssassin: this._isAssassin,
-      isVictim: this._isVictim,
       isAssassinated: this._isAssassinated,
     };
   }

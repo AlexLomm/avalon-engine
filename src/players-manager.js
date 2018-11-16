@@ -8,9 +8,10 @@ class PlayersManager {
     this._players         = [];
     this._isSubmitted     = false;
     //
+    this._gameCreator     = null;
     this._proposedPlayers = [];
     this._leaderIndex     = -1;
-    this._gameCreator     = null;
+    this._victim          = null;
   }
 
   assassinate(assassinsUsername) {
@@ -19,16 +20,15 @@ class PlayersManager {
       throw new errors.DeniedAssassinationError();
     }
 
-    const victim = this.getVictim();
-    if (!victim) {
+    if (!this._victim) {
       throw new errors.RequiredVictimError();
     }
 
-    victim.markAsAssassinated();
+    this._victim.markAsAssassinated();
   }
 
   getVictim() {
-    return this._players.find((p) => p.getIsVictim());
+    return this._victim;
   }
 
   getAssassin() {
@@ -81,11 +81,11 @@ class PlayersManager {
       throw new errors.DeniedSelfSacrificeError();
     }
 
-    this._players.forEach((p) => {
-      p.getUsername() === victimUsername
-        ? p.toggleIsVictim()
-        : p.setIsVictim(false);
-    });
+    const player = this._findPlayer(victimUsername);
+
+    this._victim = this._victim === player
+      ? null
+      : player;
   }
 
   toggleTeamProposition(username) {
