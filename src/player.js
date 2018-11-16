@@ -1,4 +1,5 @@
 const {roleIds} = require('../configs/roles.config');
+const Vote      = require('./vote');
 
 class Player {
   constructor(username) {
@@ -19,8 +20,14 @@ class Player {
     return this._role;
   }
 
-  setVote(vote) {
-    this._vote = vote;
+  vote(value) {
+    this._vote = new Vote(this._username, value);
+
+    return this._vote;
+  }
+
+  resetVote() {
+    this._vote = null;
   }
 
   getVote() {

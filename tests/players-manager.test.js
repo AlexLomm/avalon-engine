@@ -3,7 +3,6 @@ const errors         = require('../src/errors');
 const LevelPreset    = require('../src/level-preset');
 const PlayersManager = require('../src/players-manager');
 const Player         = require('../src/player');
-const Vote           = require('../src/vote');
 
 let manager;
 beforeEach(() => {
@@ -193,8 +192,8 @@ describe('team proposition and submission', () => {
   test('should reset votes', () => {
     addPlayersToManager(7);
 
-    manager.setVote(new Vote('user-3', true));
-    manager.setVote(new Vote('user-4', true));
+    manager.vote('user-3', true);
+    manager.vote('user-4', true);
 
     manager.resetVotes();
 
@@ -207,8 +206,8 @@ describe('team proposition and submission', () => {
   test('should reset propositions', () => {
     addPlayersToManager(7);
 
-    manager.setVote(new Vote('user-3', true));
-    manager.setVote(new Vote('user-4', true));
+    manager.vote('user-3', true);
+    manager.vote('user-4', true);
 
     manager.resetPropositions();
 
@@ -220,11 +219,11 @@ describe('voting', () => {
   test('should mark player as has voted', () => {
     addPlayersToManager(7);
 
-    manager.setVote(new Vote('nonexistent', false));
+    manager.vote('nonexistent', false);
 
     expect(manager.getAll().find(p => p.getVote())).toBeFalsy();
 
-    manager.setVote(new Vote('user-3', false));
+    manager.vote('user-3', false);
 
     expect(
       manager.getAll().find(p => p.getVote()).getUsername()
@@ -236,7 +235,7 @@ describe('voting', () => {
 
     expect(manager.teamVotingAllowedFor('user-1')).toBeTruthy();
 
-    manager.setVote(new Vote('user-1', true));
+    manager.vote('user-1', true);
 
     expect(manager.teamVotingAllowedFor('user-1')).toBeFalsy();
   });
@@ -250,7 +249,7 @@ describe('voting', () => {
 
     expect(manager.questVotingAllowedFor('user-1')).toBeTruthy();
 
-    manager.setVote(new Vote('user-1', true));
+    manager.vote('user-1', true);
 
     expect(manager.questVotingAllowedFor('user-1')).toBeFalsy();
   });

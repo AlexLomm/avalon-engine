@@ -161,16 +161,16 @@ class PlayersManager {
     return leader && leader.getUsername() === username;
   }
 
-  setVote(vote) {
-    const player = this._findPlayer(vote.getUsername());
+  vote(username, voteValue) {
+    const player = this._findPlayer(username);
 
     if (!player) return;
 
-    player.setVote(vote);
+    return player.vote(voteValue);
   }
 
   resetVotes() {
-    this._players.forEach((player) => player.setVote(null));
+    this._players.forEach((player) => player.resetVote());
   }
 
   resetPropositions() {

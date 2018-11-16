@@ -32,12 +32,27 @@ test('should say if can see another player', () => {
   expect(player2.canSee(player1)).toBeFalsy();
 });
 
-test('should assign a vote', () => {
-  expect(player.getVote()).toBeFalsy();
+describe('voting', () => {
+  test('should return a vote', () => {
+    expect(player.vote(false))
+      .toEqual(new Vote(player.getUsername(), false));
+  });
 
-  player.setVote(new Vote('user-1', true));
+  test('should remember the vote', () => {
+    expect(player.getVote()).toBeFalsy();
 
-  expect(player.getVote()).toBeTruthy();
+    const vote = player.vote(true);
+
+    expect(vote).toBe(player.getVote());
+  });
+
+  test('should reset vote', () => {
+    player.vote(true);
+
+    player.resetVote();
+
+    expect(player.getVote()).toBeFalsy();
+  });
 });
 
 describe('serialization', () => {
@@ -54,7 +69,7 @@ describe('serialization', () => {
 
   test('should contain a serialized vote', () => {
     const vote = new Vote('user-1', true);
-    player.setVote(vote);
+    player.vote(vote);
 
     expect(player.serialize().vote).toEqual(vote.serialize());
   });

@@ -4,7 +4,6 @@ const errors         = require('./errors');
 const LevelPreset    = require('./level-preset');
 const PlayersManager = require('./players-manager');
 const QuestsManager  = require('./quests-manager');
-const Vote           = require('./vote');
 
 class Game {
   constructor(
@@ -158,9 +157,8 @@ class Game {
   }
 
   _vote(username, voteValue) {
-    const vote = new Vote(username, voteValue);
+    const vote = this._playersManager.vote(username, voteValue);
 
-    this._playersManager.setVote(vote);
     this._questsManager.addVote(vote);
   }
 
