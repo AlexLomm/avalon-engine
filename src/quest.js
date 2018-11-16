@@ -1,7 +1,7 @@
 const errors = require('./errors');
 
 class Quest {
-  constructor(config = {}) {
+  constructor(config) {
     this._votesNeeded                 = config.votesNeeded;
     this._failsNeeded                 = config.failsNeeded;
     this._totalPlayers                = config.totalPlayers;
