@@ -1,14 +1,17 @@
 const _             = require('lodash');
 const errors        = require('./errors');
-const {roleIds}     = require('../configs/roles.config');
 const RolesAssigner = require('./roles-assigner');
 
 class PlayersManager {
   constructor() {
-    this._players     = [];
-    // TODO: is out of place
-    this._leaderIndex = -1;
-    this._isSubmitted = false;
+    this._players         = [];
+    this._gameCreator     = null;
+    this._isSubmitted     = false;
+    this._proposedPlayers = [];
+    this._leaderIndex     = -1;
+    // TODO: replace with player proposition
+    this._victim          = null;
+    this._isAssassinated  = false;
   }
 
   assassinate(assassinsUsername) {
@@ -17,32 +20,41 @@ class PlayersManager {
       throw new errors.DeniedAssassinationError();
     }
 
-    const victim = this.getVictim();
-    if (!victim) {
+    if (!this._victim) {
       throw new errors.RequiredVictimError();
     }
 
-    victim.markAsAssassinated();
+    this._isAssassinated = true;
   }
 
+  // TODO: remove
   getVictim() {
-    return this._players.find((p) => p.getIsVictim());
+    return this._victim;
   }
 
+  // TODO: make private
+  isAssassinated(player) {
+    return this._victim === player && this._isAssassinated;
+  }
+
+  // TODO: make private
   getAssassin() {
-    return this._players.find((p) => p.getIsAssassin());
+    return this._players.find((p) => p.isAssassin());
   }
 
+  // TODO: remove
   getAll() {
     return this._players;
   }
 
+  // TODO: remove
   getProposedPlayers() {
-    return this._players.filter((p) => p.getIsProposed());
+    return this._proposedPlayers;
   }
 
+  // TODO: remove
   getGameCreator() {
-    return this._players.find((p) => p.getIsGameCreator());
+    return this._gameCreator;
   }
 
   add(player) {
@@ -56,8 +68,8 @@ class PlayersManager {
       throw new errors.PlayersMaximumReachedError();
     }
 
-    if (!this.getGameCreator()) {
-      player.markAsGameCreator();
+    if (!this._gameCreator) {
+      this._gameCreator = player;
     }
 
     this._players.push(player);
@@ -79,19 +91,23 @@ class PlayersManager {
       throw new errors.DeniedSelfSacrificeError();
     }
 
-    this._players.forEach((p) => {
-      p.getUsername() === victimUsername
-        ? p.toggleIsVictim()
-        : p.setIsVictim(false);
-    });
+    const player = this._findPlayer(victimUsername);
+
+    this._victim = this._victim === player
+      ? null
+      : player;
   }
 
-  toggleTeamProposition(username) {
+  togglePlayerProposition(username) {
     const player = this._findPlayer(username);
 
     if (!player) return;
 
-    player.toggleTeamProposition();
+    const index = this._proposedPlayers.findIndex((p) => p === player);
+
+    index > -1
+      ? this._proposedPlayers.splice(index, 1)
+      : this._proposedPlayers.push(player);
   }
 
   setIsSubmitted(isSubmitted) {
@@ -108,17 +124,7 @@ class PlayersManager {
       levelPreset
     ).assignRoles(config);
 
-    this._initAssassin();
-
     this.nextLeader();
-  }
-
-  _initAssassin() {
-    const player = this._players.find(
-      (player) => player.getRole().getId() === roleIds.ASSASSIN
-    );
-
-    player.markAsAssassin();
   }
 
   nextLeader() {
@@ -133,22 +139,20 @@ class PlayersManager {
 
   _chooseLeaderRandomly() {
     this._leaderIndex = _.random(0, this._players.length - 1);
-
-    this.getLeader().setIsLeader(true);
   }
 
   _chooseNextPlayerAsLeader() {
-    this.getLeader().setIsLeader(false);
-
     this._leaderIndex = (this._leaderIndex + 1) % this._players.length;
-
-    this.getLeader().setIsLeader(true);
   }
 
   questVotingAllowedFor(username) {
     const player = this._findPlayer(username);
 
-    return player && player.getIsProposed() && !player.getVote();
+    return player && this._isProposed(player) && !player.getVote();
+  }
+
+  _isProposed(player) {
+    return !!this._proposedPlayers.find((p) => p === player);
   }
 
   teamVotingAllowedFor(username) {
@@ -157,42 +161,55 @@ class PlayersManager {
     return player && !player.getVote();
   }
 
-  teamPropositionAllowedFor(username) {
-    return this.playerPropositionAllowedFor(username);
-  }
-
   playerPropositionAllowedFor(username) {
     const leader = this.getLeader();
 
-    if (!leader) return false;
-
-    return leader.getUsername() === username;
+    return leader && leader.getUsername() === username;
   }
 
-  setVote(vote) {
-    const player = this._findPlayer(vote.getUsername());
+  vote(username, voteValue) {
+    const player = this._findPlayer(username);
 
     if (!player) return;
 
-    player.setVote(vote);
+    return player.vote(voteValue);
   }
 
   resetVotes() {
-    this._players.forEach((player) => player.setVote(null));
+    this._players.forEach((player) => player.resetVote());
   }
 
   resetPropositions() {
-    this._players.forEach((player) => player.setIsProposed(false));
+    this._proposedPlayers = [];
   }
 
-  serialize() {
-    const gameCreator = this.getGameCreator();
+  serializeFor(forPlayerUsername, votesRevealed) {
+    const forPlayer = this._findPlayer(forPlayerUsername);
+    if (!forPlayer) {
+      throw new errors.PlayerMissingError();
+    }
 
     return {
+      players: this._serializePlayers(forPlayer, votesRevealed),
+      proposedPlayerUsernames: this._proposedPlayers.map(p => p.getUsername()),
+      gameCreatorUsername: PlayersManager._getUsernameOrNull(this._gameCreator),
+      leaderUsername: PlayersManager._getUsernameOrNull(this.getLeader()),
       isSubmitted: this._isSubmitted,
-      gameCreator: gameCreator ? gameCreator.serialize() : null,
-      players: this._players.map(p => p.serialize()),
+      victimUsername: PlayersManager._getUsernameOrNull(this.getVictim()),
+      isAssassinated: this._isAssassinated,
     };
+  }
+
+  _serializePlayers(forPlayer, votesRevealed) {
+    return this._players.map((p) => {
+      const roleRevealed = forPlayer.canSee(p);
+
+      return p.serialize(roleRevealed, votesRevealed);
+    });
+  }
+
+  static _getUsernameOrNull(player) {
+    return player ? player.getUsername() : null;
   }
 }
 

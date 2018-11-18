@@ -18,8 +18,8 @@ test('should serialize', () => {
   const actual   = vote.serialize();
   const expected = {
     username: 'some-user',
-    vote: false,
+    value: false,
   };
 
-  expect(vote.serialize()).toEqual(expected);
+  expect(actual).toEqual(expected);
 });

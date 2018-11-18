@@ -2,6 +2,7 @@ const _                    = require('lodash');
 const {roleIds, loyalties} = require('../configs/roles.config');
 const Role                 = require('./role');
 
+// TODO: promote to a service
 class RolesAssigner {
   constructor(players, levelPreset) {
     this._players     = players;

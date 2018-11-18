@@ -32,124 +32,76 @@ test('should say if can see another player', () => {
   expect(player2.canSee(player1)).toBeFalsy();
 });
 
-test('should assign a vote', () => {
-  expect(player.getVote()).toBeFalsy();
-
-  player.setVote(new Vote('user-1', true));
-
-  expect(player.getVote()).toBeTruthy();
-});
-
-test('should return if is a game creator', () => {
-  expect(player.getIsGameCreator()).toBeFalsy();
-
-  player.markAsGameCreator();
-
-  expect(player.getIsGameCreator()).toBeTruthy();
-});
-
-describe('assassination', () => {
-  test('should be marked as assassin', () => {
-    expect(player.getIsAssassin()).toBeFalsy();
-
-    player.markAsAssassin();
-
-    expect(player.getIsAssassin()).toBeTruthy();
+describe('voting', () => {
+  test('should return a vote', () => {
+    expect(player.vote(false))
+      .toEqual(new Vote(player.getUsername(), false));
   });
 
-  test('should be marked as victim', () => {
-    expect(player.getIsVictim()).toBeFalsy();
+  test('should remember the vote', () => {
+    expect(player.getVote()).toBeFalsy();
 
-    player.setIsVictim(true);
+    const vote = player.vote(true);
 
-    expect(player.getIsVictim()).toBeTruthy();
+    expect(vote).toBe(player.getVote());
   });
 
-  test('should toggle as victim', () => {
-    expect(player.getIsVictim()).toBeFalsy();
+  test('should reset vote', () => {
+    player.vote(true);
 
-    player.toggleIsVictim();
+    player.resetVote();
 
-    expect(player.getIsVictim()).toBeTruthy();
-
-    player.toggleIsVictim();
-
-    expect(player.getIsVictim()).toBeFalsy();
-  });
-
-  test('should be assassinated', () => {
-    expect(player.getIsAssassinated()).toBeFalsy();
-
-    player.markAsAssassinated();
-
-    expect(player.getIsAssassinated()).toBeTruthy();
-  });
-});
-
-describe('leader', () => {
-  test('should mark as leader', () => {
-    player.setIsLeader(true);
-
-    expect(player.getIsLeader()).toBeTruthy();
-  });
-
-  test('should unmark as leader', () => {
-    player.setIsLeader(true);
-
-    player.setIsLeader(false);
-
-    expect(player.getIsLeader()).toBeFalsy();
-  });
-});
-
-describe('proposition', () => {
-  test('should toggle proposition', () => {
-    player.toggleTeamProposition();
-
-    expect(player.getIsProposed()).toBeTruthy();
-
-    player.toggleTeamProposition();
-
-    expect(player.getIsProposed()).toBeFalsy();
-  });
-
-  test('should test proposition to false', () => {
-    player.toggleTeamProposition();
-
-    player.setIsProposed(false);
-
-    expect(player.getIsProposed()).toBeFalsy();
+    expect(player.getVote()).toBeFalsy();
   });
 });
 
 describe('serialization', () => {
-  test('should return it\'s field values as an object', () => {
-    const actual   = player.serialize();
-    const expected = {
-      username: 'user-1',
-      role: null,
-      vote: null,
-      isProposed: false,
-      isLeader: false,
-      isAssassin: false,
-      isVictim: false,
-      isAssassinated: false,
-    };
+  test('should return necessary values', () => {
+    const expected = ['username', 'role', 'vote'].sort();
+    const actual   = Object.keys(player.serialize(false, false)).sort();
+
+    expect(expected).toEqual(actual);
+  });
+
+  test('should contain a hidden role when no role is assigned', () => {
+    const expected = new Role(roleIds.UNKNOWN).serialize();
+    const actual   = player.serialize(true, false).role;
+
+    expect(expected).toEqual(actual);
+  });
+
+  test('should contain a hidden role, despite it being assigned', () => {
+    player.setRole(new Role(roleIds.MERLIN));
+
+    const expected = new Role(roleIds.UNKNOWN).serialize();
+    const actual   = player.serialize(false, false).role;
+
+    expect(expected).toEqual(actual);
+  });
+
+  test('should contain a revealed role when role is assigned', () => {
+    const role = new Role(roleIds.MORDRED);
+    player.setRole(role);
+
+    const expected = role.serialize();
+    const actual   = player.serialize(true, false).role;
 
     expect(actual).toEqual(expected);
   });
 
-  test('should contain a serialized vote', () => {
-    const vote = new Vote('user-1', true);
-    player.setVote(vote);
-
-    expect(player.serialize().vote).toEqual(vote.serialize());
+  test('should contain `null` if a vote hasn\'t been cast', () => {
+    expect(player.serialize(false, false).vote).toStrictEqual(null);
   });
 
-  test('should contain a serialized role', () => {
-    const role = new Role(roleIds.MORDRED);
-    player.setRole(role);
+  test('should contain `null` as a vote value if the vote has not been yet revealed', () => {
+    player.vote(true);
 
-    expect(player.serialize().role).toEqual(role.serialize());
+    expect(player.serialize(false, false).vote.value).toStrictEqual(null);
+  });
+
+  test('should reveal the vote value', () => {
+    player.vote(true);
+
+    expect(player.serialize(false, true).vote.value).toStrictEqual(true);
   });
 });

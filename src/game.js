@@ -4,7 +4,6 @@ const errors         = require('./errors');
 const LevelPreset    = require('./level-preset');
 const PlayersManager = require('./players-manager');
 const QuestsManager  = require('./quests-manager');
-const Vote           = require('./vote');
 
 class Game {
   constructor(
@@ -89,7 +88,7 @@ class Game {
   }
 
   submitTeam(username) {
-    if (!this._playersManager.teamPropositionAllowedFor(username)) {
+    if (!this._playersManager.playerPropositionAllowedFor(username)) {
       throw new errors.DeniedTeamSubmissionError();
     }
 
@@ -158,13 +157,12 @@ class Game {
   }
 
   _vote(username, voteValue) {
-    const vote = new Vote(username, voteValue);
+    const vote = this._playersManager.vote(username, voteValue);
 
-    this._playersManager.setVote(vote);
     this._questsManager.addVote(vote);
   }
 
-  toggleTeamProposition(leaderUsername, username) {
+  toggleTeammateProposition(leaderUsername, username) {
     if (!this.teamPropositionIsOn()) {
       throw new errors.NoTimeForTeammatePropositionError();
     }
@@ -173,7 +171,7 @@ class Game {
       throw new errors.DeniedTeammatePropositionError();
     }
 
-    this._playersManager.toggleTeamProposition(username);
+    this._playersManager.togglePlayerProposition(username);
   }
 
   toggleVictimProposition(assassinsUsername, victimsUsername) {
@@ -227,17 +225,18 @@ class Game {
            && !this._rolesAreRevealed;
   }
 
-  serialize() {
-    return {
-      meta: {
-        startedAt: this._startedAt,
-        finishedAt: this._finishedAt,
-        ...this._levelPreset.serialize(),
-      },
-      ...this._questsManager.serialize(),
-      ...this._playersManager.serialize(),
-    };
-  }
+  // serialize(forUsername) {
+  //   return {
+  //     meta: {
+  //       startedAt: this._startedAt,
+  //       finishedAt: this._finishedAt,
+  //       ...this._levelPreset.serialize(),
+  //     },
+  //     ...this._questsManager.serialize(),
+  //     // TODO: implement
+  //     ...this._playersManager.serializeFor(forUsername, true),
+  //   };
+  // }
 }
 
 module.exports = Game;

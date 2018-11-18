@@ -1,9 +1,13 @@
 const loyalties = {
+  UNKNOWN: 'UNKNOWN',
+  //
   GOOD: 'GOOD',
   EVIL: 'EVIL',
 };
 
 const roleIds = {
+  UNKNOWN: 'UNKNOWN',
+  //
   MERLIN: 'MERLIN',
   PERCIVAL: 'PERCIVAL',
   SERVANT_1: 'SERVANT_1',
@@ -21,6 +25,15 @@ const roleIds = {
 };
 
 const rolesConfig = {
+  // TODO: signify somehow that this role has a special behavior (i.e not assignable to player)
+  [roleIds.UNKNOWN]: {
+    id: roleIds.UNKNOWN,
+    name: 'Unknown',
+    description: 'The player\'s identity isn\'t known',
+    loyalty: loyalties.UNKNOWN,
+    visibleRoleIds: []
+  },
+  //
   [roleIds.MERLIN]: {
     id: roleIds.MERLIN,
     name: 'Merlin',
