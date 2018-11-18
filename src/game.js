@@ -225,18 +225,18 @@ class Game {
            && !this._rolesAreRevealed;
   }
 
-  serialize(forUsername) {
-    return {
-      meta: {
-        startedAt: this._startedAt,
-        finishedAt: this._finishedAt,
-        ...this._levelPreset.serialize(),
-      },
-      ...this._questsManager.serialize(),
-      // TODO: implement
-      // ...this._playersManager.serializeFor(forUsername),
-    };
-  }
+  // serialize(forUsername) {
+  //   return {
+  //     meta: {
+  //       startedAt: this._startedAt,
+  //       finishedAt: this._finishedAt,
+  //       ...this._levelPreset.serialize(),
+  //     },
+  //     ...this._questsManager.serialize(),
+  //     // TODO: implement
+  //     ...this._playersManager.serializeFor(forUsername, true),
+  //   };
+  // }
 }
 
 module.exports = Game;

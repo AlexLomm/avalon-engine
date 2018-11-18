@@ -2,6 +2,7 @@ const {roleIds} = require('../configs/roles.config');
 const Role      = require('./role');
 const Vote      = require('./vote');
 
+// TODO: add an id
 class Player {
   constructor(username) {
     this._username = username;
