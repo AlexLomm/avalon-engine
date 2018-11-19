@@ -1,9 +1,9 @@
-const errors      = require('../src/errors');
-const LevelPreset = require('../src/level-preset');
+import * as fromErrors from '../src/errors';
+import { LevelPreset } from '../src/level-preset';
 
 test('should throw if the specified number of players is incorrect', () => {
   expect(() => new LevelPreset(100))
-    .toThrow(errors.PlayersAmountIncorrectError);
+    .toThrow(fromErrors.PlayersAmountIncorrectError);
 });
 
 test('should create a level preset for specified number of players', () => {
@@ -30,7 +30,7 @@ test('should be serialized', () => {
 
   const expected = {
     goodCount: levelPreset.getGoodCount(),
-    evilCount: levelPreset.getEvilCount()
+    evilCount: levelPreset.getEvilCount(),
   };
 
   const actual = levelPreset.serialize();
@@ -39,7 +39,7 @@ test('should be serialized', () => {
 });
 
 test('should return a null object if called with -1 parameter', () => {
-  let levelPreset;
+  let levelPreset: LevelPreset;
 
   expect(() => levelPreset = new LevelPreset(-1)).not.toThrow();
 

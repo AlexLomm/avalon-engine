@@ -1,11 +1,10 @@
-const _              = require('lodash');
-const errors         = require('../src/errors');
-const {roleIds}      = require('../configs/roles.config');
-const Game           = require('../src/game.js');
-const Player         = require('../src/player');
-const PlayersManager = require('../src/players-manager');
-const QuestsManager  = require('../src/quests-manager');
-const LevelPreset    = require('../src/level-preset');
+import * as _ from 'lodash';
+import * as fromErrors from '../src/errors';
+import { RoleId } from '../src/configs/roles.config';
+import { Game } from '../src/game';
+import { PlayersManager } from '../src/players-manager';
+import { QuestsManager } from '../src/quests-manager';
+import { Player } from '../src/player';
 
 describe('initialization', () => {
   test('should set creation date', () => {
@@ -17,7 +16,6 @@ describe('initialization', () => {
   test('should mark the game as finished', () => {
     const game = new Game();
 
-    expect(game.getFinishedAt()).toBeDefined();
     expect(game.getFinishedAt()).toBeFalsy();
 
     game.finish();
@@ -42,7 +40,7 @@ describe('game start', () => {
     game.start();
 
     expect(() => game.addPlayer(new Player('user-6')))
-      .toThrow(errors.AlreadyStartedGameError);
+      .toThrow(fromErrors.AlreadyStartedGameError);
   });
 
   test('should not start the game if the player count is not enough', () => {
@@ -50,7 +48,7 @@ describe('game start', () => {
 
     _.times(4, (i) => game.addPlayer(new Player(`user-${i}`)));
 
-    expect(() => game.start()).toThrow(errors.PlayersAmountIncorrectError);
+    expect(() => game.start()).toThrow(fromErrors.PlayersAmountIncorrectError);
   });
 
   test('should mark the game as started', () => {
@@ -58,7 +56,6 @@ describe('game start', () => {
 
     _.times(8, (i) => game.addPlayer(new Player(`user-${i}`)));
 
-    expect(game.getStartedAt()).toBeDefined();
     expect(game.getStartedAt()).toBeFalsy();
 
     game.start();
@@ -116,7 +113,7 @@ describe('reveal roles', () => {
     expect(game.getRolesAreRevealed()).toBeDefined();
     expect(game.getRolesAreRevealed()).toBeFalsy();
 
-    game.revealRoles();
+    game.revealRoles(10);
 
     expect(game.getRolesAreRevealed()).toBeTruthy();
   });
@@ -178,9 +175,9 @@ describe('reveal roles', () => {
 });
 
 describe('post "reveal roles" phase', () => {
-  let game;
-  let playersManager;
-  let questsManager;
+  let game: Game;
+  let playersManager: PlayersManager;
+  let questsManager: QuestsManager;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -197,13 +194,13 @@ describe('post "reveal roles" phase', () => {
     jest.runAllTimers();
   });
 
-  const passQuestsWithResults = (results = []) => {
+  const passQuestsWithResults = (results: boolean[] = []) => {
     _.times(results.length, () => {
-      const usernames = [];
+      const usernames: string[] = [];
 
       _.times(
         questsManager.getCurrentQuest().getVotesNeeded(),
-        (i) => usernames.push(`user-${i}`)
+        (i) => usernames.push(`user-${i}`),
       );
 
       proposeAndSubmitTeam(usernames);
@@ -214,7 +211,7 @@ describe('post "reveal roles" phase', () => {
     });
   };
 
-  const proposeAndSubmitTeam = (usernames = []) => {
+  const proposeAndSubmitTeam = (usernames: string[] = []) => {
     const leaderUsername = playersManager.getLeader().getUsername();
 
     proposePlayers(usernames);
@@ -222,7 +219,7 @@ describe('post "reveal roles" phase', () => {
     game.submitTeam(leaderUsername);
   };
 
-  const proposePlayers = (usernames = []) => {
+  const proposePlayers = (usernames: string[] = []) => {
     const leaderUsername = playersManager.getLeader().getUsername();
 
     usernames.forEach((username) => {
@@ -230,25 +227,25 @@ describe('post "reveal roles" phase', () => {
     });
   };
 
-  const voteAllForTeam = (voteValue) => {
+  const voteAllForTeam = (voteValue: boolean) => {
     playersManager.getAll()
       .forEach(p => game.voteForTeam(p.getUsername(), voteValue));
   };
 
-  const voteAllForQuest = (voteValue) => {
+  const voteAllForQuest = (voteValue: boolean) => {
     playersManager.getProposedPlayers()
       .forEach(p => game.voteForQuest(p.getUsername(), voteValue));
   };
 
   const getNonAssassin = () => {
     return playersManager.getAll().find(
-      (p) => p.getUsername() !== playersManager.getAssassin().getUsername()
+      (p) => p.getUsername() !== playersManager.getAssassin().getUsername(),
     );
   };
 
   const getMerlin = () => {
     return playersManager.getAll().find(
-      (p) => p.getRole().getId() === roleIds.MERLIN
+      (p) => p.getRole().getId() === RoleId.Merlin,
     );
   };
 
@@ -256,7 +253,7 @@ describe('post "reveal roles" phase', () => {
     return playersManager.getAll()
       .find(p => {
         return p.getUsername() !== playersManager.getAssassin().getUsername()
-               && p.getRole().getId() !== roleIds.MERLIN;
+          && p.getRole().getId() !== RoleId.Merlin;
       });
   };
 
@@ -272,7 +269,7 @@ describe('post "reveal roles" phase', () => {
 
       expect(() => {
         game.toggleTeammateProposition(nonLeader.getUsername(), 'user-3');
-      }).toThrow(errors.DeniedTeammatePropositionError);
+      }).toThrow(fromErrors.DeniedTeammatePropositionError);
     });
 
     test('should toggle whether a player is proposed or not', () => {
@@ -290,31 +287,31 @@ describe('post "reveal roles" phase', () => {
 
       expect(() => game.toggleTeammateProposition(
         playersManager.getLeader().getUsername(),
-        'user-2'
-      )).toThrow(errors.NoTimeForTeammatePropositionError);
+        'user-2',
+      )).toThrow(fromErrors.NoTimeForTeammatePropositionError);
     });
   });
 
   describe('team submission', () => {
     test('should disallow team submission by a non-leader player', () => {
-      const leader            = playersManager.getLeader();
-      const nonLeaderUsername = playersManager.getAll()
+      const leader    = playersManager.getLeader();
+      const nonLeader = playersManager.getAll()
         .find(p => p.getUsername() !== leader.getUsername());
 
-      expect(() => game.submitTeam(nonLeaderUsername))
-        .toThrow(errors.DeniedTeamSubmissionError);
+      expect(() => game.submitTeam(nonLeader.getUsername()))
+        .toThrow(fromErrors.DeniedTeamSubmissionError);
     });
 
     test('should disallow submission if not enough players are proposed', () => {
       const leaderUsername = playersManager.getLeader().getUsername();
 
       expect(() => game.submitTeam(leaderUsername))
-        .toThrow(errors.RequiredCorrectTeammatesAmountError);
+        .toThrow(fromErrors.RequiredCorrectTeammatesAmountError);
 
       game.toggleTeammateProposition(leaderUsername, 'user-1');
 
       expect(() => game.submitTeam(leaderUsername))
-        .toThrow(errors.RequiredCorrectTeammatesAmountError);
+        .toThrow(fromErrors.RequiredCorrectTeammatesAmountError);
 
       game.toggleTeammateProposition(leaderUsername, 'user-2');
 
@@ -337,7 +334,7 @@ describe('post "reveal roles" phase', () => {
       proposePlayers(['user-1', 'user-2']);
 
       expect(() => game.voteForTeam('user-1', true))
-        .toThrow(errors.NoTimeForTeamVotingError);
+        .toThrow(fromErrors.NoTimeForTeamVotingError);
 
       game.submitTeam(playersManager.getLeader().getUsername());
 
@@ -349,7 +346,7 @@ describe('post "reveal roles" phase', () => {
 
       expect(() => game.voteForTeam('user-3', true)).not.toThrow();
       expect(() => game.voteForTeam('nonexistent', true))
-        .toThrow(errors.DeniedTeamVotingError);
+        .toThrow(fromErrors.DeniedTeamVotingError);
     });
 
     test('should only allow voting once', () => {
@@ -358,7 +355,7 @@ describe('post "reveal roles" phase', () => {
       game.voteForTeam('user-1', true);
 
       expect(() => game.voteForTeam('user-1', true))
-        .toThrow(errors.DeniedTeamVotingError);
+        .toThrow(fromErrors.DeniedTeamVotingError);
     });
 
     test('should persist the vote in quest history', () => {
@@ -418,7 +415,7 @@ describe('post "reveal roles" phase', () => {
       // the voting should be over and the
       // quest voting should have started
       expect(() => game.voteForTeam('user-1', false))
-        .toThrow(errors.NoTimeForTeamVotingError);
+        .toThrow(fromErrors.NoTimeForTeamVotingError);
     });
   });
 
@@ -427,12 +424,12 @@ describe('post "reveal roles" phase', () => {
       proposeAndSubmitTeam(['user-1', 'user-2']);
 
       expect(() => game.voteForQuest('user-1', true))
-        .toThrow(errors.NoTimeForQuestVotingError);
+        .toThrow(fromErrors.NoTimeForQuestVotingError);
 
       voteAllForTeam(false);
 
       expect(() => game.voteForQuest('user-1', true))
-        .toThrow(errors.NoTimeForQuestVotingError);
+        .toThrow(fromErrors.NoTimeForQuestVotingError);
     });
 
     test('should not throw when attempting to vote for the quest if the team voting has succeeded', () => {
@@ -442,7 +439,7 @@ describe('post "reveal roles" phase', () => {
 
       expect(() => game.voteForQuest('user-1', true))
         .not
-        .toThrow(errors.NoTimeForQuestVotingError);
+        .toThrow(fromErrors.NoTimeForQuestVotingError);
     });
 
     test('should throw when attempting to vote for the quest, after the quest voting has completed', () => {
@@ -453,7 +450,7 @@ describe('post "reveal roles" phase', () => {
       voteAllForQuest(false);
 
       expect(() => game.voteForQuest('user-1', true))
-        .toThrow(errors.NoTimeForQuestVotingError);
+        .toThrow(fromErrors.NoTimeForQuestVotingError);
     });
 
     test('should return whether quest voting is on', () => {
@@ -474,8 +471,8 @@ describe('post "reveal roles" phase', () => {
       voteAllForTeam(true);
 
       expect(() => game.voteForQuest('user-1', true)).not.toThrow();
-      expect(() => game.voteForQuest('user-4', true)).toThrow(errors.DeniedQuestVotingError);
-      expect(() => game.voteForQuest('nonexistent', true)).toThrow(errors.DeniedQuestVotingError);
+      expect(() => game.voteForQuest('user-4', true)).toThrow(fromErrors.DeniedQuestVotingError);
+      expect(() => game.voteForQuest('nonexistent', true)).toThrow(fromErrors.DeniedQuestVotingError);
     });
 
     test('should only allow a player to vote on a quest once', () => {
@@ -485,7 +482,7 @@ describe('post "reveal roles" phase', () => {
 
       game.voteForQuest('user-1', true);
       expect(() => game.voteForQuest('user-1', true))
-        .toThrow(errors.DeniedQuestVotingError);
+        .toThrow(fromErrors.DeniedQuestVotingError);
     });
 
     test('should persist the vote in the quest history', () => {
@@ -553,17 +550,17 @@ describe('post "reveal roles" phase', () => {
 
       expect(() => game.toggleVictimProposition(
         assassin.getUsername(),
-        victim.getUsername())
-      ).toThrow(errors.NoTimeVictimPropositionError);
+        victim.getUsername()),
+      ).toThrow(fromErrors.NoTimeVictimPropositionError);
 
       passQuestsWithResults([true, true, true]);
 
       expect(() => game.toggleVictimProposition(
         assassin.getUsername(),
-        victim.getUsername())
+        victim.getUsername()),
       )
         .not
-        .toThrow(errors.NoTimeVictimPropositionError);
+        .toThrow(fromErrors.NoTimeVictimPropositionError);
     });
 
     test('should toggle assassination victim', () => {
@@ -576,7 +573,7 @@ describe('post "reveal roles" phase', () => {
 
       game.toggleVictimProposition(
         assassin.getUsername(),
-        victim.getUsername()
+        victim.getUsername(),
       );
 
       expect(playersManager.toggleVictimProposition).toBeCalledTimes(1);
@@ -588,13 +585,13 @@ describe('post "reveal roles" phase', () => {
       const assassin = playersManager.getAssassin();
 
       expect(() => game.assassinate(assassin.getUsername()))
-        .toThrow(errors.NoTimeForAssassinationError);
+        .toThrow(fromErrors.NoTimeForAssassinationError);
 
       passQuestsWithResults([true, true, true]);
 
       expect(() => game.assassinate(assassin.getUsername()))
         .not
-        .toThrow(errors.NoTimeForAssassinationError);
+        .toThrow(fromErrors.NoTimeForAssassinationError);
     });
 
     test('should persist assassination results', () => {

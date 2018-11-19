@@ -4,7 +4,9 @@
   "description": "This is an engine for playing the popular \"The Resistance: Avalon\" game.",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest"
+    "test": "npx jest",
+    "build": "tsc -p .",
+    "watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
   },
   "author": "Alex Lomia",
   "license": "MIT",
@@ -24,6 +26,11 @@
     "resistance avalon"
   ],
   "devDependencies": {
-    "jest": "^23.6.0"
+    "@types/jest": "^23.3.9",
+    "@types/lodash": "^4.14.118",
+    "@types/node": "^10.12.9",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
+    "typescript": "^3.1.6"
   }
 }

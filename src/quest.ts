@@ -1,13 +1,23 @@
-const errors = require('./errors');
+import { Vote } from './vote';
+import * as fromErrors from './errors';
 
-class Quest {
-  constructor(config) {
-    this._votesNeeded          = config.votesNeeded;
-    this._failsNeeded          = config.failsNeeded;
-    this._totalPlayers         = config.totalPlayers;
-    this._teamVoteRounds       = [[], [], [], [], []];
-    this._teamVotingRoundIndex = 0;
-    this._questVotes           = [];
+export class Quest {
+  private _votesNeeded: number;
+  private _failsNeeded: number;
+  private _totalPlayers: number;
+  private _teamVoteRounds: Vote[][]     = [[], [], [], [], []];
+  private _teamVotingRoundIndex: number = 0;
+  private _questVotes: Vote[]           = [];
+
+  // TODO: refactor type
+  constructor(config: {
+    votesNeeded: number,
+    failsNeeded: number,
+    totalPlayers: number
+  }) {
+    this._votesNeeded  = config.votesNeeded;
+    this._failsNeeded  = config.failsNeeded;
+    this._totalPlayers = config.totalPlayers;
   }
 
   getVotesNeeded() {
@@ -45,22 +55,22 @@ class Quest {
 
   _failsCount() {
     return this._questVotes.reduce(
-      (acc, vote) => vote.getValue() ? acc : acc + 1, 0
+      (acc, vote) => vote.getValue() ? acc : acc + 1, 0,
     );
   }
 
-  addVote(vote) {
+  addVote(vote: Vote) {
     this.teamVotingAllowed()
       ? this._addVoteForTeam(vote)
       : this._addVoteForQuest(vote);
   }
 
-  _addVoteForTeam(vote) {
+  _addVoteForTeam(vote: Vote) {
     const currentRound = this._getCurrentTeamVotingRound();
 
     // TODO: voting validation is also handled by the players manager
     if (this._alreadyVotedFor(currentRound, vote)) {
-      throw new errors.AlreadyVotedForTeamError();
+      throw new fromErrors.AlreadyVotedForTeamError();
     }
 
     currentRound.push(vote);
@@ -70,22 +80,22 @@ class Quest {
     }
   }
 
-  _addVoteForQuest(vote) {
+  _addVoteForQuest(vote: Vote) {
     // TODO: voting validation is also handled by the players manager
     if (this._alreadyVotedFor(this._questVotes, vote)) {
-      throw new errors.AlreadyVotedForQuestError();
+      throw new fromErrors.AlreadyVotedForQuestError();
     }
 
     this._questVotes.push(vote);
   }
 
-  _alreadyVotedFor(votes, vote) {
-    return !!votes.find((v) => v.getUsername() === vote.getUsername());
+  _alreadyVotedFor(votes: Vote[], vote: Vote) {
+    return !!votes.find((v: Vote) => v.getUsername() === vote.getUsername());
   }
 
   questVotingAllowed() {
     return this.teamVotingSucceeded()
-           && this._questVotes.length < this._votesNeeded;
+      && this._questVotes.length < this._votesNeeded;
   }
 
   teamVotingSucceeded() {
@@ -96,7 +106,7 @@ class Quest {
     const currentRound = this._getCurrentTeamVotingRound();
 
     const failsCount = currentRound.reduce(
-      (acc, vote) => vote.getValue() ? acc : acc + 1, 0
+      (acc, vote) => vote.getValue() ? acc : acc + 1, 0,
     );
 
     return failsCount < Math.ceil(currentRound.length / 2);
@@ -104,7 +114,7 @@ class Quest {
 
   teamVotingAllowed() {
     return this._getCurrentTeamVotingRound().length < this._totalPlayers
-           || !this._majorityApproved();
+      || !this._majorityApproved();
   }
 
   teamVotingRoundFinished() {
@@ -115,14 +125,14 @@ class Quest {
     if (!previousRound) return false;
 
     return this._everybodyVotedFor(previousRound)
-           && this._getCurrentTeamVotingRound().length === 0;
+      && this._getCurrentTeamVotingRound().length === 0;
   }
 
   _getPreviousTeamVotingRound() {
     return this._teamVoteRounds[this._teamVotingRoundIndex - 1];
   }
 
-  _everybodyVotedFor(round) {
+  _everybodyVotedFor(round: Vote[]) {
     return round.length === this._totalPlayers;
   }
 
@@ -143,5 +153,3 @@ class Quest {
     };
   }
 }
-
-module.exports = Quest;

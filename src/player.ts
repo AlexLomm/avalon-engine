@@ -1,20 +1,21 @@
-const {roleIds} = require('../configs/roles.config');
-const Role      = require('./role');
-const Vote      = require('./vote');
+import { Role } from './role';
+import { Vote } from './vote';
+import { RoleId } from './configs/roles.config';
 
-// TODO: add an id
-class Player {
-  constructor(username) {
+export class Player {
+  private _username: string;
+  private _role: Role;
+  private _vote: Vote;
+
+  constructor(username: string) {
     this._username = username;
-    this._role     = null;
-    this._vote     = null;
   }
 
   getUsername() {
     return this._username;
   }
 
-  setRole(role) {
+  setRole(role: Role) {
     this._role = role;
   }
 
@@ -22,7 +23,7 @@ class Player {
     return this._role;
   }
 
-  vote(value) {
+  vote(value: boolean) {
     this._vote = new Vote(this._username, value);
 
     return this._vote;
@@ -37,17 +38,17 @@ class Player {
   }
 
   isAssassin() {
-    return !!(this._role && this._role.getId() === roleIds.ASSASSIN);
+    return this._role && this._role.getId() === RoleId.Assassin;
   }
 
-  canSee(anotherPlayer) {
+  canSee(anotherPlayer: Player) {
     return this._role.canSee(anotherPlayer.getRole());
   }
 
   // TODO: refactor
-  serialize(roleRevealed, voteRevealed) {
+  serialize(roleRevealed: boolean, voteRevealed: boolean) {
     const serializedRole = !(this._role && roleRevealed)
-      ? new Role(roleIds.UNKNOWN).serialize()
+      ? new Role(RoleId.Unknown).serialize()
       : this._role.serialize();
 
     let serializedVote = null;
@@ -64,5 +65,3 @@ class Player {
     };
   }
 }
-
-module.exports = Player;

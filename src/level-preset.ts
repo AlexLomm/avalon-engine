@@ -1,11 +1,15 @@
-const errors       = require('./errors');
-const levelPresets = require('../configs/level-presets.config');
+import { levelPresets, QuestConfig } from './configs/level-presets.config';
+import * as fromErrors from './errors';
 
-class LevelPreset {
-  constructor(playerCount) {
+export class LevelPreset {
+  private _goodCount: number;
+  private _evilCount: number;
+  private _quests: QuestConfig[];
+
+  constructor(playerCount: number) {
     const levelPreset = levelPresets[playerCount];
     if (!levelPreset) {
-      throw new errors.PlayersAmountIncorrectError();
+      throw new fromErrors.PlayersAmountIncorrectError();
     }
 
     this._goodCount = levelPresets[playerCount].goodCount;
@@ -37,9 +41,7 @@ class LevelPreset {
   serialize() {
     return {
       goodCount: this._goodCount,
-      evilCount: this._evilCount
+      evilCount: this._evilCount,
     };
   }
 }
-
-module.exports = LevelPreset;

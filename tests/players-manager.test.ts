@@ -1,27 +1,27 @@
-const _              = require('lodash');
-const errors         = require('../src/errors');
-const LevelPreset    = require('../src/level-preset');
-const PlayersManager = require('../src/players-manager');
-const Player         = require('../src/player');
+import * as _ from 'lodash';
+import * as fromErrors from '../src/errors';
+import { PlayersManager } from '../src/players-manager';
+import { Player } from '../src/player';
+import { LevelPreset } from '../src/level-preset';
 
-let manager;
+let manager: PlayersManager;
 beforeEach(() => {
   manager = new PlayersManager();
 });
 
 // TODO: extract
-const addPlayersAndAssignRoles = (number, _manager = manager) => {
+const addPlayersAndAssignRoles = (number: number, _manager: PlayersManager = manager) => {
   addPlayersToManager(number, _manager);
   assignRolesToManager(_manager);
 };
 
 // TODO: extract
-const addPlayersToManager = (number, _manager = manager) => {
-  _.times(number, (i) => _manager.add(new Player(`user-${i}`)));
+const addPlayersToManager = (number: number, _manager: PlayersManager = manager) => {
+  _.times(number, (i: number) => _manager.add(new Player(`user-${i}`)));
 };
 
 // TODO: extract
-const assignRolesToManager = (_manager = manager) => {
+const assignRolesToManager = (_manager: PlayersManager = manager) => {
   _manager.assignRoles(new LevelPreset(_manager.getAll().length));
 };
 
@@ -29,7 +29,7 @@ describe('adding players', () => {
   test('should add a player', () => {
     expect(manager.getAll().length).toBeFalsy();
 
-    manager.add(new Player());
+    manager.add(new Player('user-1'));
 
     expect(manager.getAll().length).toBeTruthy();
   });
@@ -54,14 +54,14 @@ describe('adding players', () => {
 
     expect(() => {
       manager.add(new Player('some-username'));
-    }).toThrow(errors.AlreadyExistsPlayerError);
+    }).toThrow(fromErrors.AlreadyExistsPlayerError);
   });
 
   test('should prevent adding more than 10 players', () => {
     addPlayersToManager(10);
 
     expect(() => manager.add(new Player('user-11')))
-      .toThrow(errors.PlayersMaximumReachedError);
+      .toThrow(fromErrors.PlayersMaximumReachedError);
   });
 
   test('should make the first player a "creator"', () => {
@@ -221,12 +221,12 @@ describe('voting', () => {
 
     manager.vote('nonexistent', false);
 
-    expect(manager.getAll().find(p => p.getVote())).toBeFalsy();
+    expect(manager.getAll().find(p => !!p.getVote())).toBeFalsy();
 
     manager.vote('user-3', false);
 
     expect(
-      manager.getAll().find(p => p.getVote()).getUsername()
+      manager.getAll().find(p => !!p.getVote()).getUsername(),
     ).toStrictEqual('user-3');
   });
 
@@ -264,9 +264,9 @@ describe('assassination', () => {
     expect(() => {
       manager.toggleVictimProposition(
         nonAssassins[0].getUsername(),
-        nonAssassins[1].getUsername()
+        nonAssassins[1].getUsername(),
       );
-    }).toThrow(errors.DeniedVictimPropositionError);
+    }).toThrow(fromErrors.DeniedVictimPropositionError);
   });
 
   test('should throw if an assassin tries to propose himself', () => {
@@ -275,9 +275,9 @@ describe('assassination', () => {
     expect(() => {
       manager.toggleVictimProposition(
         manager.getAssassin().getUsername(),
-        manager.getAssassin().getUsername()
+        manager.getAssassin().getUsername(),
       );
-    }).toThrow(errors.DeniedSelfSacrificeError);
+    }).toThrow(fromErrors.DeniedSelfSacrificeError);
   });
 
   test('should toggle victim proposition', () => {
@@ -288,14 +288,14 @@ describe('assassination', () => {
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
       manager.getAssassin().getUsername(),
-      nonAssassin.getUsername()
+      nonAssassin.getUsername(),
     );
 
     expect(manager.getVictim()).toBe(nonAssassin);
 
     manager.toggleVictimProposition(
       manager.getAssassin().getUsername(),
-      nonAssassin.getUsername()
+      nonAssassin.getUsername(),
     );
 
     expect(manager.getVictim()).toBeFalsy();
@@ -305,7 +305,7 @@ describe('assassination', () => {
     addPlayersAndAssignRoles(7);
 
     expect(() => manager.assassinate(manager.getAssassin().getUsername()))
-      .toThrow(errors.RequiredVictimError);
+      .toThrow(fromErrors.RequiredVictimError);
   });
 
   test('should throw if a non-assassin tries to assassinate', () => {
@@ -316,11 +316,11 @@ describe('assassination', () => {
 
     manager.toggleVictimProposition(
       assassin.getUsername(),
-      nonAssassin.getUsername()
+      nonAssassin.getUsername(),
     );
 
     expect(() => manager.assassinate(nonAssassin.getUsername()))
-      .toThrow(errors.DeniedAssassinationError);
+      .toThrow(fromErrors.DeniedAssassinationError);
   });
 
   test('should assassinate a player', () => {
@@ -333,7 +333,7 @@ describe('assassination', () => {
 
     expect(manager.isAssassinated(victim)).toBeFalsy();
 
-    manager.assassinate(assassin.getUsername(), victim.getUsername());
+    manager.assassinate(assassin.getUsername());
 
     expect(manager.isAssassinated(victim)).toBeTruthy();
   });
@@ -341,8 +341,8 @@ describe('assassination', () => {
 
 describe('serialization', () => {
   test('should throw if no such player exists', () => {
-    expect(() => manager.serializeFor('nonexistent'))
-      .toThrow(errors.PlayerMissingError);
+    expect(() => manager.serializeFor('nonexistent', false))
+      .toThrow(fromErrors.PlayerMissingError);
   });
 
   test('should return necessary values', () => {
@@ -353,7 +353,7 @@ describe('serialization', () => {
       'leaderUsername', 'isSubmitted', 'victimUsername', 'isAssassinated',
     ].sort();
 
-    const actual = Object.keys(manager.serializeFor('user-1')).sort();
+    const actual = Object.keys(manager.serializeFor('user-1', false)).sort();
 
     expect(expected).toEqual(actual);
   });
@@ -375,7 +375,7 @@ describe('serialization', () => {
     manager.togglePlayerProposition('user-1');
     manager.togglePlayerProposition('user-2');
 
-    const serialized = manager.serializeFor('user-3');
+    const serialized = manager.serializeFor('user-3', false);
 
     expect(serialized.proposedPlayerUsernames)
       .toEqual(['user-1', 'user-2']);
@@ -384,7 +384,7 @@ describe('serialization', () => {
   test('should contain a game creator username', () => {
     addPlayersAndAssignRoles(5);
 
-    const gameCreatorUsername = manager.serializeFor('user-1').gameCreatorUsername;
+    const gameCreatorUsername = manager.serializeFor('user-1', false).gameCreatorUsername;
     const usernames           = manager.getAll().map((p) => p.getUsername());
 
     expect(usernames.includes(gameCreatorUsername)).toBeTruthy();
@@ -394,7 +394,7 @@ describe('serialization', () => {
     addPlayersAndAssignRoles(5);
 
     const expected = manager.getLeader().getUsername();
-    const actual   = manager.serializeFor('user-1').leaderUsername;
+    const actual   = manager.serializeFor('user-1', false).leaderUsername;
 
     expect(expected).toEqual(actual);
   });
@@ -404,7 +404,7 @@ describe('serialization', () => {
 
     manager.setIsSubmitted(true);
 
-    expect(manager.serializeFor('user-1').isSubmitted).toStrictEqual(true);
+    expect(manager.serializeFor('user-1', false).isSubmitted).toStrictEqual(true);
   });
 
   test('should contain the victim\'s username', () => {
@@ -413,10 +413,10 @@ describe('serialization', () => {
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
       manager.getAssassin().getUsername(),
-      nonAssassin.getUsername()
+      nonAssassin.getUsername(),
     );
 
-    const victimUsername = manager.serializeFor('user-1').victimUsername;
+    const victimUsername = manager.serializeFor('user-1', false).victimUsername;
 
     expect(nonAssassin.getUsername()).toStrictEqual(victimUsername);
   });
@@ -427,12 +427,12 @@ describe('serialization', () => {
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
       manager.getAssassin().getUsername(),
-      nonAssassin.getUsername()
+      nonAssassin.getUsername(),
     );
 
     manager.assassinate(manager.getAssassin().getUsername());
 
-    const isAssassinated = manager.serializeFor('user-1').isAssassinated;
+    const isAssassinated = manager.serializeFor('user-1', false).isAssassinated;
 
     expect(isAssassinated).toStrictEqual(true);
   });

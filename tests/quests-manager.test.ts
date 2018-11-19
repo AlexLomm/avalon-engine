@@ -1,31 +1,31 @@
-const _             = require('lodash');
-const errors        = require('../src/errors');
-const QuestsManager = require('../src/quests-manager');
-const Quest         = require('../src/quest');
-const LevelPreset   = require('../src/level-preset');
-const Vote          = require('../src/vote');
+import * as _ from 'lodash';
+import * as fromErrors from '../src/errors';
+import { Vote } from '../src/vote';
+import { QuestsManager } from '../src/quests-manager';
+import { Quest } from '../src/quest';
+import { LevelPreset } from '../src/level-preset';
 
-const resolveQuestsTimes = function (manager, vote, times) {
+const resolveQuestsTimes = function (manager: QuestsManager, voteValue: boolean, times: number) {
   _.times(times, () => {
     // approve the team
-    _.times(manager.getLevelPreset().getPlayerCount(), (i) => {
+    _.times(manager.getLevelPreset().getPlayerCount(), (i: number) => {
       manager.addVote(new Vote(`user-${i}`, true));
     });
 
     // fail or succeed a quest (depends on `vote`)
     _.times(manager.getCurrentQuest().getVotesNeeded(), (i) => {
-      manager.addVote(new Vote(`user-${i}`, vote));
+      manager.addVote(new Vote(`user-${i}`, voteValue));
     });
 
     manager.nextQuest();
   });
 };
 
-const failQuestsTimes = function (manager, times) {
+const failQuestsTimes = function (manager: QuestsManager, times: number) {
   resolveQuestsTimes(manager, false, times);
 };
 
-const succeedQuestsTimes = function (manager, times) {
+const succeedQuestsTimes = function (manager: QuestsManager, times: number) {
   resolveQuestsTimes(manager, true, times);
 };
 
@@ -54,8 +54,8 @@ describe('initialization', () => {
 });
 
 describe('current quest', () => {
-  let manager;
-  let preset;
+  let manager: QuestsManager;
+  let preset: LevelPreset;
   beforeEach(() => {
     manager = new QuestsManager();
     preset  = new LevelPreset(5);
@@ -79,9 +79,9 @@ describe('current quest', () => {
 });
 
 describe('team voting', () => {
-  let manager;
-  let preset;
-  let currentQuest;
+  let manager: QuestsManager;
+  let preset: LevelPreset;
+  let currentQuest: Quest;
   beforeEach(() => {
     manager = new QuestsManager();
     preset  = new LevelPreset(5);
@@ -94,7 +94,7 @@ describe('team voting', () => {
   test('should be able to add a vote', () => {
     jest.spyOn(currentQuest, 'addVote');
 
-    manager.addVote(new Vote(1, true));
+    manager.addVote(new Vote('user-1', true));
 
     expect(currentQuest.addVote).toBeCalledTimes(1);
   });
@@ -102,7 +102,7 @@ describe('team voting', () => {
   test('should return whether the current team voting was successful or not', () => {
     jest.spyOn(currentQuest, 'teamVotingSucceeded');
 
-    _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(i, true)));
+    _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(`user-${i}`, true)));
 
     expect(currentQuest.teamVotingSucceeded())
       .toStrictEqual(manager.teamVotingSucceeded());
@@ -113,7 +113,7 @@ describe('team voting', () => {
   test('should return whether the team voting is over or not', () => {
     jest.spyOn(currentQuest, 'teamVotingRoundFinished');
 
-    _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(i, false)));
+    _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(`user-${i}`, false)));
 
     expect(currentQuest.teamVotingRoundFinished())
       .toStrictEqual(manager.teamVotingRoundFinished());
@@ -132,8 +132,8 @@ describe('team voting', () => {
 });
 
 describe('assassination', () => {
-  let manager;
-  let preset;
+  let manager: QuestsManager;
+  let preset: LevelPreset;
   beforeEach(() => {
     manager = new QuestsManager();
     preset  = new LevelPreset(5);
@@ -165,17 +165,17 @@ describe('assassination', () => {
 
   test('should not allow assassination attempt to resolve too early', () => {
     expect(() => manager.setAssassinationStatus(false))
-      .toThrow(errors.NoTimeForAssassinationError);
+      .toThrow(fromErrors.NoTimeForAssassinationError);
 
     expect(() => manager.setAssassinationStatus(true))
-      .toThrow(errors.NoTimeForAssassinationError);
+      .toThrow(fromErrors.NoTimeForAssassinationError);
   });
 });
 
 describe('winner', () => {
-  let manager;
-  let preset;
-  let currentQuest;
+  let manager: QuestsManager;
+  let preset: LevelPreset;
+  let currentQuest: Quest;
   beforeEach(() => {
     manager = new QuestsManager();
     preset  = new LevelPreset(5);
@@ -222,7 +222,8 @@ describe('serialization', () => {
   test('should return an empty state', () => {
     const manager = new QuestsManager();
 
-    const expected = {
+    // TODO: add type
+    const expected: any = {
       quests: [],
       teamVotingRoundIndex: 0,
       assassinationStatus: -1,
@@ -248,7 +249,7 @@ describe('serialization', () => {
     manager.init(preset);
 
     const currentQuest = manager.getCurrentQuest();
-    _.times(preset.getPlayerCount(), (i) => {
+    _.times(preset.getPlayerCount(), (i: number) => {
       currentQuest.addVote(new Vote(`user-${i}`, false));
     });
 

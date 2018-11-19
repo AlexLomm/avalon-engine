@@ -1,71 +1,74 @@
-const _             = require('lodash');
-const errors        = require('./errors');
-const RolesAssigner = require('./roles-assigner');
+import * as _ from 'lodash';
+import * as fromErrors from './errors';
+import { Player } from './player';
+import { LevelPreset } from './level-preset';
+import { RolesAssigner } from './roles-assigner';
+import { RoleId } from './configs/roles.config';
 
-class PlayersManager {
+export class PlayersManager {
+  private _players: Player[]         = [];
+  private _gameCreator: Player;
+  private _isSubmitted: boolean      = false;
+  private _proposedPlayers: Player[] = [];
+  private _leaderIndex: number       = -1;
+  private _victim: Player;
+  private _isAssassinated: boolean   = false;
+
   constructor() {
-    this._players         = [];
-    this._gameCreator     = null;
-    this._isSubmitted     = false;
-    this._proposedPlayers = [];
-    this._leaderIndex     = -1;
-    // TODO: replace with player proposition
-    this._victim          = null;
-    this._isAssassinated  = false;
   }
 
-  assassinate(assassinsUsername) {
+  assassinate(assassinsUsername: string) {
     const assassin = this.getAssassin();
     if (!assassin || assassin.getUsername() !== assassinsUsername) {
-      throw new errors.DeniedAssassinationError();
+      throw new fromErrors.DeniedAssassinationError();
     }
 
     if (!this._victim) {
-      throw new errors.RequiredVictimError();
+      throw new fromErrors.RequiredVictimError();
     }
 
     this._isAssassinated = true;
   }
 
   // TODO: remove
-  getVictim() {
+  getVictim(): Player {
     return this._victim;
   }
 
   // TODO: make private
-  isAssassinated(player) {
+  isAssassinated(player: Player): boolean {
     return this._victim === player && this._isAssassinated;
   }
 
   // TODO: make private
-  getAssassin() {
+  getAssassin(): Player {
     return this._players.find((p) => p.isAssassin());
   }
 
   // TODO: remove
-  getAll() {
+  getAll(): Player[] {
     return this._players;
   }
 
   // TODO: remove
-  getProposedPlayers() {
+  getProposedPlayers(): Player[] {
     return this._proposedPlayers;
   }
 
   // TODO: remove
-  getGameCreator() {
+  getGameCreator(): Player {
     return this._gameCreator;
   }
 
-  add(player) {
+  add(player: Player) {
     if (!player) return;
 
     if (this._findPlayer(player.getUsername())) {
-      throw new errors.AlreadyExistsPlayerError();
+      throw new fromErrors.AlreadyExistsPlayerError();
     }
 
     if (this._players.length === 10) {
-      throw new errors.PlayersMaximumReachedError();
+      throw new fromErrors.PlayersMaximumReachedError();
     }
 
     if (!this._gameCreator) {
@@ -75,20 +78,20 @@ class PlayersManager {
     this._players.push(player);
   }
 
-  _findPlayer(username) {
+  _findPlayer(username: string): Player {
     return this._players.find((p) => p.getUsername() === username);
   }
 
   toggleVictimProposition(
-    assassinsUsername,
-    victimUsername
+    assassinsUsername: string,
+    victimUsername: string,
   ) {
     if (this.getAssassin().getUsername() !== assassinsUsername) {
-      throw new errors.DeniedVictimPropositionError();
+      throw new fromErrors.DeniedVictimPropositionError();
     }
 
     if (this.getAssassin().getUsername() === victimUsername) {
-      throw new errors.DeniedSelfSacrificeError();
+      throw new fromErrors.DeniedSelfSacrificeError();
     }
 
     const player = this._findPlayer(victimUsername);
@@ -98,7 +101,7 @@ class PlayersManager {
       : player;
   }
 
-  togglePlayerProposition(username) {
+  togglePlayerProposition(username: string) {
     const player = this._findPlayer(username);
 
     if (!player) return;
@@ -110,7 +113,7 @@ class PlayersManager {
       : this._proposedPlayers.push(player);
   }
 
-  setIsSubmitted(isSubmitted) {
+  setIsSubmitted(isSubmitted: boolean) {
     this._isSubmitted = isSubmitted;
   }
 
@@ -118,11 +121,11 @@ class PlayersManager {
     return this._isSubmitted;
   }
 
-  assignRoles(levelPreset, config = {}) {
+  assignRoles(levelPreset: LevelPreset, roleIds: RoleId[]) {
     this._players = new RolesAssigner(
       this._players,
-      levelPreset
-    ).assignRoles(config);
+      levelPreset,
+    ).assignRoles(roleIds);
 
     this.nextLeader();
   }
@@ -145,29 +148,29 @@ class PlayersManager {
     this._leaderIndex = (this._leaderIndex + 1) % this._players.length;
   }
 
-  questVotingAllowedFor(username) {
+  questVotingAllowedFor(username: string) {
     const player = this._findPlayer(username);
 
     return player && this._isProposed(player) && !player.getVote();
   }
 
-  _isProposed(player) {
+  _isProposed(player: Player) {
     return !!this._proposedPlayers.find((p) => p === player);
   }
 
-  teamVotingAllowedFor(username) {
+  teamVotingAllowedFor(username: string) {
     const player = this._findPlayer(username);
 
     return player && !player.getVote();
   }
 
-  playerPropositionAllowedFor(username) {
+  playerPropositionAllowedFor(username: string) {
     const leader = this.getLeader();
 
     return leader && leader.getUsername() === username;
   }
 
-  vote(username, voteValue) {
+  vote(username: string, voteValue: boolean) {
     const player = this._findPlayer(username);
 
     if (!player) return;
@@ -183,10 +186,10 @@ class PlayersManager {
     this._proposedPlayers = [];
   }
 
-  serializeFor(forPlayerUsername, votesRevealed) {
+  serializeFor(forPlayerUsername: string, votesRevealed: boolean) {
     const forPlayer = this._findPlayer(forPlayerUsername);
     if (!forPlayer) {
-      throw new errors.PlayerMissingError();
+      throw new fromErrors.PlayerMissingError();
     }
 
     return {
@@ -200,7 +203,7 @@ class PlayersManager {
     };
   }
 
-  _serializePlayers(forPlayer, votesRevealed) {
+  _serializePlayers(forPlayer: Player, votesRevealed: boolean) {
     return this._players.map((p) => {
       const roleRevealed = forPlayer.canSee(p);
 
@@ -208,9 +211,7 @@ class PlayersManager {
     });
   }
 
-  static _getUsernameOrNull(player) {
+  static _getUsernameOrNull(player: Player) {
     return player ? player.getUsername() : null;
   }
 }
-
-module.exports = PlayersManager;

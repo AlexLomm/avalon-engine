@@ -1,9 +1,9 @@
-const {roleIds} = require('../configs/roles.config');
-const Player    = require('../src/player');
-const Role      = require('../src/role');
-const Vote      = require('../src/vote');
+import { Player } from '../src/player';
+import { RoleId } from '../src/configs/roles.config';
+import { Role } from '../src/role';
+import { Vote } from '../src/vote';
 
-let player;
+let player: Player;
 beforeEach(() => {
   player = new Player('user-1');
 });
@@ -15,7 +15,7 @@ test('should return a username', () => {
 test('should return a role', () => {
   expect(player.getRole()).toBeFalsy();
 
-  const role = new Role(roleIds.MERLIN);
+  const role = new Role(RoleId.Merlin);
   player.setRole(role);
 
   expect(player.getRole()).toEqual(role);
@@ -23,10 +23,10 @@ test('should return a role', () => {
 
 test('should say if can see another player', () => {
   const player1 = new Player('user-1');
-  player1.setRole(new Role(roleIds.MERLIN));
+  player1.setRole(new Role(RoleId.Merlin));
 
   const player2 = new Player('user-2');
-  player2.setRole(new Role(roleIds.MINION_1));
+  player2.setRole(new Role(RoleId.Minion_1));
 
   expect(player1.canSee(player2)).toBeTruthy();
   expect(player2.canSee(player1)).toBeFalsy();
@@ -64,23 +64,23 @@ describe('serialization', () => {
   });
 
   test('should contain a hidden role when no role is assigned', () => {
-    const expected = new Role(roleIds.UNKNOWN).serialize();
+    const expected = new Role(RoleId.Unknown).serialize();
     const actual   = player.serialize(true, false).role;
 
     expect(expected).toEqual(actual);
   });
 
   test('should contain a hidden role, despite it being assigned', () => {
-    player.setRole(new Role(roleIds.MERLIN));
+    player.setRole(new Role(RoleId.Merlin));
 
-    const expected = new Role(roleIds.UNKNOWN).serialize();
+    const expected = new Role(RoleId.Unknown).serialize();
     const actual   = player.serialize(false, false).role;
 
     expect(expected).toEqual(actual);
   });
 
   test('should contain a revealed role when role is assigned', () => {
-    const role = new Role(roleIds.MORDRED);
+    const role = new Role(RoleId.Mordred);
     player.setRole(role);
 
     const expected = role.serialize();

@@ -1,20 +1,23 @@
-const errors = require('../src/errors');
-const Quest  = require('./quest');
+import { LevelPreset } from './level-preset';
+import { Quest } from './quest';
+import { Vote } from './vote';
+import * as fromErrors from './errors';
 
-class QuestsManager {
+export class QuestsManager {
+  private _levelPreset: LevelPreset = null;
+  private _quests: Quest[]          = [];
+  private _currentQuestIndex        = 0;
+  private _assassinationStatus      = -1;
+
   constructor() {
-    this._levelPreset         = null;
-    this._quests              = [];
-    this._currentQuestIndex   = 0;
-    this._assassinationStatus = -1;
   }
 
-  setAssassinationStatus(isSuccessful) {
+  setAssassinationStatus(isSuccessful: boolean) {
     if (
       this._getFailedQuestsCount() < 3
       && this._getSucceededQuestsCount() < 3
     ) {
-      throw new errors.NoTimeForAssassinationError();
+      throw new fromErrors.NoTimeForAssassinationError();
     }
 
     this._assassinationStatus = isSuccessful ? 1 : 0;
@@ -28,19 +31,20 @@ class QuestsManager {
     return this._quests;
   };
 
-  init(levelPreset) {
+  init(levelPreset: LevelPreset) {
     this._levelPreset = levelPreset;
 
     this._quests = this._levelPreset.getQuestsConfig().map(
+      // TODO: add types
       (config) => new Quest({
         votesNeeded: config.votesNeeded,
         failsNeeded: config.failsNeeded,
-        totalPlayers: this._levelPreset.getPlayerCount()
-      })
+        totalPlayers: this._levelPreset.getPlayerCount(),
+      }),
     );
   };
 
-  addVote(vote) {
+  addVote(vote: Vote) {
     return this.getCurrentQuest().addVote(vote);
   };
 
@@ -76,7 +80,7 @@ class QuestsManager {
 
   assassinationAllowed() {
     return this._getSucceededQuestsCount() >= 3
-           && this._assassinationStatus === -1;
+      && this._assassinationStatus === -1;
   };
 
   _getFailedQuestsCount() {
@@ -97,5 +101,3 @@ class QuestsManager {
     };
   }
 }
-
-module.exports = QuestsManager;

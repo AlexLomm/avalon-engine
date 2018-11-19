@@ -1,5 +1,8 @@
-class Vote {
-  constructor(username, value) {
+export class Vote {
+  private _username: string;
+  private _value: boolean;
+
+  constructor(username: string, value: boolean) {
     this._username = username;
     this._value    = value;
   }
@@ -19,5 +22,3 @@ class Vote {
     };
   }
 }
-
-module.exports = Vote;

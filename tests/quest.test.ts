@@ -1,7 +1,7 @@
-const _      = require('lodash');
-const errors = require('../src/errors');
-const Quest  = require('../src/quest');
-const Vote   = require('../src/vote');
+import * as _ from 'lodash';
+import * as fromErrors from '../src/errors';
+import { Quest } from '../src/quest';
+import { Vote } from '../src/vote';
 
 test('should return number of players needed', () => {
   const quest = new Quest({votesNeeded: 3, failsNeeded: 1, totalPlayers: 2});
@@ -104,7 +104,7 @@ describe('team voting', () => {
     quest.addVote(new Vote('user-1', true));
 
     expect(() => quest.addVote(new Vote('user-1', false)))
-      .toThrow(errors.AlreadyVotedForTeamError);
+      .toThrow(fromErrors.AlreadyVotedForTeamError);
   });
 
   test('should allow a player to vote again in the next team voting round', () => {
@@ -114,7 +114,7 @@ describe('team voting', () => {
     quest.addVote(new Vote('user-2', false));
 
     expect(() => quest.addVote(new Vote('user-1', false)))
-      .not.toThrow(errors.AlreadyVotedForQuestError);
+      .not.toThrow(fromErrors.AlreadyVotedForQuestError);
   });
 
   test('should increment the tracker if team voting has failed', () => {
@@ -184,7 +184,7 @@ describe('quest voting', () => {
 
     quest.addVote(new Vote('user-1', true));
     expect(() => quest.addVote(new Vote('user-1', false)))
-      .toThrow(errors.AlreadyVotedForQuestError);
+      .toThrow(fromErrors.AlreadyVotedForQuestError);
   });
 
   test('should return whether everybody has voted for the quest or not', () => {
@@ -209,11 +209,12 @@ describe('serialization', () => {
   test('should serialize an empty quest', () => {
     const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
 
-    const expected = {
+    // TODO: add type
+    const expected: any = {
       votesNeeded: 2,
       failsNeeded: 1,
       teamVotes: [],
-      questVotes: []
+      questVotes: [],
     };
 
     const actual = quest.serialize();

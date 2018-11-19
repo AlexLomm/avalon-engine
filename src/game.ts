@@ -1,34 +1,39 @@
-const crypto         = require('crypto');
-const {roleIds}      = require('../configs/roles.config');
-const errors         = require('./errors');
-const LevelPreset    = require('./level-preset');
-const PlayersManager = require('./players-manager');
-const QuestsManager  = require('./quests-manager');
+import * as crypto from 'crypto';
+import { LevelPreset } from './level-preset';
+import { PlayersManager } from './players-manager';
+import { QuestsManager } from './quests-manager';
+import { Player } from './player';
+import * as fromErrors from './errors';
+import { RoleId } from './configs/roles.config';
 
-class Game {
+export class Game {
+  private _id: string                = crypto.randomBytes(20).toString('hex');
+  private _createdAt: Date           = new Date();
+  private _startedAt: Date;
+  private _finishedAt: Date;
+  private _rolesLastRevealedAt: Date;
+  private _rolesAreRevealed: boolean = false;
+  private _revealRolesPromise: Promise<void>;
+  private _levelPreset: LevelPreset  = LevelPreset.null();
+  private _playersManager: PlayersManager;
+  private _questsManager: QuestsManager;
+
   constructor(
     playersManager = new PlayersManager(),
-    questsManager  = new QuestsManager()
+    questsManager  = new QuestsManager(),
   ) {
-    this._id                  = crypto.randomBytes(20).toString('hex');
-    this._createdAt           = new Date();
-    this._startedAt           = null;
-    this._finishedAt          = null;
-    this._rolesLastRevealedAt = null;
-    this._rolesAreRevealed    = false;
-    this._revealRolesPromise  = null;
-    this._levelPreset         = LevelPreset.null();
-    this._playersManager      = playersManager;
-    this._questsManager       = questsManager;
+    this._id             = crypto.randomBytes(20).toString('hex');
+    this._playersManager = playersManager;
+    this._questsManager  = questsManager;
   }
 
   getId() {
     return this._id;
   }
 
-  addPlayer(player) {
+  addPlayer(player: Player) {
     if (this._startedAt) {
-      throw new errors.AlreadyStartedGameError();
+      throw new fromErrors.AlreadyStartedGameError();
     }
 
     this._playersManager.add(player);
@@ -46,13 +51,13 @@ class Game {
     return this._finishedAt;
   }
 
-  start(config = {}) {
+  start(roleIds: RoleId[] = []) {
     const playerCount = this._playersManager.getAll().length;
 
     this._levelPreset = new LevelPreset(playerCount);
     this._startedAt   = new Date();
 
-    this._playersManager.assignRoles(this._levelPreset, config);
+    this._playersManager.assignRoles(this._levelPreset, roleIds);
     this._questsManager.init(this._levelPreset);
   }
 
@@ -68,7 +73,7 @@ class Game {
     return this._rolesAreRevealed;
   }
 
-  revealRoles(seconds) {
+  revealRoles(seconds: number) {
     if (this._revealRolesPromise) return this._revealRolesPromise;
 
     this._rolesAreRevealed = true;
@@ -87,16 +92,16 @@ class Game {
     return this._revealRolesPromise;
   }
 
-  submitTeam(username) {
+  submitTeam(username: string) {
     if (!this._playersManager.playerPropositionAllowedFor(username)) {
-      throw new errors.DeniedTeamSubmissionError();
+      throw new fromErrors.DeniedTeamSubmissionError();
     }
 
     const proposedPlayersCount = this._playersManager.getProposedPlayers().length;
     const votesNeededCount     = this._questsManager.getCurrentQuest().getVotesNeeded();
 
     if (proposedPlayersCount !== votesNeededCount) {
-      throw new errors.RequiredCorrectTeammatesAmountError();
+      throw new fromErrors.RequiredCorrectTeammatesAmountError();
     }
 
     this._playersManager.setIsSubmitted(true);
@@ -104,17 +109,17 @@ class Game {
     if (this._questsManager.isLastRoundOfTeamVoting()) {
       this._playersManager
         .getAll()
-        .forEach((player) => this.voteForTeam(player.getUsername(), true));
+        .forEach((player: Player) => this.voteForTeam(player.getUsername(), true));
     }
   }
 
-  voteForQuest(username, voteValue) {
+  voteForQuest(username: string, voteValue: boolean) {
     if (!this.questVotingIsOn()) {
-      throw new errors.NoTimeForQuestVotingError();
+      throw new fromErrors.NoTimeForQuestVotingError();
     }
 
     if (!this._playersManager.questVotingAllowedFor(username)) {
-      throw new errors.DeniedQuestVotingError();
+      throw new fromErrors.DeniedQuestVotingError();
     }
 
     this._vote(username, voteValue);
@@ -126,13 +131,13 @@ class Game {
     }
   }
 
-  voteForTeam(username, voteValue) {
+  voteForTeam(username: string, voteValue: boolean) {
     if (!this.teamVotingIsOn()) {
-      throw new errors.NoTimeForTeamVotingError();
+      throw new fromErrors.NoTimeForTeamVotingError();
     }
 
     if (!this._playersManager.teamVotingAllowedFor(username)) {
-      throw new errors.DeniedTeamVotingError();
+      throw new fromErrors.DeniedTeamVotingError();
     }
 
     this._vote(username, voteValue);
@@ -156,41 +161,41 @@ class Game {
     this._playersManager.setIsSubmitted(false);
   }
 
-  _vote(username, voteValue) {
+  _vote(username: string, voteValue: boolean) {
     const vote = this._playersManager.vote(username, voteValue);
 
     this._questsManager.addVote(vote);
   }
 
-  toggleTeammateProposition(leaderUsername, username) {
+  toggleTeammateProposition(leaderUsername: string, username: string) {
     if (!this.teamPropositionIsOn()) {
-      throw new errors.NoTimeForTeammatePropositionError();
+      throw new fromErrors.NoTimeForTeammatePropositionError();
     }
 
     if (!this._playersManager.playerPropositionAllowedFor(leaderUsername)) {
-      throw new errors.DeniedTeammatePropositionError();
+      throw new fromErrors.DeniedTeammatePropositionError();
     }
 
     this._playersManager.togglePlayerProposition(username);
   }
 
-  toggleVictimProposition(assassinsUsername, victimsUsername) {
+  toggleVictimProposition(assassinsUsername: string, victimsUsername: string) {
     if (!this.assassinationIsOn()) {
-      throw new errors.NoTimeVictimPropositionError();
+      throw new fromErrors.NoTimeVictimPropositionError();
     }
 
     this._playersManager.toggleVictimProposition(
       assassinsUsername,
-      victimsUsername
+      victimsUsername,
     );
   }
 
-  assassinate(assassinsUsername, victimsUsername) {
+  assassinate(assassinsUsername: string) {
     if (!this.assassinationIsOn()) {
-      throw new errors.NoTimeForAssassinationError();
+      throw new fromErrors.NoTimeForAssassinationError();
     }
 
-    this._playersManager.assassinate(assassinsUsername, victimsUsername);
+    this._playersManager.assassinate(assassinsUsername);
     this._questsManager.setAssassinationStatus(this._assassinationSucceeded());
   }
 
@@ -199,30 +204,30 @@ class Game {
   }
 
   _assassinationSucceeded() {
-    return this._playersManager.getVictim().getRole().getId() === roleIds.MERLIN;
+    return this._playersManager.getVictim().getRole().getId() === RoleId.Merlin;
   }
 
   questVotingIsOn() {
     return this._gameStarted()
-           && this._playersManager.getIsSubmitted()
-           && this._questsManager.getCurrentQuest().questVotingAllowed();
+      && this._playersManager.getIsSubmitted()
+      && this._questsManager.getCurrentQuest().questVotingAllowed();
   }
 
   teamVotingIsOn() {
     return this._gameStarted()
-           && this._playersManager.getIsSubmitted()
-           && this._questsManager.getCurrentQuest().teamVotingAllowed();
+      && this._playersManager.getIsSubmitted()
+      && this._questsManager.getCurrentQuest().teamVotingAllowed();
   }
 
   teamPropositionIsOn() {
     return this._gameStarted()
-           && !this._playersManager.getIsSubmitted();
+      && !this._playersManager.getIsSubmitted();
   }
 
   _gameStarted() {
     return this._startedAt
-           && this._rolesLastRevealedAt
-           && !this._rolesAreRevealed;
+      && this._rolesLastRevealedAt
+      && !this._rolesAreRevealed;
   }
 
   // serialize(forUsername) {
@@ -238,5 +243,3 @@ class Game {
   //   };
   // }
 }
-
-module.exports = Game;

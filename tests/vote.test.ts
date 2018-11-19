@@ -1,4 +1,4 @@
-const Vote = require('../src/vote');
+import { Vote } from '../src/vote';
 
 test('should get vote', () => {
   const vote = new Vote('user-1', true);
@@ -15,8 +15,10 @@ test('should get username', () => {
 test('should serialize', () => {
   const vote = new Vote('some-user', false);
 
-  const actual   = vote.serialize();
-  const expected = {
+  const actual = vote.serialize();
+
+  // TODO: add type
+  const expected: any = {
     username: 'some-user',
     value: false,
   };

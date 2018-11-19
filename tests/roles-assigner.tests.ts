@@ -1,18 +1,20 @@
-const Player        = require('../src/player');
-const LevelPreset   = require('../src/level-preset');
-const RolesAssigner = require('../src/roles-assigner');
+import * as _ from 'lodash';
+import { RolesAssigner } from '../src/roles-assigner';
+import { Player } from '../src/player';
+import { Loyalty, RoleId } from '../src/configs/roles.config';
+import { LevelPreset } from '../src/level-preset';
 
-const generateRolesAssigner = (playerCount) => {
+const generateRolesAssigner = (playerCount: number): RolesAssigner => {
   const players     = generatePlayers(playerCount);
   const levelPreset = new LevelPreset(players.length);
 
   return new RolesAssigner(players, levelPreset);
 };
 
-const generatePlayers = (count) => {
-  const players = [];
+const generatePlayers = (count: number): Player[] => {
+  const players: Player[] = [];
 
-  _.times(count, (i) => players.push(new Player(`user-${i}`)));
+  _.times(count, (i: number) => players.push(new Player(`user-${i}`)));
 
   return players;
 };
@@ -24,9 +26,9 @@ test('should have a correct number of good and evil players', () => {
     let goodCount = 0;
     let evilCount = 0;
     assigner.assignRoles().forEach(p => {
-      const loyalty = p.getRole().getLoyalty();
+      const loyalty: Loyalty = p.getRole().getLoyalty();
 
-      loyalty === 'GOOD' ? goodCount++ : evilCount++;
+      loyalty === Loyalty.Good ? goodCount++ : evilCount++;
     });
 
     expect(new LevelPreset(j).getGoodCount()).toEqual(goodCount);
@@ -51,8 +53,8 @@ test('should always assign default roles to players', () => {
     ASSASSIN: false,
   });
 
-  expect(players.find(p => p.getRole().getId() === 'MERLIN')).toBeTruthy();
-  expect(players.find(p => p.getRole().getId() === 'ASSASSIN')).toBeTruthy();
+  expect(players.find((p: Player) => p.getRole().getId() === RoleId.Merlin)).toBeTruthy();
+  expect(players.find((p: Player) => p.getRole().getId() === RoleId.Assassin)).toBeTruthy();
 });
 
 test('should assign every player a unique role', () => {
@@ -60,5 +62,5 @@ test('should assign every player a unique role', () => {
 
   const roleIds = assigner.assignRoles().map(p => p.getRole().getId());
 
-  expect(_.uniqBy(roleIds, v => v).length).toEqual(roleIds.length);
+  expect(_.uniqBy(roleIds, (v: RoleId): RoleId => v).length).toEqual(roleIds.length);
 });

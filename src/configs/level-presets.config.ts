@@ -1,4 +1,19 @@
-module.exports = {
+export interface LevelPresetConfigs {
+  [key: number]: LevelPresetConfig;
+}
+
+export interface LevelPresetConfig {
+  goodCount: number;
+  evilCount: number;
+  quests: QuestConfig[];
+}
+
+export interface QuestConfig {
+  votesNeeded: number;
+  failsNeeded: number;
+}
+
+export const levelPresets: LevelPresetConfigs = {
   '-1': {
     goodCount: null,
     evilCount: null,
