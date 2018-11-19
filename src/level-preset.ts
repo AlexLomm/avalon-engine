@@ -2,9 +2,9 @@ import { levelPresets, QuestConfig } from './configs/level-presets.config';
 import * as fromErrors from './errors';
 
 export class LevelPreset {
-  private _goodCount: number;
-  private _evilCount: number;
-  private _quests: QuestConfig[];
+  private goodCount: number;
+  private evilCount: number;
+  private quests: QuestConfig[];
 
   constructor(playerCount: number) {
     const levelPreset = levelPresets[playerCount];
@@ -12,9 +12,9 @@ export class LevelPreset {
       throw new fromErrors.PlayersAmountIncorrectError();
     }
 
-    this._goodCount = levelPresets[playerCount].goodCount;
-    this._evilCount = levelPresets[playerCount].evilCount;
-    this._quests    = levelPresets[playerCount].quests;
+    this.goodCount = levelPresets[playerCount].goodCount;
+    this.evilCount = levelPresets[playerCount].evilCount;
+    this.quests    = levelPresets[playerCount].quests;
   }
 
   // TODO: cache
@@ -23,25 +23,25 @@ export class LevelPreset {
   }
 
   getGoodCount() {
-    return this._goodCount;
+    return this.goodCount;
   }
 
   getEvilCount() {
-    return this._evilCount;
+    return this.evilCount;
   }
 
   getQuestsConfig() {
-    return this._quests;
+    return this.quests;
   }
 
   getPlayerCount() {
-    return this._goodCount + this._evilCount;
+    return this.goodCount + this.evilCount;
   }
 
   serialize() {
     return {
-      goodCount: this._goodCount,
-      evilCount: this._evilCount,
+      goodCount: this.goodCount,
+      evilCount: this.evilCount,
     };
   }
 }

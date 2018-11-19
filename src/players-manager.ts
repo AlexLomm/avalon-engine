@@ -6,13 +6,13 @@ import { RolesAssigner } from './roles-assigner';
 import { RoleId } from './configs/roles.config';
 
 export class PlayersManager {
-  private _players: Player[]         = [];
-  private _gameCreator: Player;
-  private _isSubmitted: boolean      = false;
-  private _proposedPlayers: Player[] = [];
-  private _leaderIndex: number       = -1;
-  private _victim: Player;
-  private _isAssassinated: boolean   = false;
+  private players: Player[]         = [];
+  private gameCreator: Player;
+  private isSubmitted: boolean      = false;
+  private proposedPlayers: Player[] = [];
+  private leaderIndex: number       = -1;
+  private victim: Player;
+  private isAssassinated: boolean   = false;
 
   constructor() {
   }
@@ -23,41 +23,41 @@ export class PlayersManager {
       throw new fromErrors.DeniedAssassinationError();
     }
 
-    if (!this._victim) {
+    if (!this.victim) {
       throw new fromErrors.RequiredVictimError();
     }
 
-    this._isAssassinated = true;
+    this.isAssassinated = true;
   }
 
   // TODO: remove
   getVictim(): Player {
-    return this._victim;
+    return this.victim;
   }
 
   // TODO: make private
-  isAssassinated(player: Player): boolean {
-    return this._victim === player && this._isAssassinated;
+  getIsAssassinated(player: Player): boolean {
+    return this.victim === player && this.isAssassinated;
   }
 
   // TODO: make private
   getAssassin(): Player {
-    return this._players.find((p) => p.isAssassin());
+    return this.players.find((p) => p.isAssassin());
   }
 
   // TODO: remove
   getAll(): Player[] {
-    return this._players;
+    return this.players;
   }
 
   // TODO: remove
   getProposedPlayers(): Player[] {
-    return this._proposedPlayers;
+    return this.proposedPlayers;
   }
 
   // TODO: remove
   getGameCreator(): Player {
-    return this._gameCreator;
+    return this.gameCreator;
   }
 
   add(player: Player) {
@@ -67,19 +67,19 @@ export class PlayersManager {
       throw new fromErrors.AlreadyExistsPlayerError();
     }
 
-    if (this._players.length === 10) {
+    if (this.players.length === 10) {
       throw new fromErrors.PlayersMaximumReachedError();
     }
 
-    if (!this._gameCreator) {
-      this._gameCreator = player;
+    if (!this.gameCreator) {
+      this.gameCreator = player;
     }
 
-    this._players.push(player);
+    this.players.push(player);
   }
 
   _findPlayer(username: string): Player {
-    return this._players.find((p) => p.getUsername() === username);
+    return this.players.find((p) => p.getUsername() === username);
   }
 
   toggleVictimProposition(
@@ -96,7 +96,7 @@ export class PlayersManager {
 
     const player = this._findPlayer(victimUsername);
 
-    this._victim = this._victim === player
+    this.victim = this.victim === player
       ? null
       : player;
   }
@@ -106,24 +106,24 @@ export class PlayersManager {
 
     if (!player) return;
 
-    const index = this._proposedPlayers.findIndex((p) => p === player);
+    const index = this.proposedPlayers.findIndex((p) => p === player);
 
     index > -1
-      ? this._proposedPlayers.splice(index, 1)
-      : this._proposedPlayers.push(player);
+      ? this.proposedPlayers.splice(index, 1)
+      : this.proposedPlayers.push(player);
   }
 
   setIsSubmitted(isSubmitted: boolean) {
-    this._isSubmitted = isSubmitted;
+    this.isSubmitted = isSubmitted;
   }
 
   getIsSubmitted() {
-    return this._isSubmitted;
+    return this.isSubmitted;
   }
 
-  assignRoles(levelPreset: LevelPreset, roleIds: RoleId[]) {
-    this._players = new RolesAssigner(
-      this._players,
+  assignRoles(levelPreset: LevelPreset, roleIds: RoleId[] = []) {
+    this.players = new RolesAssigner(
+      this.players,
       levelPreset,
     ).assignRoles(roleIds);
 
@@ -137,15 +137,15 @@ export class PlayersManager {
   }
 
   getLeader() {
-    return this._players[this._leaderIndex];
+    return this.players[this.leaderIndex];
   }
 
   _chooseLeaderRandomly() {
-    this._leaderIndex = _.random(0, this._players.length - 1);
+    this.leaderIndex = _.random(0, this.players.length - 1);
   }
 
   _chooseNextPlayerAsLeader() {
-    this._leaderIndex = (this._leaderIndex + 1) % this._players.length;
+    this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
   }
 
   questVotingAllowedFor(username: string) {
@@ -155,7 +155,7 @@ export class PlayersManager {
   }
 
   _isProposed(player: Player) {
-    return !!this._proposedPlayers.find((p) => p === player);
+    return !!this.proposedPlayers.find((p) => p === player);
   }
 
   teamVotingAllowedFor(username: string) {
@@ -170,20 +170,20 @@ export class PlayersManager {
     return leader && leader.getUsername() === username;
   }
 
-  vote(username: string, voteValue: boolean) {
+  generateVote(username: string, voteValue: boolean) {
     const player = this._findPlayer(username);
 
     if (!player) return;
 
-    return player.vote(voteValue);
+    return player.generateVote(voteValue);
   }
 
   resetVotes() {
-    this._players.forEach((player) => player.resetVote());
+    this.players.forEach((player) => player.resetVote());
   }
 
   resetPropositions() {
-    this._proposedPlayers = [];
+    this.proposedPlayers = [];
   }
 
   serializeFor(forPlayerUsername: string, votesRevealed: boolean) {
@@ -194,17 +194,17 @@ export class PlayersManager {
 
     return {
       players: this._serializePlayers(forPlayer, votesRevealed),
-      proposedPlayerUsernames: this._proposedPlayers.map(p => p.getUsername()),
-      gameCreatorUsername: PlayersManager._getUsernameOrNull(this._gameCreator),
+      proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
+      gameCreatorUsername: PlayersManager._getUsernameOrNull(this.gameCreator),
       leaderUsername: PlayersManager._getUsernameOrNull(this.getLeader()),
-      isSubmitted: this._isSubmitted,
+      isSubmitted: this.isSubmitted,
       victimUsername: PlayersManager._getUsernameOrNull(this.getVictim()),
-      isAssassinated: this._isAssassinated,
+      isAssassinated: this.isAssassinated,
     };
   }
 
   _serializePlayers(forPlayer: Player, votesRevealed: boolean) {
-    return this._players.map((p) => {
+    return this.players.map((p) => {
       const roleRevealed = forPlayer.canSee(p);
 
       return p.serialize(roleRevealed, votesRevealed);

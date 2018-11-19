@@ -4,10 +4,10 @@ import { Vote } from './vote';
 import * as fromErrors from './errors';
 
 export class QuestsManager {
-  private _levelPreset: LevelPreset = null;
-  private _quests: Quest[]          = [];
-  private _currentQuestIndex        = 0;
-  private _assassinationStatus      = -1;
+  private levelPreset: LevelPreset    = null;
+  private quests: Quest[]             = [];
+  private currentQuestIndex: number   = 0;
+  private assassinationStatus: number = -1;
 
   constructor() {
   }
@@ -20,26 +20,26 @@ export class QuestsManager {
       throw new fromErrors.NoTimeForAssassinationError();
     }
 
-    this._assassinationStatus = isSuccessful ? 1 : 0;
+    this.assassinationStatus = isSuccessful ? 1 : 0;
   };
 
   getLevelPreset() {
-    return this._levelPreset;
+    return this.levelPreset;
   };
 
   getAll() {
-    return this._quests;
+    return this.quests;
   };
 
   init(levelPreset: LevelPreset) {
-    this._levelPreset = levelPreset;
+    this.levelPreset = levelPreset;
 
-    this._quests = this._levelPreset.getQuestsConfig().map(
+    this.quests = this.levelPreset.getQuestsConfig().map(
       // TODO: add types
       (config) => new Quest({
         votesNeeded: config.votesNeeded,
         failsNeeded: config.failsNeeded,
-        totalPlayers: this._levelPreset.getPlayerCount(),
+        totalPlayers: this.levelPreset.getPlayerCount(),
       }),
     );
   };
@@ -57,11 +57,11 @@ export class QuestsManager {
   };
 
   getCurrentQuest() {
-    return this._quests[this._currentQuestIndex];
+    return this.quests[this.currentQuestIndex];
   };
 
   nextQuest() {
-    this._currentQuestIndex++;
+    this.currentQuestIndex++;
   };
 
   isLastRoundOfTeamVoting() {
@@ -69,8 +69,8 @@ export class QuestsManager {
   };
 
   getStatus() {
-    if (this._assassinationStatus !== -1) {
-      return this._assassinationStatus === 1 ? 0 : 1;
+    if (this.assassinationStatus !== -1) {
+      return this.assassinationStatus === 1 ? 0 : 1;
     }
 
     if (this._getFailedQuestsCount() >= 3) return 0;
@@ -80,7 +80,7 @@ export class QuestsManager {
 
   assassinationAllowed() {
     return this._getSucceededQuestsCount() >= 3
-      && this._assassinationStatus === -1;
+      && this.assassinationStatus === -1;
   };
 
   _getFailedQuestsCount() {
@@ -93,8 +93,8 @@ export class QuestsManager {
 
   serialize() {
     return {
-      assassinationStatus: this._assassinationStatus,
-      quests: this._quests.map(q => q.serialize()),
+      assassinationStatus: this.assassinationStatus,
+      quests: this.quests.map(q => q.serialize()),
       teamVotingRoundIndex: this.getCurrentQuest()
         ? this.getCurrentQuest().getTeamVotingRoundIndex()
         : 0,

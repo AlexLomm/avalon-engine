@@ -192,8 +192,8 @@ describe('team proposition and submission', () => {
   test('should reset votes', () => {
     addPlayersToManager(7);
 
-    manager.vote('user-3', true);
-    manager.vote('user-4', true);
+    manager.generateVote('user-3', true);
+    manager.generateVote('user-4', true);
 
     manager.resetVotes();
 
@@ -206,8 +206,8 @@ describe('team proposition and submission', () => {
   test('should reset propositions', () => {
     addPlayersToManager(7);
 
-    manager.vote('user-3', true);
-    manager.vote('user-4', true);
+    manager.generateVote('user-3', true);
+    manager.generateVote('user-4', true);
 
     manager.resetPropositions();
 
@@ -219,11 +219,11 @@ describe('voting', () => {
   test('should mark player as has voted', () => {
     addPlayersToManager(7);
 
-    manager.vote('nonexistent', false);
+    manager.generateVote('nonexistent', false);
 
     expect(manager.getAll().find(p => !!p.getVote())).toBeFalsy();
 
-    manager.vote('user-3', false);
+    manager.generateVote('user-3', false);
 
     expect(
       manager.getAll().find(p => !!p.getVote()).getUsername(),
@@ -235,7 +235,7 @@ describe('voting', () => {
 
     expect(manager.teamVotingAllowedFor('user-1')).toBeTruthy();
 
-    manager.vote('user-1', true);
+    manager.generateVote('user-1', true);
 
     expect(manager.teamVotingAllowedFor('user-1')).toBeFalsy();
   });
@@ -249,7 +249,7 @@ describe('voting', () => {
 
     expect(manager.questVotingAllowedFor('user-1')).toBeTruthy();
 
-    manager.vote('user-1', true);
+    manager.generateVote('user-1', true);
 
     expect(manager.questVotingAllowedFor('user-1')).toBeFalsy();
   });
@@ -331,11 +331,11 @@ describe('assassination', () => {
 
     manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
 
-    expect(manager.isAssassinated(victim)).toBeFalsy();
+    expect(manager.getIsAssassinated(victim)).toBeFalsy();
 
     manager.assassinate(assassin.getUsername());
 
-    expect(manager.isAssassinated(victim)).toBeTruthy();
+    expect(manager.getIsAssassinated(victim)).toBeTruthy();
   });
 });
 
@@ -384,7 +384,8 @@ describe('serialization', () => {
   test('should contain a game creator username', () => {
     addPlayersAndAssignRoles(5);
 
-    const gameCreatorUsername = manager.serializeFor('user-1', false).gameCreatorUsername;
+    const gameCreatorUsername = manager.serializeFor('user-1', false)
+      .gameCreatorUsername;
     const usernames           = manager.getAll().map((p) => p.getUsername());
 
     expect(usernames.includes(gameCreatorUsername)).toBeTruthy();
@@ -394,7 +395,8 @@ describe('serialization', () => {
     addPlayersAndAssignRoles(5);
 
     const expected = manager.getLeader().getUsername();
-    const actual   = manager.serializeFor('user-1', false).leaderUsername;
+    const actual   = manager.serializeFor('user-1', false)
+      .leaderUsername;
 
     expect(expected).toEqual(actual);
   });
@@ -404,7 +406,8 @@ describe('serialization', () => {
 
     manager.setIsSubmitted(true);
 
-    expect(manager.serializeFor('user-1', false).isSubmitted).toStrictEqual(true);
+    expect(manager.serializeFor('user-1', false).isSubmitted)
+      .toStrictEqual(true);
   });
 
   test('should contain the victim\'s username', () => {
@@ -416,7 +419,8 @@ describe('serialization', () => {
       nonAssassin.getUsername(),
     );
 
-    const victimUsername = manager.serializeFor('user-1', false).victimUsername;
+    const victimUsername = manager.serializeFor('user-1', false)
+      .victimUsername;
 
     expect(nonAssassin.getUsername()).toStrictEqual(victimUsername);
   });
@@ -432,7 +436,8 @@ describe('serialization', () => {
 
     manager.assassinate(manager.getAssassin().getUsername());
 
-    const isAssassinated = manager.serializeFor('user-1', false).isAssassinated;
+    const isAssassinated = manager.serializeFor('user-1', false)
+      .isAssassinated;
 
     expect(isAssassinated).toStrictEqual(true);
   });

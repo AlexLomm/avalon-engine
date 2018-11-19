@@ -100,6 +100,15 @@ export class NoTimeForTeammatePropositionError extends BaseError {
   }
 }
 
+export class NoTimeForTeamSubmissionError extends BaseError {
+  constructor() {
+    super(
+      'This is not a team submission time.',
+      'ERR_NO_TEAM_SUB',
+    );
+  }
+}
+
 export class NoTimeForTeamVotingError extends BaseError {
   constructor() {
     super(

@@ -34,20 +34,20 @@ test('should say if can see another player', () => {
 
 describe('voting', () => {
   test('should return a vote', () => {
-    expect(player.vote(false))
+    expect(player.generateVote(false))
       .toEqual(new Vote(player.getUsername(), false));
   });
 
   test('should remember the vote', () => {
     expect(player.getVote()).toBeFalsy();
 
-    const vote = player.vote(true);
+    const vote = player.generateVote(true);
 
     expect(vote).toBe(player.getVote());
   });
 
   test('should reset vote', () => {
-    player.vote(true);
+    player.generateVote(true);
 
     player.resetVote();
 
@@ -94,13 +94,13 @@ describe('serialization', () => {
   });
 
   test('should contain `null` as a vote value if the vote has not been yet revealed', () => {
-    player.vote(true);
+    player.generateVote(true);
 
     expect(player.serialize(false, false).vote.value).toStrictEqual(null);
   });
 
   test('should reveal the vote value', () => {
-    player.vote(true);
+    player.generateVote(true);
 
     expect(player.serialize(false, true).vote.value).toStrictEqual(true);
   });

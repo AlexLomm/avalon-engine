@@ -2,12 +2,12 @@ import { Vote } from './vote';
 import * as fromErrors from './errors';
 
 export class Quest {
-  private _votesNeeded: number;
-  private _failsNeeded: number;
-  private _totalPlayers: number;
-  private _teamVoteRounds: Vote[][]     = [[], [], [], [], []];
-  private _teamVotingRoundIndex: number = 0;
-  private _questVotes: Vote[]           = [];
+  private votesNeeded: number;
+  private failsNeeded: number;
+  private totalPlayers: number;
+  private teamVoteRounds: Vote[][]     = [[], [], [], [], []];
+  private teamVotingRoundIndex: number = 0;
+  private questVotes: Vote[]           = [];
 
   // TODO: refactor type
   constructor(config: {
@@ -15,26 +15,26 @@ export class Quest {
     failsNeeded: number,
     totalPlayers: number
   }) {
-    this._votesNeeded  = config.votesNeeded;
-    this._failsNeeded  = config.failsNeeded;
-    this._totalPlayers = config.totalPlayers;
+    this.votesNeeded  = config.votesNeeded;
+    this.failsNeeded  = config.failsNeeded;
+    this.totalPlayers = config.totalPlayers;
   }
 
   getVotesNeeded() {
-    return this._votesNeeded;
+    return this.votesNeeded;
   }
 
   getFailsNeeded() {
-    return this._failsNeeded;
+    return this.failsNeeded;
   }
 
   // a.k.a "vote tracker"
   getTeamVotingRoundIndex() {
-    return this._teamVotingRoundIndex;
+    return this.teamVotingRoundIndex;
   }
 
   questVotingFinished() {
-    return this._questVotes.length === this._votesNeeded;
+    return this.questVotes.length === this.votesNeeded;
   }
 
   isComplete() {
@@ -50,11 +50,11 @@ export class Quest {
   }
 
   _questVotingFailed() {
-    return this._failsCount() < this._failsNeeded;
+    return this._failsCount() < this.failsNeeded;
   }
 
   _failsCount() {
-    return this._questVotes.reduce(
+    return this.questVotes.reduce(
       (acc, vote) => vote.getValue() ? acc : acc + 1, 0,
     );
   }
@@ -76,17 +76,17 @@ export class Quest {
     currentRound.push(vote);
 
     if (this._everybodyVotedFor(currentRound) && !this.teamVotingSucceeded()) {
-      this._teamVotingRoundIndex++;
+      this.teamVotingRoundIndex++;
     }
   }
 
   _addVoteForQuest(vote: Vote) {
     // TODO: voting validation is also handled by the players manager
-    if (this._alreadyVotedFor(this._questVotes, vote)) {
+    if (this._alreadyVotedFor(this.questVotes, vote)) {
       throw new fromErrors.AlreadyVotedForQuestError();
     }
 
-    this._questVotes.push(vote);
+    this.questVotes.push(vote);
   }
 
   _alreadyVotedFor(votes: Vote[], vote: Vote) {
@@ -95,7 +95,7 @@ export class Quest {
 
   questVotingAllowed() {
     return this.teamVotingSucceeded()
-      && this._questVotes.length < this._votesNeeded;
+      && this.questVotes.length < this.votesNeeded;
   }
 
   teamVotingSucceeded() {
@@ -113,7 +113,7 @@ export class Quest {
   }
 
   teamVotingAllowed() {
-    return this._getCurrentTeamVotingRound().length < this._totalPlayers
+    return this._getCurrentTeamVotingRound().length < this.totalPlayers
       || !this._majorityApproved();
   }
 
@@ -129,27 +129,27 @@ export class Quest {
   }
 
   _getPreviousTeamVotingRound() {
-    return this._teamVoteRounds[this._teamVotingRoundIndex - 1];
+    return this.teamVoteRounds[this.teamVotingRoundIndex - 1];
   }
 
   _everybodyVotedFor(round: Vote[]) {
-    return round.length === this._totalPlayers;
+    return round.length === this.totalPlayers;
   }
 
   _getCurrentTeamVotingRound() {
-    return this._teamVoteRounds[this._teamVotingRoundIndex];
+    return this.teamVoteRounds[this.teamVotingRoundIndex];
   }
 
   isLastRoundOfTeamVoting() {
-    return this._teamVotingRoundIndex === this._teamVoteRounds.length - 1;
+    return this.teamVotingRoundIndex === this.teamVoteRounds.length - 1;
   }
 
   serialize() {
     return {
-      failsNeeded: this._failsNeeded,
-      votesNeeded: this._votesNeeded,
+      failsNeeded: this.failsNeeded,
+      votesNeeded: this.votesNeeded,
       teamVotes: this._getCurrentTeamVotingRound().map(vote => vote.serialize()),
-      questVotes: this._questVotes.map(vote => vote.serialize()),
+      questVotes: this.questVotes.map(vote => vote.serialize()),
     };
   }
 }

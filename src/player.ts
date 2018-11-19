@@ -3,63 +3,63 @@ import { Vote } from './vote';
 import { RoleId } from './configs/roles.config';
 
 export class Player {
-  private _username: string;
-  private _role: Role;
-  private _vote: Vote;
+  private username: string;
+  private role: Role;
+  private vote: Vote;
 
   constructor(username: string) {
-    this._username = username;
+    this.username = username;
   }
 
   getUsername() {
-    return this._username;
+    return this.username;
   }
 
   setRole(role: Role) {
-    this._role = role;
+    this.role = role;
   }
 
   getRole() {
-    return this._role;
+    return this.role;
   }
 
-  vote(value: boolean) {
-    this._vote = new Vote(this._username, value);
+  generateVote(value: boolean) {
+    this.vote = new Vote(this.username, value);
 
-    return this._vote;
+    return this.vote;
   }
 
   resetVote() {
-    this._vote = null;
+    this.vote = null;
   }
 
   getVote() {
-    return this._vote;
+    return this.vote;
   }
 
   isAssassin() {
-    return this._role && this._role.getId() === RoleId.Assassin;
+    return this.role && this.role.getId() === RoleId.Assassin;
   }
 
   canSee(anotherPlayer: Player) {
-    return this._role.canSee(anotherPlayer.getRole());
+    return this.role.canSee(anotherPlayer.getRole());
   }
 
   // TODO: refactor
   serialize(roleRevealed: boolean, voteRevealed: boolean) {
-    const serializedRole = !(this._role && roleRevealed)
+    const serializedRole = !(this.role && roleRevealed)
       ? new Role(RoleId.Unknown).serialize()
-      : this._role.serialize();
+      : this.role.serialize();
 
     let serializedVote = null;
-    if (this._vote && !voteRevealed) {
-      serializedVote = new Vote(this._username, null).serialize();
-    } else if (this._vote && voteRevealed) {
-      serializedVote = this._vote.serialize();
+    if (this.vote && !voteRevealed) {
+      serializedVote = new Vote(this.username, null).serialize();
+    } else if (this.vote && voteRevealed) {
+      serializedVote = this.vote.serialize();
     }
 
     return {
-      username: this._username,
+      username: this.username,
       role: serializedRole,
       vote: serializedVote,
     };

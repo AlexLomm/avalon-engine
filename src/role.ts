@@ -2,43 +2,43 @@
 import { Loyalty, rolesConfig, RoleId } from './configs/roles.config';
 
 export class Role {
-  _id: RoleId;
-  _name: string;
-  _description: string;
-  _loyalty: Loyalty;
-  _visibleRoleIds: RoleId[];
+  id: RoleId;
+  name: string;
+  description: string;
+  loyalty: Loyalty;
+  visibleRoleIds: RoleId[];
 
   constructor(id: RoleId) {
-    this._id             = rolesConfig[id].id;
-    this._name           = rolesConfig[id].name;
-    this._description    = rolesConfig[id].description;
-    this._loyalty        = rolesConfig[id].loyalty;
-    this._visibleRoleIds = rolesConfig[id].visibleRoleIds;
+    this.id             = rolesConfig[id].id;
+    this.name           = rolesConfig[id].name;
+    this.description    = rolesConfig[id].description;
+    this.loyalty        = rolesConfig[id].loyalty;
+    this.visibleRoleIds = rolesConfig[id].visibleRoleIds;
   }
 
   getId() {
-    return this._id;
+    return this.id;
   };
 
   getName() {
-    return this._name;
+    return this.name;
   };
 
   getDescription() {
-    return this._description;
+    return this.description;
   };
 
   getLoyalty() {
-    return this._loyalty;
+    return this.loyalty;
   };
 
   getVisibleRoleIds() {
-    return this._visibleRoleIds;
+    return this.visibleRoleIds;
   };
 
   // TODO: cache in a table-like data structure
   canSee(anotherRole: Role) {
-    const index = this._visibleRoleIds
+    const index = this.visibleRoleIds
       .findIndex((roleId) => roleId === anotherRole.getId());
 
     return index > -1;
@@ -46,10 +46,10 @@ export class Role {
 
   serialize() {
     return {
-      id: this._id,
-      name: this._name,
-      description: this._description,
-      loyalty: this._loyalty,
+      id: this.id,
+      name: this.name,
+      description: this.description,
+      loyalty: this.loyalty,
     };
   }
 }

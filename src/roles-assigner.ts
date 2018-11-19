@@ -6,25 +6,25 @@ import { Role } from './role';
 
 // TODO: promote to a service
 export class RolesAssigner {
-  private _players: Player[];
-  private _levelPreset: LevelPreset;
+  private players: Player[];
+  private levelPreset: LevelPreset;
 
   constructor(players: Player[], levelPreset: LevelPreset) {
-    this._players     = players;
-    this._levelPreset = levelPreset;
+    this.players     = players;
+    this.levelPreset = levelPreset;
   }
 
   assignRoles(requestedRoleIds: RoleId[] = []): Player[] {
     const roleIds = RolesAssigner._generateRolesConfig(requestedRoleIds);
     const roles   = RolesAssigner._generateRoles(
       roleIds,
-      this._levelPreset.getGoodCount(),
-      this._levelPreset.getEvilCount(),
+      this.levelPreset.getGoodCount(),
+      this.levelPreset.getEvilCount(),
     );
 
-    this._players.forEach((player) => player.setRole(roles.pop()));
+    this.players.forEach((player) => player.setRole(roles.pop()));
 
-    return this._players;
+    return this.players;
   }
 
   static _generateRolesConfig(roleIds: RoleId[]): RoleId[] {
