@@ -14,11 +14,11 @@ export class QuestVotingState extends BaseState {
     this.vote(game, username, voteValue);
 
     // TODO: add state freezing
-    if (!game.questVotingIsOn()) {
+    if (!this.questVotingIsOn(game)) {
       // TODO: refactor
       if (game.questsManager.getStatus() === 0) {
         game.state = new FrozenState();
-      } else if (game.assassinationIsOn()) {
+      } else if (game.questsManager.assassinationAllowed()) {
         this.resetFlags(game);
 
         game.state = new AssassinationState();
@@ -48,5 +48,11 @@ export class QuestVotingState extends BaseState {
     game.playersManager.resetVotes();
     game.playersManager.resetPropositions();
     game.playersManager.setIsSubmitted(false);
+  }
+
+  // TODO: rename
+  private questVotingIsOn(game: Game) {
+    return game.playersManager.getIsSubmitted()
+      && game.questsManager.getCurrentQuest().questVotingAllowed();
   }
 }

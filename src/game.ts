@@ -77,6 +77,7 @@ export class Game {
     return this.rolesAreRevealed;
   }
 
+  // TODO: remove
   revealRoles(seconds: number) {
     if (this.revealRolesPromise) return this.revealRolesPromise;
 
@@ -96,71 +97,34 @@ export class Game {
     return this.revealRolesPromise;
   }
 
+  // TODO: convert to "handle"
   submitTeam(leaderUsername: string) {
     this.state.submitTeam(this, leaderUsername);
   }
 
+  // TODO: convert to "handle"
   voteForQuest(username: string, voteValue: boolean) {
     this.state.voteForQuest(this, username, voteValue);
   }
 
+  // TODO: convert to "handle"
   voteForTeam(username: string, voteValue: boolean) {
     this.state.voteForTeam(this, username, voteValue);
   }
 
-  //_resetFlags() {
-  //  this.playersManager.resetVotes();
-  //  this.playersManager.resetPropositions();
-  //  this.playersManager.setIsSubmitted(false);
-  //}
-
-  //_vote(username: string, voteValue: boolean) {
-  //  const vote = this.playersManager.vote(username, voteValue);
-  //
-  //  this.questsManager.addVote(vote);
-  //}
-
+  // TODO: convert to "handle"
   toggleTeammateProposition(leaderUsername: string, username: string) {
     this.state.toggleTeammateProposition(this, leaderUsername, username);
   }
 
+  // TODO: convert to "handle"
   toggleVictimProposition(assassinsUsername: string, victimsUsername: string) {
     this.state.toggleVictimProposition(this, assassinsUsername, victimsUsername);
   }
 
+  // TODO: convert to "handle"
   assassinate(assassinsUsername: string) {
     this.state.assassinate(this, assassinsUsername);
-  }
-
-  assassinationIsOn() {
-    return this.questsManager.assassinationAllowed();
-  }
-
-  _assassinationSucceeded() {
-    return this.playersManager.getVictim().getRole().getId() === RoleId.Merlin;
-  }
-
-  questVotingIsOn() {
-    return this._gameStarted()
-      && this.playersManager.getIsSubmitted()
-      && this.questsManager.getCurrentQuest().questVotingAllowed();
-  }
-
-  teamVotingIsOn() {
-    return this._gameStarted()
-      && this.playersManager.getIsSubmitted()
-      && this.questsManager.getCurrentQuest().teamVotingAllowed();
-  }
-
-  teamPropositionIsOn() {
-    return this._gameStarted()
-      && !this.playersManager.getIsSubmitted();
-  }
-
-  _gameStarted() {
-    return this.startedAt
-      && this.rolesLastRevealedAt
-      && !this.rolesAreRevealed;
   }
 
   // serialize(forUsername) {

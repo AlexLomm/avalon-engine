@@ -453,18 +453,6 @@ describe('post "reveal roles" phase', () => {
         .toThrow(fromErrors.NoTimeForQuestVotingError);
     });
 
-    test('should return whether quest voting is on', () => {
-      expect(game.questVotingIsOn()).toBeFalsy();
-
-      proposeAndSubmitTeam(['user-1', 'user-2']);
-
-      expect(game.questVotingIsOn()).toBeFalsy();
-
-      voteAllForTeam(true);
-
-      expect(game.questVotingIsOn()).toBeTruthy();
-    });
-
     test('should only allow a proposed player to vote on a quest', () => {
       proposeAndSubmitTeam(['user-1', 'user-2']);
 
@@ -535,15 +523,6 @@ describe('post "reveal roles" phase', () => {
   });
 
   describe('assassination', () => {
-    test('should return whether assassination is on', () => {
-      jest.spyOn(questsManager, 'assassinationAllowed');
-
-      const assassinationIsOn = game.assassinationIsOn();
-
-      expect(questsManager.assassinationAllowed).toBeCalledTimes(1);
-      expect(questsManager.assassinationAllowed()).toEqual(assassinationIsOn);
-    });
-
     test('should throw if it is not an appropriate time to propose a victim', () => {
       const assassin = playersManager.getAssassin();
       const victim   = getNonAssassin();
