@@ -18,10 +18,10 @@ export class AssassinationState extends BaseState {
 
     // TODO: refactor, return boolean
     game.playersManager.assassinate(assassinsUsername);
-    game.questsManager.setAssassinationStatus(this._assassinationSucceeded(game));
+    game.questsManager.setAssassinationStatus(this.assassinationSucceeded(game));
   }
 
-  _assassinationSucceeded(game: Game) {
+  private assassinationSucceeded(game: Game) {
     return game.playersManager.getVictim().getRole().getId() === RoleId.Merlin;
   }
 }

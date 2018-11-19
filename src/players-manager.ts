@@ -63,7 +63,7 @@ export class PlayersManager {
   add(player: Player) {
     if (!player) return;
 
-    if (this._findPlayer(player.getUsername())) {
+    if (this.findPlayer(player.getUsername())) {
       throw new fromErrors.AlreadyExistsPlayerError();
     }
 
@@ -78,7 +78,7 @@ export class PlayersManager {
     this.players.push(player);
   }
 
-  _findPlayer(username: string): Player {
+  private findPlayer(username: string): Player {
     return this.players.find((p) => p.getUsername() === username);
   }
 
@@ -94,7 +94,7 @@ export class PlayersManager {
       throw new fromErrors.DeniedSelfSacrificeError();
     }
 
-    const player = this._findPlayer(victimUsername);
+    const player = this.findPlayer(victimUsername);
 
     this.victim = this.victim === player
       ? null
@@ -102,7 +102,7 @@ export class PlayersManager {
   }
 
   togglePlayerProposition(username: string) {
-    const player = this._findPlayer(username);
+    const player = this.findPlayer(username);
 
     if (!player) return;
 
@@ -132,34 +132,34 @@ export class PlayersManager {
 
   nextLeader() {
     this.getLeader()
-      ? this._chooseNextPlayerAsLeader()
-      : this._chooseLeaderRandomly();
+      ? this.chooseNextPlayerAsLeader()
+      : this.chooseLeaderRandomly();
   }
 
   getLeader() {
     return this.players[this.leaderIndex];
   }
 
-  _chooseLeaderRandomly() {
+  private chooseLeaderRandomly() {
     this.leaderIndex = _.random(0, this.players.length - 1);
   }
 
-  _chooseNextPlayerAsLeader() {
+  private chooseNextPlayerAsLeader() {
     this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
   }
 
   questVotingAllowedFor(username: string) {
-    const player = this._findPlayer(username);
+    const player = this.findPlayer(username);
 
-    return player && this._isProposed(player) && !player.getVote();
+    return player && this.isProposed(player) && !player.getVote();
   }
 
-  _isProposed(player: Player) {
+  private isProposed(player: Player) {
     return !!this.proposedPlayers.find((p) => p === player);
   }
 
   teamVotingAllowedFor(username: string) {
-    const player = this._findPlayer(username);
+    const player = this.findPlayer(username);
 
     return player && !player.getVote();
   }
@@ -171,7 +171,7 @@ export class PlayersManager {
   }
 
   generateVote(username: string, voteValue: boolean) {
-    const player = this._findPlayer(username);
+    const player = this.findPlayer(username);
 
     if (!player) return;
 
@@ -187,23 +187,23 @@ export class PlayersManager {
   }
 
   serializeFor(forPlayerUsername: string, votesRevealed: boolean) {
-    const forPlayer = this._findPlayer(forPlayerUsername);
+    const forPlayer = this.findPlayer(forPlayerUsername);
     if (!forPlayer) {
       throw new fromErrors.PlayerMissingError();
     }
 
     return {
-      players: this._serializePlayers(forPlayer, votesRevealed),
+      players: this.serializePlayers(forPlayer, votesRevealed),
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
-      gameCreatorUsername: PlayersManager._getUsernameOrNull(this.gameCreator),
-      leaderUsername: PlayersManager._getUsernameOrNull(this.getLeader()),
+      gameCreatorUsername: PlayersManager.getUsernameOrNull(this.gameCreator),
+      leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
-      victimUsername: PlayersManager._getUsernameOrNull(this.getVictim()),
+      victimUsername: PlayersManager.getUsernameOrNull(this.getVictim()),
       isAssassinated: this.isAssassinated,
     };
   }
 
-  _serializePlayers(forPlayer: Player, votesRevealed: boolean) {
+  private serializePlayers(forPlayer: Player, votesRevealed: boolean) {
     return this.players.map((p) => {
       const roleRevealed = forPlayer.canSee(p);
 
@@ -211,7 +211,7 @@ export class PlayersManager {
     });
   }
 
-  static _getUsernameOrNull(player: Player) {
+  static getUsernameOrNull(player: Player) {
     return player ? player.getUsername() : null;
   }
 }

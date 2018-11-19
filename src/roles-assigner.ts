@@ -15,8 +15,8 @@ export class RolesAssigner {
   }
 
   assignRoles(requestedRoleIds: RoleId[] = []): Player[] {
-    const roleIds = RolesAssigner._generateRolesConfig(requestedRoleIds);
-    const roles   = RolesAssigner._generateRoles(
+    const roleIds = RolesAssigner.generateRolesConfig(requestedRoleIds);
+    const roles   = RolesAssigner.generateRoles(
       roleIds,
       this.levelPreset.getGoodCount(),
       this.levelPreset.getEvilCount(),
@@ -27,13 +27,13 @@ export class RolesAssigner {
     return this.players;
   }
 
-  static _generateRolesConfig(roleIds: RoleId[]): RoleId[] {
+  static generateRolesConfig(roleIds: RoleId[]): RoleId[] {
     const defaultRoleIds: RoleId[] = [RoleId.Merlin, RoleId.Assassin];
 
     return _.union(roleIds, defaultRoleIds);
   }
 
-  static _generateRoles(roleIds: RoleId[], goodCount: number, evilCount: number): Role[] {
+  static generateRoles(roleIds: RoleId[], goodCount: number, evilCount: number): Role[] {
     const roles = roleIds.map((roleId: RoleId) => {
       const role = new Role(roleId);
 
@@ -46,12 +46,12 @@ export class RolesAssigner {
 
     return _.shuffle(_.concat(
       roles,
-      RolesAssigner._generateServants(goodCount),
-      RolesAssigner._generateMinions(evilCount),
+      RolesAssigner.generateServants(goodCount),
+      RolesAssigner.generateMinions(evilCount),
     ));
   }
 
-  static _generateServants(count: number): Role[] {
+  static generateServants(count: number): Role[] {
     return _.shuffle([
       new Role(RoleId.Servant_1),
       new Role(RoleId.Servant_2),
@@ -61,7 +61,7 @@ export class RolesAssigner {
     ]).slice(0, count);
   }
 
-  static _generateMinions(count: number): Role[] {
+  static generateMinions(count: number): Role[] {
     return _.shuffle([
       new Role(RoleId.Minion_1),
       new Role(RoleId.Minion_2),
