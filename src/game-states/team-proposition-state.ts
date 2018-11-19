@@ -19,10 +19,7 @@ export class TeamPropositionState extends BaseState {
       throw new fromErrors.DeniedTeamSubmissionError();
     }
 
-    const proposedPlayersCount = game.playersManager.getProposedPlayers().length;
-    const votesNeededCount     = game.questsManager.getCurrentQuest().getVotesNeeded();
-
-    if (proposedPlayersCount !== votesNeededCount) {
+    if (this.playerAmountIsIncorrect(game)) {
       throw new fromErrors.RequiredCorrectTeammatesAmountError();
     }
 
@@ -31,15 +28,24 @@ export class TeamPropositionState extends BaseState {
     if (game.questsManager.isLastRoundOfTeamVoting()) {
       game.state = new TeamVotingState();
 
-      game.playersManager
-        .getAll()
-        .forEach((player) => game.voteForTeam(player.getUsername(), true));
+      this.approveAllVotes(game);
 
       game.state = new QuestVotingState();
-
-      return;
     } else {
       game.state = new TeamVotingState();
     }
+  }
+
+  private playerAmountIsIncorrect(game: Game) {
+    const proposedPlayersCount = game.playersManager.getProposedPlayers().length;
+    const votesNeededCount     = game.questsManager.getCurrentQuest().getVotesNeeded();
+
+    return proposedPlayersCount !== votesNeededCount;
+  }
+
+  private approveAllVotes(game: Game) {
+    game.playersManager
+      .getAll()
+      .forEach((player) => game.voteForTeam(player.getUsername(), true));
   }
 }
