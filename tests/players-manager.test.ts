@@ -3,6 +3,7 @@ import * as fromErrors from '../src/errors';
 import { PlayersManager } from '../src/players-manager';
 import { Player } from '../src/player';
 import { LevelPreset } from '../src/level-preset';
+import { RoleId } from '../src/configs/roles.config';
 
 let manager: PlayersManager;
 beforeEach(() => {
@@ -336,6 +337,35 @@ describe('assassination', () => {
     manager.assassinate(assassin.getUsername());
 
     expect(manager.getIsAssassinated(victim)).toBeTruthy();
+  });
+
+  test('should return true if the assassination was successful', () => {
+    addPlayersAndAssignRoles(5);
+
+    const assassin = manager.getAssassin();
+    const merlin   = manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
+
+    manager.toggleVictimProposition(assassin.getUsername(), merlin.getUsername());
+
+    const wasMerlin = manager.assassinate(assassin.getUsername());
+
+    expect(wasMerlin).toBeTruthy();
+  });
+
+  test('should return false if the assassination was unsucsessful', () => {
+    addPlayersAndAssignRoles(5);
+
+    const assassin  = manager.getAssassin();
+    const nonMerlin = manager.getAll().find((p) => {
+      return p.getRole().getId() !== RoleId.Merlin
+        && !p.isAssassin();
+    });
+
+    manager.toggleVictimProposition(assassin.getUsername(), nonMerlin.getUsername());
+
+    const wasMerlin = manager.assassinate(assassin.getUsername());
+
+    expect(wasMerlin).toBeFalsy();
   });
 });
 

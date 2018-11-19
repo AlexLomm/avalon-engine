@@ -28,6 +28,13 @@ export class PlayersManager {
     }
 
     this.isAssassinated = true;
+
+    return this.assassinationSucceeded();
+  }
+
+  // TODO: replace the hardcoded value a with config
+  private assassinationSucceeded() {
+    return this.victim.getRole().getId() === RoleId.Merlin;
   }
 
   // TODO: remove
@@ -67,6 +74,7 @@ export class PlayersManager {
       throw new fromErrors.AlreadyExistsPlayerError();
     }
 
+    // TODO: replace the hardcoded value with a config
     if (this.players.length === 10) {
       throw new fromErrors.PlayersMaximumReachedError();
     }
