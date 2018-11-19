@@ -106,74 +106,6 @@ describe('game start', () => {
   });
 });
 
-describe('reveal roles', () => {
-  test('should reveal the roles', () => {
-    const game = new Game();
-
-    expect(game.getRolesAreRevealed()).toBeDefined();
-    expect(game.getRolesAreRevealed()).toBeFalsy();
-
-    game.revealRoles(10);
-
-    expect(game.getRolesAreRevealed()).toBeTruthy();
-  });
-
-  test('should conceal roles after specified seconds', (done) => {
-    jest.useFakeTimers();
-
-    const game = new Game();
-
-    game.revealRoles(10);
-
-    setTimeout(() => {
-      expect(game.getRolesAreRevealed()).toBeFalsy();
-
-      done();
-    }, 11 * 1000);
-
-    jest.runAllTimers();
-  });
-
-  test('should return a promise which will resolve after the roles are concealed', (done) => {
-    jest.useFakeTimers();
-
-    const game = new Game();
-
-    const p = game.revealRoles(10).then(() => {
-      expect(game.getRolesAreRevealed()).toBeFalsy();
-
-      done();
-    });
-
-    expect(p instanceof Promise).toBeTruthy();
-
-    jest.runAllTimers();
-  });
-
-  test('should return the old promise if it hasn\'t resolved yet', () => {
-    const game = new Game();
-
-    const p1 = game.revealRoles(10);
-    const p2 = game.revealRoles(10);
-
-    expect(p1).toBe(p2);
-  });
-
-  test('should return a new promise if the old one has resolved', () => {
-    jest.useFakeTimers();
-
-    const game = new Game();
-
-    const p1 = game.revealRoles(10);
-
-    jest.advanceTimersByTime(11 * 1000);
-
-    const p2 = game.revealRoles(10);
-
-    expect(p1).not.toBe(p2);
-  });
-});
-
 describe('post "reveal roles" phase', () => {
   let game: Game;
   let playersManager: PlayersManager;
@@ -189,7 +121,6 @@ describe('post "reveal roles" phase', () => {
     _.times(7, (i) => game.addPlayer(new Player(`user-${i}`)));
 
     game.start();
-    game.revealRoles(10);
 
     jest.runAllTimers();
   });

@@ -15,10 +15,6 @@ export class Game {
   public startedAt: Date;
   public finishedAt: Date;
   //
-  private rolesLastRevealedAt: Date;
-  private rolesAreRevealed: boolean = false;
-  private revealRolesPromise: Promise<void>;
-  //
   public levelPreset: LevelPreset   = LevelPreset.null();
   public playersManager: PlayersManager;
   public questsManager: QuestsManager;
@@ -70,31 +66,6 @@ export class Game {
   // TODO: make private / remove
   getLevelPreset() {
     return this.levelPreset;
-  }
-
-  // TODO: make private / remove
-  getRolesAreRevealed() {
-    return this.rolesAreRevealed;
-  }
-
-  // TODO: remove
-  revealRoles(seconds: number) {
-    if (this.revealRolesPromise) return this.revealRolesPromise;
-
-    this.rolesAreRevealed = true;
-
-    this.revealRolesPromise = new Promise((resolve) => {
-      const rolesAreRevealed = setTimeout(() => {
-        this.rolesAreRevealed    = false;
-        this.revealRolesPromise  = null;
-        this.rolesLastRevealedAt = new Date();
-        clearTimeout(rolesAreRevealed);
-
-        resolve();
-      }, seconds * 1000);
-    });
-
-    return this.revealRolesPromise;
   }
 
   // TODO: convert to "handle"
