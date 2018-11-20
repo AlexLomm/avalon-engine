@@ -8,8 +8,6 @@ import { createFsm, GameState } from './game-states/finite-state-machine';
 import { TypeState } from 'typestate';
 import { GameMetaData } from './game-meta-data';
 
-// TODO: make fields private
-// TODO: extract "history" fields to another class
 export class Game {
   private playersManager: PlayersManager;
   private questsManager: QuestsManager;
@@ -52,6 +50,8 @@ export class Game {
 
   addPlayer(player: Player) {
     this.state.addPlayer(this, player);
+
+    this.metaData.setCreatorOnce(player);
   }
 
   start(roleIds: RoleId[] = []) {

@@ -7,7 +7,6 @@ import { RoleId } from './configs/roles.config';
 
 export class PlayersManager {
   private players: Player[]         = [];
-  private gameCreator: Player;
   private isSubmitted: boolean      = false;
   private proposedPlayers: Player[] = [];
   private leaderIndex: number       = -1;
@@ -62,11 +61,6 @@ export class PlayersManager {
     return this.proposedPlayers;
   }
 
-  // TODO: remove
-  getGameCreator(): Player {
-    return this.gameCreator;
-  }
-
   add(player: Player) {
     if (!player) return;
 
@@ -77,10 +71,6 @@ export class PlayersManager {
     // TODO: replace the hardcoded value with a config
     if (this.players.length === 10) {
       throw new fromErrors.PlayersMaximumReachedError();
-    }
-
-    if (!this.gameCreator) {
-      this.gameCreator = player;
     }
 
     this.players.push(player);
@@ -206,7 +196,7 @@ export class PlayersManager {
     this.proposedPlayers = [];
   }
 
-  serializeFor(forPlayerUsername: string, votesRevealed: boolean) {
+  serialize(forPlayerUsername: string, votesRevealed: boolean) {
     const forPlayer = this.findPlayer(forPlayerUsername);
     if (!forPlayer) {
       throw new fromErrors.PlayerMissingError();
@@ -215,7 +205,6 @@ export class PlayersManager {
     return {
       players: this.serializePlayers(forPlayer, votesRevealed),
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
-      gameCreatorUsername: PlayersManager.getUsernameOrNull(this.gameCreator),
       leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
       victimUsername: PlayersManager.getUsernameOrNull(this.getVictim()),

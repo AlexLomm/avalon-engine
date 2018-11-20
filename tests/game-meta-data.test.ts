@@ -1,5 +1,6 @@
 import { GameMetaData } from '../src/game-meta-data';
 import { LevelPreset } from '../src/level-preset';
+import { Player } from '../src/player';
 
 test('should have an id and creation date set upon initialization', () => {
   const gameMeta = new GameMetaData();
@@ -11,6 +12,17 @@ test('should have an id and creation date set upon initialization', () => {
   expect(serializedMeta.levelPreset).toBeTruthy();
 
   expect(gameMeta.serialize());
+});
+
+test('should set a creator once', () => {
+  const gameMeta = new GameMetaData();
+
+  expect(gameMeta.serialize().gameCreator).toBeFalsy();
+
+  gameMeta.setCreatorOnce(new Player('user-1'));
+  gameMeta.setCreatorOnce(new Player('user-2'));
+
+  expect(gameMeta.serialize().gameCreator).toStrictEqual('user-1');
 });
 
 test('should set an appropriate level preset', () => {
