@@ -127,6 +127,15 @@ export class NoTimeForQuestVotingError extends BaseError {
   }
 }
 
+export class NoTimeVictimPropositionError extends BaseError {
+  constructor() {
+    super(
+      'This is not a victim proposition time.',
+      'ERR_NO_VICTIM_PROP',
+    );
+  }
+}
+
 export class NoTimeForAssassinationError extends BaseError {
   constructor() {
     super(
@@ -136,11 +145,11 @@ export class NoTimeForAssassinationError extends BaseError {
   }
 }
 
-export class NoTimeVictimPropositionError extends BaseError {
+export class NoTimeFinishError extends BaseError {
   constructor() {
     super(
-      'This is not a victim proposition time.',
-      'ERR_NO_VICTIM_PROP',
+      'The game can not be finished yet.',
+      'ERR_NO_GAME_FINISH',
     );
   }
 }

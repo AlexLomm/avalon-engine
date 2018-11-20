@@ -37,6 +37,6 @@ export abstract class BaseState {
   }
 
   finish(game: Game) {
-    // TODO: add an error
+    throw new fromErrors.NoTimeFinishError();
   }
 }

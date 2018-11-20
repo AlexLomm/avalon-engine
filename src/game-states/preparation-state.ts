@@ -3,7 +3,7 @@ import { Game } from '../game';
 import { Player } from '../player';
 import { RoleId } from '../configs/roles.config';
 import { BaseState } from './base-state';
-import { TeamPropositionState } from './team-proposition-state';
+import { GameState } from './finite-state-machine';
 
 export class PreparationState extends BaseState {
   addPlayer(game: Game, player: Player) {
@@ -19,6 +19,6 @@ export class PreparationState extends BaseState {
     game.playersManager.assignRoles(game.levelPreset, roleIds);
     game.questsManager.init(game.levelPreset);
 
-    game.state = new TeamPropositionState();
+    game.fsm.go(GameState.TeamProposition);
   }
 }

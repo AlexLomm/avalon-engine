@@ -1,9 +1,7 @@
 import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
-import { AssassinationState } from './assassination-state';
-import { FrozenState } from './frozen-state';
-import { TeamPropositionState } from './team-proposition-state';
+import { GameState } from './finite-state-machine';
 
 export class QuestVotingState extends BaseState {
   voteForQuest(game: Game, username: string, voteValue: boolean) {
@@ -15,23 +13,18 @@ export class QuestVotingState extends BaseState {
 
     // TODO: add state freezing
     if (!this.questVotingIsOn(game)) {
+
       // TODO: refactor
       if (game.questsManager.getStatus() === 0) {
-        game.state = new FrozenState();
-      } else if (game.questsManager.assassinationAllowed()) {
-        this.resetFlags(game);
+        game.fsm.go(GameState.Finish);
+      }
 
-        game.state = new AssassinationState();
-      } else {
-        game.state = new FrozenState();
+      else if (game.questsManager.assassinationAllowed()) {
+        game.fsm.go(GameState.Assassination);
+      }
 
-        //setTimeout(() => {
-          this.resetFlags(game);
-
-          game.questsManager.nextQuest();
-
-          game.state = new TeamPropositionState();
-        //}, 5000);
+      else {
+        game.fsm.go(GameState.TeamProposition);
       }
     }
   }
@@ -41,13 +34,6 @@ export class QuestVotingState extends BaseState {
     const vote = game.playersManager.generateVote(username, voteValue);
 
     game.questsManager.addVote(vote);
-  }
-
-  // TODO: dedupe
-  private resetFlags(game: Game) {
-    game.playersManager.resetVotes();
-    game.playersManager.resetPropositions();
-    game.playersManager.setIsSubmitted(false);
   }
 
   // TODO: rename

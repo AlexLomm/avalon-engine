@@ -6,19 +6,22 @@ import { PreparationState } from './game-states/preparation-state';
 import { RoleId } from './configs/roles.config';
 import { BaseState } from './game-states/base-state';
 import { Player } from './player';
+import { createFsm } from './game-states/finite-state-machine';
 
 // TODO: make fields private
 // TODO: extract "history" fields to another class
 export class Game {
-  private id: string                = crypto.randomBytes(20).toString('hex');
-  public createdAt: Date            = new Date();
+  private id: string     = crypto.randomBytes(20).toString('hex');
+  public createdAt: Date = new Date();
   public startedAt: Date;
   public finishedAt: Date;
   //
-  public levelPreset: LevelPreset   = LevelPreset.null();
+  // TODO refactor null object
+  public levelPreset: LevelPreset = LevelPreset.null();
   public playersManager: PlayersManager;
   public questsManager: QuestsManager;
   public state: BaseState;
+  public fsm: any;
 
   constructor(
     playersManager   = new PlayersManager(),
@@ -29,6 +32,7 @@ export class Game {
     this.playersManager = playersManager;
     this.questsManager  = questsManager;
     this.state          = state;
+    this.fsm            = createFsm(this);
   }
 
   // TODO: make private / remove
