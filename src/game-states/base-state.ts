@@ -35,8 +35,4 @@ export abstract class BaseState {
   assassinate(game: Game, assassinsUsername: string) {
     throw new fromErrors.NoTimeForAssassinationError();
   }
-
-  finish(game: Game) {
-    throw new fromErrors.NoTimeFinishError();
-  }
 }

@@ -5,25 +5,25 @@ import { GameState } from './finite-state-machine';
 
 export class TeamVotingState extends BaseState {
   voteForTeam(game: Game, username: string, voteValue: boolean) {
-    if (!game.playersManager.teamVotingAllowedFor(username)) {
+    if (!game.getPlayersManager().teamVotingAllowedFor(username)) {
       throw new fromErrors.DeniedTeamVotingError();
     }
 
     this.vote(game, username, voteValue);
 
-    if (game.questsManager.teamVotingSucceeded()) {
-      game.fsm.go(GameState.QuestVoting);
+    if (game.getQuestsManager().teamVotingSucceeded()) {
+      game.getFsm().go(GameState.QuestVoting);
     }
 
-    else if (game.questsManager.teamVotingRoundFinished()) {
-      game.fsm.go(GameState.TeamProposition);
+    else if (game.getQuestsManager().teamVotingRoundFinished()) {
+      game.getFsm().go(GameState.TeamProposition);
     }
   }
 
   // TODO: dedupe
   private vote(game: Game, username: string, voteValue: boolean) {
-    const vote = game.playersManager.generateVote(username, voteValue);
+    const vote = game.getPlayersManager().generateVote(username, voteValue);
 
-    game.questsManager.addVote(vote);
+    game.getQuestsManager().addVote(vote);
   }
 }

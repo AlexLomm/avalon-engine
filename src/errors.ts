@@ -145,15 +145,6 @@ export class NoTimeForAssassinationError extends BaseError {
   }
 }
 
-export class NoTimeFinishError extends BaseError {
-  constructor() {
-    super(
-      'The game can not be finished yet.',
-      'ERR_NO_GAME_FINISH',
-    );
-  }
-}
-
 export class DeniedTeammatePropositionError extends BaseError {
   constructor() {
     super(

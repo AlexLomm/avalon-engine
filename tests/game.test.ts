@@ -7,27 +7,10 @@ import { QuestsManager } from '../src/quests-manager';
 import { Player } from '../src/player';
 
 describe('initialization', () => {
-  test('should set creation date', () => {
+  test('should contain a meta data object', () => {
     const game = new Game();
 
-    expect(game.getCreatedAt() instanceof Date).toStrictEqual(true);
-  });
-
-  test('should mark the game as finished', () => {
-    const game = new Game();
-
-    expect(game.getFinishedAt()).toBeFalsy();
-
-    game.finish();
-
-    expect(game.getFinishedAt() instanceof Date).toStrictEqual(true);
-  });
-
-  test('should be assigned a unique id', () => {
-    const game1 = new Game();
-    const game2 = new Game();
-
-    expect(game1.getId()).not.toEqual(game2.getId());
+    expect(game.getMetaData()).toBeTruthy();
   });
 });
 
@@ -49,32 +32,6 @@ describe('game start', () => {
     _.times(4, (i) => game.addPlayer(new Player(`user-${i}`)));
 
     expect(() => game.start()).toThrow(fromErrors.PlayersAmountIncorrectError);
-  });
-
-  test('should mark the game as started', () => {
-    const game = new Game();
-
-    _.times(8, (i) => game.addPlayer(new Player(`user-${i}`)));
-
-    expect(game.getStartedAt()).toBeFalsy();
-
-    game.start();
-
-    expect(game.getStartedAt() instanceof Date).toStrictEqual(true);
-  });
-
-  test('should load the level preset appropriate to the player count', () => {
-    const game        = new Game();
-    const playerCount = 8;
-
-    _.times(playerCount, (i) => game.addPlayer(new Player(`user-${i}`)));
-
-    game.start();
-
-    const goodCount = game.getLevelPreset().getGoodCount();
-    const evilCount = game.getLevelPreset().getEvilCount();
-
-    expect(goodCount + evilCount).toEqual(playerCount);
   });
 
   test('should assign roles', () => {

@@ -1,4 +1,3 @@
-import { LevelPreset } from '../level-preset';
 import { Game } from '../game';
 import { Player } from '../player';
 import { RoleId } from '../configs/roles.config';
@@ -7,18 +6,16 @@ import { GameState } from './finite-state-machine';
 
 export class PreparationState extends BaseState {
   addPlayer(game: Game, player: Player) {
-    game.playersManager.add(player);
+    game.getPlayersManager().add(player);
   }
 
   start(game: Game, roleIds: RoleId[]) {
-    const playerCount = game.playersManager.getAll().length;
+    const playerCount = game.getPlayersManager().getAll().length;
+    const levelPreset = game.getMetaData().init(playerCount);
 
-    game.levelPreset = new LevelPreset(playerCount);
-    game.startedAt   = new Date();
+    game.getPlayersManager().assignRoles(levelPreset, roleIds);
+    game.getQuestsManager().init(levelPreset);
 
-    game.playersManager.assignRoles(game.levelPreset, roleIds);
-    game.questsManager.init(game.levelPreset);
-
-    game.fsm.go(GameState.TeamProposition);
+    game.getFsm().go(GameState.TeamProposition);
   }
 }

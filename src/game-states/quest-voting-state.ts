@@ -5,7 +5,7 @@ import { GameState } from './finite-state-machine';
 
 export class QuestVotingState extends BaseState {
   voteForQuest(game: Game, username: string, voteValue: boolean) {
-    if (!game.playersManager.questVotingAllowedFor(username)) {
+    if (!game.getPlayersManager().questVotingAllowedFor(username)) {
       throw new fromErrors.DeniedQuestVotingError();
     }
 
@@ -15,30 +15,30 @@ export class QuestVotingState extends BaseState {
     if (!this.questVotingIsOn(game)) {
 
       // TODO: refactor
-      if (game.questsManager.getStatus() === 0) {
-        game.fsm.go(GameState.Finish);
+      if (game.getQuestsManager().getStatus() === 0) {
+        game.getFsm().go(GameState.Finish);
       }
 
-      else if (game.questsManager.assassinationAllowed()) {
-        game.fsm.go(GameState.Assassination);
+      else if (game.getQuestsManager().assassinationAllowed()) {
+        game.getFsm().go(GameState.Assassination);
       }
 
       else {
-        game.fsm.go(GameState.TeamProposition);
+        game.getFsm().go(GameState.TeamProposition);
       }
     }
   }
 
   // TODO: dedupe
   private vote(game: Game, username: string, voteValue: boolean) {
-    const vote = game.playersManager.generateVote(username, voteValue);
+    const vote = game.getPlayersManager().generateVote(username, voteValue);
 
-    game.questsManager.addVote(vote);
+    game.getQuestsManager().addVote(vote);
   }
 
   // TODO: rename
   private questVotingIsOn(game: Game) {
-    return game.playersManager.getIsSubmitted()
-      && game.questsManager.getCurrentQuest().questVotingAllowed();
+    return game.getPlayersManager().getIsSubmitted()
+      && game.getQuestsManager().getCurrentQuest().questVotingAllowed();
   }
 }

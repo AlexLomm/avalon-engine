@@ -5,15 +5,15 @@ import { GameState } from './finite-state-machine';
 
 export class TeamPropositionState extends BaseState {
   toggleTeammateProposition(game: Game, leaderUsername: string, username: string) {
-    if (!game.playersManager.playerPropositionAllowedFor(leaderUsername)) {
+    if (!game.getPlayersManager().playerPropositionAllowedFor(leaderUsername)) {
       throw new fromErrors.DeniedTeammatePropositionError();
     }
 
-    game.playersManager.togglePlayerProposition(username);
+    game.getPlayersManager().togglePlayerProposition(username);
   }
 
   submitTeam(game: Game, leaderUsername: string) {
-    if (!game.playersManager.playerPropositionAllowedFor(leaderUsername)) {
+    if (!game.getPlayersManager().playerPropositionAllowedFor(leaderUsername)) {
       throw new fromErrors.DeniedTeamSubmissionError();
     }
 
@@ -21,14 +21,14 @@ export class TeamPropositionState extends BaseState {
       throw new fromErrors.RequiredCorrectTeammatesAmountError();
     }
 
-    game.questsManager.isLastRoundOfTeamVoting()
-      ? game.fsm.go(GameState.TeamVotingPreApproved)
-      : game.fsm.go(GameState.TeamVoting);
+    game.getQuestsManager().isLastRoundOfTeamVoting()
+      ? game.getFsm().go(GameState.TeamVotingPreApproved)
+      : game.getFsm().go(GameState.TeamVoting);
   }
 
   private playerAmountIsIncorrect(game: Game) {
-    const proposedPlayersCount = game.playersManager.getProposedPlayers().length;
-    const votesNeededCount     = game.questsManager.getCurrentQuest().getVotesNeeded();
+    const proposedPlayersCount = game.getPlayersManager().getProposedPlayers().length;
+    const votesNeededCount     = game.getQuestsManager().getCurrentQuest().getVotesNeeded();
 
     return proposedPlayersCount !== votesNeededCount;
   }

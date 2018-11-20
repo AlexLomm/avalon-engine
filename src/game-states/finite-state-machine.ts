@@ -6,14 +6,6 @@ import { FrozenState } from './frozen-state';
 import { TypeState } from 'typestate';
 import { AssassinationState } from './assassination-state';
 
-function simulateTeamApproval(game: Game) {
-  game.playersManager
-    .getAll()
-    .forEach((player) => {
-      game.voteForTeam(player.getUsername(), true);
-    });
-}
-
 export enum GameState {
   Preparation           = 'Preparation',
   TeamProposition       = 'TeamProposition',
@@ -22,6 +14,14 @@ export enum GameState {
   QuestVoting           = 'QuestVoting',
   Assassination         = 'Assassination',
   Finish                = 'Finish',
+}
+
+function simulateTeamApproval(game: Game) {
+  game.getPlayersManager()
+    .getAll()
+    .forEach((player) => {
+      game.voteForTeam(player.getUsername(), true);
+    });
 }
 
 export function createFsm(game: Game) {
@@ -46,28 +46,28 @@ export function createFsm(game: Game) {
   fsm.on(GameState.TeamProposition, (from: GameState) => {
     switch (from) {
       case GameState.Preparation:
-        game.state = new TeamPropositionState();
+        game.setState(new TeamPropositionState());
 
         break;
       case GameState.TeamVoting:
-        game.state = new FrozenState();
+        game.setState(new FrozenState());
 
         //setTimeout(() => {
-        game.playersManager.reset();
+        game.getPlayersManager().reset();
 
-        game.state = new TeamPropositionState();
+        game.setState(new TeamPropositionState());
         //}, 5000);
 
         break;
       case GameState.QuestVoting:
-        game.state = new FrozenState();
+        game.setState(new FrozenState());
 
         //setTimeout(() => {
-        game.playersManager.reset();
+        game.getPlayersManager().reset();
 
-        game.questsManager.nextQuest();
+        game.getQuestsManager().nextQuest();
 
-        game.state = new TeamPropositionState();
+        game.setState(new TeamPropositionState());
         //}, 5000);
 
         break;
@@ -77,9 +77,9 @@ export function createFsm(game: Game) {
   fsm.on(GameState.TeamVoting, (from: GameState) => {
     switch (from) {
       case GameState.TeamProposition:
-        game.playersManager.setIsSubmitted(true);
+        game.getPlayersManager().setIsSubmitted(true);
 
-        game.state = new TeamVotingState();
+        game.setState(new TeamVotingState());
 
         break;
     }
@@ -88,9 +88,9 @@ export function createFsm(game: Game) {
   fsm.on(GameState.TeamVotingPreApproved, (from: GameState) => {
     switch (from) {
       case GameState.TeamProposition:
-        game.playersManager.setIsSubmitted(true);
+        game.getPlayersManager().setIsSubmitted(true);
 
-        game.state = new TeamVotingState();
+        game.setState(new TeamVotingState());
 
         simulateTeamApproval(game);
 
@@ -102,12 +102,12 @@ export function createFsm(game: Game) {
     switch (from) {
       case GameState.TeamVotingPreApproved:
       case GameState.TeamVoting:
-        game.state = new FrozenState();
+        game.setState(new FrozenState());
 
         //setTimeout(() => {
-        game.playersManager.resetVotes();
+        game.getPlayersManager().resetVotes();
 
-        game.state = new QuestVotingState();
+        game.setState(new QuestVotingState());
         //}, 5000);
 
         break;
@@ -117,9 +117,9 @@ export function createFsm(game: Game) {
   fsm.on(GameState.Assassination, (from: GameState) => {
     switch (from) {
       case GameState.QuestVoting:
-        game.playersManager.reset();
+        game.getPlayersManager().reset();
 
-        game.state = new AssassinationState();
+        game.setState(new AssassinationState());
 
         break;
     }
@@ -128,11 +128,8 @@ export function createFsm(game: Game) {
   fsm.on(GameState.Finish, (from: GameState) => {
     switch (from) {
       case GameState.QuestVoting:
-        game.state = new FrozenState();
-
-        break;
       case GameState.Assassination:
-        game.state = new FrozenState();
+        game.setState(new FrozenState());
 
         break;
     }
