@@ -186,11 +186,17 @@ export class PlayersManager {
     return player.generateVote(voteValue);
   }
 
+  reset() {
+    this.setIsSubmitted(false);
+    this.resetVotes();
+    this.resetPropositions();
+  }
+
   resetVotes() {
     this.players.forEach((player) => player.resetVote());
   }
 
-  resetPropositions() {
+  private resetPropositions() {
     this.proposedPlayers = [];
   }
 

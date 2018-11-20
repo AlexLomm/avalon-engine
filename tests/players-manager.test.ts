@@ -210,9 +210,23 @@ describe('team proposition and submission', () => {
     manager.generateVote('user-3', true);
     manager.generateVote('user-4', true);
 
-    manager.resetPropositions();
+    manager.reset();
 
     expect(manager.getProposedPlayers().length).toStrictEqual(0);
+  });
+
+  test('should reset votes, propositions and whether the team is submitted or not', () => {
+    addPlayersToManager(7);
+
+    manager.setIsSubmitted(true);
+    manager.generateVote('user-1', true);
+    manager.togglePlayerProposition(manager.getAll()[0].getUsername());
+
+    manager.reset();
+
+    expect(manager.getIsSubmitted()).toBeFalsy();
+    expect(manager.getProposedPlayers().length).toStrictEqual(0);
+    expect(manager.getIsSubmitted()).toBeFalsy();
   });
 });
 

@@ -14,13 +14,6 @@ function simulateTeamApproval(game: Game) {
     });
 }
 
-// TODO: maybe move to playersManager?
-function reset(game: Game) {
-  game.playersManager.resetVotes();
-  game.playersManager.resetPropositions();
-  game.playersManager.setIsSubmitted(false);
-}
-
 export enum GameState {
   Preparation           = 'Preparation',
   TeamProposition       = 'TeamProposition',
@@ -60,7 +53,7 @@ export function createFsm(game: Game) {
         game.state = new FrozenState();
 
         //setTimeout(() => {
-        reset(game);
+        game.playersManager.reset();
 
         game.state = new TeamPropositionState();
         //}, 5000);
@@ -70,7 +63,7 @@ export function createFsm(game: Game) {
         game.state = new FrozenState();
 
         //setTimeout(() => {
-        reset(game);
+        game.playersManager.reset();
 
         game.questsManager.nextQuest();
 
@@ -124,7 +117,7 @@ export function createFsm(game: Game) {
   fsm.on(GameState.Assassination, (from: GameState) => {
     switch (from) {
       case GameState.QuestVoting:
-        reset(game);
+        game.playersManager.reset();
 
         game.state = new AssassinationState();
 
