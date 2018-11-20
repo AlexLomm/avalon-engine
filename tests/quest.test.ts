@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as fromErrors from '../src/errors';
-import { Quest } from '../src/quest';
+import { Quest, QuestStatus } from '../src/quest';
 import { Vote } from '../src/vote';
 
 test('should return number of players needed', () => {
@@ -20,13 +20,13 @@ describe('status', () => {
     const quest = new Quest({votesNeeded: 2, failsNeeded: 2, totalPlayers: 2});
 
     quest.addVote(new Vote('user-1', true));
-    expect(quest.getStatus()).toEqual(-1);
+    expect(quest.getStatus()).toEqual(QuestStatus.Unresolved);
 
     quest.addVote(new Vote('user-2', true));
-    expect(quest.getStatus()).toEqual(-1);
+    expect(quest.getStatus()).toEqual(QuestStatus.Unresolved);
 
     quest.addVote(new Vote('user-1', false));
-    expect(quest.getStatus()).toEqual(-1);
+    expect(quest.getStatus()).toEqual(QuestStatus.Unresolved);
   });
 
   test('should return status: success', () => {
@@ -38,7 +38,7 @@ describe('status', () => {
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', true));
 
-    expect(quest.getStatus()).toStrictEqual(1);
+    expect(quest.getStatus()).toStrictEqual(QuestStatus.Won);
   });
 
   test('should return status: fail', () => {
@@ -50,7 +50,7 @@ describe('status', () => {
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', false));
 
-    expect(quest.getStatus()).toStrictEqual(0);
+    expect(quest.getStatus()).toStrictEqual(QuestStatus.Lost);
   });
 
   test('should return status: pending when the team has been rejected', () => {
@@ -62,7 +62,7 @@ describe('status', () => {
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', true));
 
-    expect(quest.getStatus()).toStrictEqual(-1);
+    expect(quest.getStatus()).toStrictEqual(QuestStatus.Unresolved);
   });
 
   test('should return if is complete', () => {

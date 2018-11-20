@@ -1,6 +1,12 @@
 import { Vote } from './vote';
 import * as fromErrors from './errors';
 
+export enum QuestStatus {
+  Unresolved = 'Unresolved',
+  Lost       = 'Lost',
+  Won        = 'Won',
+}
+
 export class Quest {
   private votesNeeded: number;
   private failsNeeded: number;
@@ -38,22 +44,22 @@ export class Quest {
   }
 
   isComplete() {
-    return this.getStatus() !== -1;
+    return this.getStatus() !== QuestStatus.Unresolved;
   }
 
-  getStatus() {
+  getStatus(): QuestStatus {
     if (this.teamVotingAllowed() || this.questVotingAllowed()) {
-      return -1;
+      return QuestStatus.Unresolved;
     }
 
-    return this._questVotingFailed() ? 1 : 0;
+    return this.questVotingFailed() ? QuestStatus.Won : QuestStatus.Lost;
   }
 
-  _questVotingFailed() {
-    return this._failsCount() < this.failsNeeded;
+  private questVotingFailed() {
+    return this.failsCount() < this.failsNeeded;
   }
 
-  _failsCount() {
+  private failsCount() {
     return this.questVotes.reduce(
       (acc, vote) => vote.getValue() ? acc : acc + 1, 0,
     );
@@ -61,35 +67,35 @@ export class Quest {
 
   addVote(vote: Vote) {
     this.teamVotingAllowed()
-      ? this._addVoteForTeam(vote)
-      : this._addVoteForQuest(vote);
+      ? this.addVoteForTeam(vote)
+      : this.addVoteForQuest(vote);
   }
 
-  _addVoteForTeam(vote: Vote) {
-    const currentRound = this._getCurrentTeamVotingRound();
+  private addVoteForTeam(vote: Vote) {
+    const currentRound = this.getCurrentTeamVotingRound();
 
     // TODO: voting validation is also handled by the players manager
-    if (this._alreadyVotedFor(currentRound, vote)) {
+    if (this.alreadyVotedFor(currentRound, vote)) {
       throw new fromErrors.AlreadyVotedForTeamError();
     }
 
     currentRound.push(vote);
 
-    if (this._everybodyVotedFor(currentRound) && !this.teamVotingSucceeded()) {
+    if (this.everybodyVotedFor(currentRound) && !this.teamVotingSucceeded()) {
       this.teamVotingRoundIndex++;
     }
   }
 
-  _addVoteForQuest(vote: Vote) {
+  private addVoteForQuest(vote: Vote) {
     // TODO: voting validation is also handled by the players manager
-    if (this._alreadyVotedFor(this.questVotes, vote)) {
+    if (this.alreadyVotedFor(this.questVotes, vote)) {
       throw new fromErrors.AlreadyVotedForQuestError();
     }
 
     this.questVotes.push(vote);
   }
 
-  _alreadyVotedFor(votes: Vote[], vote: Vote) {
+  private alreadyVotedFor(votes: Vote[], vote: Vote) {
     return !!votes.find((v: Vote) => v.getUsername() === vote.getUsername());
   }
 
@@ -99,11 +105,11 @@ export class Quest {
   }
 
   teamVotingSucceeded() {
-    return !this.teamVotingAllowed() && this._majorityApproved();
+    return !this.teamVotingAllowed() && this.majorityApproved();
   }
 
-  _majorityApproved() {
-    const currentRound = this._getCurrentTeamVotingRound();
+  private majorityApproved() {
+    const currentRound = this.getCurrentTeamVotingRound();
 
     const failsCount = currentRound.reduce(
       (acc, vote) => vote.getValue() ? acc : acc + 1, 0,
@@ -113,30 +119,30 @@ export class Quest {
   }
 
   teamVotingAllowed() {
-    return this._getCurrentTeamVotingRound().length < this.totalPlayers
-      || !this._majorityApproved();
+    return this.getCurrentTeamVotingRound().length < this.totalPlayers
+      || !this.majorityApproved();
   }
 
   teamVotingRoundFinished() {
     if (this.teamVotingSucceeded()) return true;
 
-    const previousRound = this._getPreviousTeamVotingRound();
+    const previousRound = this.getPreviousTeamVotingRound();
 
     if (!previousRound) return false;
 
-    return this._everybodyVotedFor(previousRound)
-      && this._getCurrentTeamVotingRound().length === 0;
+    return this.everybodyVotedFor(previousRound)
+      && this.getCurrentTeamVotingRound().length === 0;
   }
 
-  _getPreviousTeamVotingRound() {
+  private getPreviousTeamVotingRound() {
     return this.teamVoteRounds[this.teamVotingRoundIndex - 1];
   }
 
-  _everybodyVotedFor(round: Vote[]) {
+  private everybodyVotedFor(round: Vote[]) {
     return round.length === this.totalPlayers;
   }
 
-  _getCurrentTeamVotingRound() {
+  private getCurrentTeamVotingRound() {
     return this.teamVoteRounds[this.teamVotingRoundIndex];
   }
 
@@ -148,7 +154,7 @@ export class Quest {
     return {
       failsNeeded: this.failsNeeded,
       votesNeeded: this.votesNeeded,
-      teamVotes: this._getCurrentTeamVotingRound().map(vote => vote.serialize()),
+      teamVotes: this.getCurrentTeamVotingRound().map(vote => vote.serialize()),
       questVotes: this.questVotes.map(vote => vote.serialize()),
     };
   }

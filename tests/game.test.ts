@@ -3,7 +3,7 @@ import * as fromErrors from '../src/errors';
 import { RoleId } from '../src/configs/roles.config';
 import { Game } from '../src/game';
 import { PlayersManager } from '../src/players-manager';
-import { QuestsManager } from '../src/quests-manager';
+import { QuestsManager, GameStatus } from '../src/quests-manager';
 import { Player } from '../src/player';
 
 describe('initialization', () => {
@@ -486,7 +486,7 @@ describe('post "reveal roles" phase', () => {
       game.toggleVictimProposition(assassin.getUsername(), merlin.getUsername());
       game.assassinate(assassin.getUsername());
 
-      expect(questsManager.getStatus()).toStrictEqual(0);
+      expect(questsManager.getGameStatus()).toStrictEqual(GameStatus.Lost);
     });
 
     test('should set the game status to "1", if the victim was not Merlin', () => {
@@ -498,7 +498,7 @@ describe('post "reveal roles" phase', () => {
       game.toggleVictimProposition(assassin.getUsername(), nonMerlin.getUsername());
       game.assassinate(assassin.getUsername());
 
-      expect(questsManager.getStatus()).toStrictEqual(1);
+      expect(questsManager.getGameStatus()).toStrictEqual(GameStatus.Won);
     });
   });
 

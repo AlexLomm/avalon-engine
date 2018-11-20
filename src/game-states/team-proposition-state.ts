@@ -28,7 +28,7 @@ export class TeamPropositionState extends BaseState {
 
   private playerAmountIsIncorrect(game: Game) {
     const proposedPlayersCount = game.getPlayersManager().getProposedPlayers().length;
-    const votesNeededCount     = game.getQuestsManager().getCurrentQuest().getVotesNeeded();
+    const votesNeededCount     = game.getQuestsManager().getVotesNeeded();
 
     return proposedPlayersCount !== votesNeededCount;
   }
