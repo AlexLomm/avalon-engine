@@ -28,20 +28,11 @@ export class AlreadyExistsPlayerError extends BaseError {
   }
 }
 
-export class AlreadyVotedForTeamError extends BaseError {
+export class AlreadyVotedError extends BaseError {
   constructor() {
     super(
-      'You have already voted for the team.',
-      'ERR_TEAM_VOTED',
-    );
-  }
-}
-
-export class AlreadyVotedForQuestError extends BaseError {
-  constructor() {
-    super(
-      'You have already voted for the quest.',
-      'ERR_QUEST_VOTED',
+      'You have already voted.',
+      'ERR_AlREADY_VOTED',
     );
   }
 }

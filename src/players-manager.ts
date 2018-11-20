@@ -181,7 +181,13 @@ export class PlayersManager {
   generateVote(username: string, voteValue: boolean) {
     const player = this.findPlayer(username);
 
-    if (!player) return;
+    if (!player) {
+      throw new fromErrors.PlayerMissingError();
+    }
+
+    if (player.getVote()) {
+      throw new fromErrors.AlreadyVotedError();
+    }
 
     return player.generateVote(voteValue);
   }

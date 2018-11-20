@@ -1,5 +1,4 @@
 import { Vote } from './vote';
-import * as fromErrors from './errors';
 
 export enum QuestStatus {
   Unresolved = 'Unresolved',
@@ -15,7 +14,6 @@ export class Quest {
   private teamVotingRoundIndex: number = 0;
   private questVotes: Vote[]           = [];
 
-  // TODO: refactor type
   constructor(config: {
     votesNeeded: number,
     failsNeeded: number,
@@ -74,11 +72,6 @@ export class Quest {
   private addVoteForTeam(vote: Vote) {
     const currentRound = this.getCurrentTeamVotingRound();
 
-    // TODO: voting validation is also handled by the players manager
-    if (this.alreadyVotedFor(currentRound, vote)) {
-      throw new fromErrors.AlreadyVotedForTeamError();
-    }
-
     currentRound.push(vote);
 
     if (this.everybodyVotedFor(currentRound) && !this.teamVotingSucceeded()) {
@@ -87,16 +80,7 @@ export class Quest {
   }
 
   private addVoteForQuest(vote: Vote) {
-    // TODO: voting validation is also handled by the players manager
-    if (this.alreadyVotedFor(this.questVotes, vote)) {
-      throw new fromErrors.AlreadyVotedForQuestError();
-    }
-
     this.questVotes.push(vote);
-  }
-
-  private alreadyVotedFor(votes: Vote[], vote: Vote) {
-    return !!votes.find((v: Vote) => v.getUsername() === vote.getUsername());
   }
 
   questVotingAllowed() {

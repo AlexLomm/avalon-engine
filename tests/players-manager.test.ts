@@ -231,18 +231,32 @@ describe('team proposition and submission', () => {
 });
 
 describe('voting', () => {
+  test('should throw if a nonexistent player tries to vote', () => {
+    addPlayersToManager(5);
+
+    expect(() => {
+      manager.generateVote('nonexistent', false);
+    }).toThrow(fromErrors.PlayerMissingError);
+  });
+
   test('should mark player as has voted', () => {
-    addPlayersToManager(7);
-
-    manager.generateVote('nonexistent', false);
-
-    expect(manager.getAll().find(p => !!p.getVote())).toBeFalsy();
+    addPlayersToManager(5);
 
     manager.generateVote('user-3', false);
 
     expect(
       manager.getAll().find(p => !!p.getVote()).getUsername(),
     ).toStrictEqual('user-3');
+  });
+
+  test('should throw if a player tries to vote twice', () => {
+    addPlayersToManager(5);
+
+    manager.generateVote('user-1', false);
+
+    expect(() => {
+      manager.generateVote('user-1', false);
+    }).toThrow(fromErrors.AlreadyVotedError);
   });
 
   test('should return if a player is allowed to vote for team', () => {

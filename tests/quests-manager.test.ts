@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as fromErrors from '../src/errors';
 import { Vote } from '../src/vote';
 import { QuestsManager, GameStatus, AssassinationStatus } from '../src/quests-manager';
 import { Quest } from '../src/quest';

@@ -98,25 +98,6 @@ describe('team voting', () => {
     expect(quest.teamVotingAllowed()).toBeFalsy();
   });
 
-  test('should not allow a player to vote twice in the same team voting round', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
-
-    quest.addVote(new Vote('user-1', true));
-
-    expect(() => quest.addVote(new Vote('user-1', false)))
-      .toThrow(fromErrors.AlreadyVotedForTeamError);
-  });
-
-  test('should allow a player to vote again in the next team voting round', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
-
-    quest.addVote(new Vote('user-1', false));
-    quest.addVote(new Vote('user-2', false));
-
-    expect(() => quest.addVote(new Vote('user-1', false)))
-      .not.toThrow(fromErrors.AlreadyVotedForQuestError);
-  });
-
   test('should increment the tracker if team voting has failed', () => {
     const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
 
@@ -176,17 +157,6 @@ describe('team voting', () => {
 });
 
 describe('quest voting', () => {
-  test('should not allow a user to vote twice in a quest vote', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
-
-    quest.addVote(new Vote('user-1', true));
-    quest.addVote(new Vote('user-2', true));
-
-    quest.addVote(new Vote('user-1', true));
-    expect(() => quest.addVote(new Vote('user-1', false)))
-      .toThrow(fromErrors.AlreadyVotedForQuestError);
-  });
-
   test('should return whether everybody has voted for the quest or not', () => {
     const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
 
