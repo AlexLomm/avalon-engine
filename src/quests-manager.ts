@@ -26,13 +26,6 @@ export class QuestsManager {
   }
 
   setAssassinationStatus(isSuccessful: boolean) {
-    if (
-      this.getFailedQuestsCount() < 3
-      && this.getSucceededQuestsCount() < 3
-    ) {
-      throw new fromErrors.NoTimeForAssassinationError();
-    }
-
     this.assassinationStatus = isSuccessful
       ? AssassinationStatus.CorrectGuess
       : AssassinationStatus.IncorrectGuess;

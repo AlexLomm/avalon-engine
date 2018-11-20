@@ -162,14 +162,6 @@ describe('assassination', () => {
 
     expect(manager.assassinationAllowed()).toBeFalsy();
   });
-
-  test('should not allow assassination attempt to resolve too early', () => {
-    expect(() => manager.setAssassinationStatus(false))
-      .toThrow(fromErrors.NoTimeForAssassinationError);
-
-    expect(() => manager.setAssassinationStatus(true))
-      .toThrow(fromErrors.NoTimeForAssassinationError);
-  });
 });
 
 describe('winner', () => {
