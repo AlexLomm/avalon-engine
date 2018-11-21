@@ -1,7 +1,7 @@
 import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
-import { GameState } from './finite-state-machine';
+import { GameState } from './async-finite-state-machine';
 
 export class TeamPropositionState extends BaseState {
   toggleTeammateProposition(game: Game, leaderUsername: string, username: string) {
@@ -22,8 +22,8 @@ export class TeamPropositionState extends BaseState {
     }
 
     game.getQuestsManager().isLastRoundOfTeamVoting()
-      ? game.getFsm().go(GameState.TeamVotingPreApproved)
-      : game.getFsm().go(GameState.TeamVoting);
+      ? game.getAsyncFsm().transitionTo(GameState.TeamVotingPreApproved)
+      : game.getAsyncFsm().transitionTo(GameState.TeamVoting);
   }
 
   private playerAmountIsIncorrect(game: Game) {

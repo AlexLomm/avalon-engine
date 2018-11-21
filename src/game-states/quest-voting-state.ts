@@ -1,7 +1,7 @@
 import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
-import { GameState } from './finite-state-machine';
+import { GameState } from './async-finite-state-machine';
 import { GameStatus } from '../quests-manager';
 
 export class QuestVotingState extends BaseState {
@@ -16,15 +16,15 @@ export class QuestVotingState extends BaseState {
 
       // TODO: refactor
       if (game.getQuestsManager().getGameStatus() === GameStatus.Lost) {
-        game.getFsm().go(GameState.Finish);
+        game.getAsyncFsm().transitionTo(GameState.Finish);
       }
 
       else if (game.getQuestsManager().assassinationAllowed()) {
-        game.getFsm().go(GameState.Assassination);
+        game.getAsyncFsm().transitionTo(GameState.Assassination);
       }
 
       else {
-        game.getFsm().go(GameState.TeamProposition);
+        game.getAsyncFsm().transitionTo(GameState.TeamProposition);
       }
     }
   }
