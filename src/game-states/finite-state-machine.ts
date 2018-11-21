@@ -52,6 +52,7 @@ export function createFsm(game: Game) {
       case GameState.TeamVoting:
         game.setState(new FrozenState());
 
+        // TODO: add timeout
         //setTimeout(() => {
         game.getPlayersManager().reset();
 
@@ -62,6 +63,7 @@ export function createFsm(game: Game) {
       case GameState.QuestVoting:
         game.setState(new FrozenState());
 
+        // TODO: add timeout
         //setTimeout(() => {
         game.getPlayersManager().reset();
 
@@ -104,6 +106,7 @@ export function createFsm(game: Game) {
       case GameState.TeamVoting:
         game.setState(new FrozenState());
 
+        // TODO: add timeout
         //setTimeout(() => {
         game.getPlayersManager().resetVotes();
 

@@ -82,16 +82,7 @@ export class Game {
     this.state.assassinate(this, assassinsUsername);
   }
 
-  // serialize(forUsername) {
-  //   return {
-  //     meta: {
-  //       startedAt: this.startedAt,
-  //       finishedAt: this.finishedAt,
-  //       ...this.levelPreset.serialize(),
-  //     },
-  //     ...this.questsManager.serialize(),
-  //     // TODO: implement
-  //     ...this.playersManager.serializeFor(forUsername, true),
-  //   };
-  // }
+  serialize(forUsername: string) {
+    return this.state.serialize(this, forUsername);
+  }
 }
