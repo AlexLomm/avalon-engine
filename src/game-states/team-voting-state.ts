@@ -1,7 +1,7 @@
 import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
-import { GameState } from './async-finite-state-machine';
+import { GameState } from './game-state-machine';
 
 export class TeamVotingState extends BaseState {
   voteForTeam(game: Game, username: string, voteValue: boolean) {
@@ -12,11 +12,11 @@ export class TeamVotingState extends BaseState {
     this.vote(game, username, voteValue);
 
     if (game.getQuestsManager().teamVotingSucceeded()) {
-      game.getAsyncFsm().transitionTo(GameState.QuestVoting);
+      game.getFsm().transitionTo(GameState.QuestVoting);
     }
 
     else if (game.getQuestsManager().teamVotingRoundFinished()) {
-      game.getAsyncFsm().transitionTo(GameState.TeamProposition);
+      game.getFsm().transitionTo(GameState.TeamProposition);
     }
   }
 

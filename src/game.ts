@@ -4,19 +4,18 @@ import { PreparationState } from './game-states/preparation-state';
 import { RoleId } from './configs/roles.config';
 import { BaseState } from './game-states/base-state';
 import { Player } from './player';
-import { createAsyncStateMachine, AsyncFiniteStateMachine } from './game-states/async-finite-state-machine';
 import { GameMetaData } from './game-meta-data';
+import { GameStateMachine } from './game-states/game-state-machine';
 
 export class Game {
-  private asyncFsm: AsyncFiniteStateMachine;
-
   constructor(
     private playersManager         = new PlayersManager(),
     private questsManager          = new QuestsManager(),
     private state: BaseState       = new PreparationState(),
     private metaData: GameMetaData = new GameMetaData(),
+    private fsm: GameStateMachine  = new GameStateMachine(),
   ) {
-    this.asyncFsm = createAsyncStateMachine(this);
+    this.fsm.init(this);
   }
 
   setState(state: BaseState) {
@@ -35,8 +34,8 @@ export class Game {
     return this.metaData;
   }
 
-  getAsyncFsm(): AsyncFiniteStateMachine {
-    return this.asyncFsm;
+  getFsm(): GameStateMachine {
+    return this.fsm;
   }
 
   addPlayer(player: Player) {
