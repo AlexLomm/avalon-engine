@@ -1,7 +1,5 @@
 import { GameStateMachine, GameState } from '../../src/game-states/game-state-machine';
 import { Game } from '../../src/game';
-import { PlayersManager } from '../../src/players-manager';
-import { addPlayersToGame } from '../helpers/game';
 
 describe('initialization', () => {
   test('should throw an error upon transition the machine is not initialized', () => {
