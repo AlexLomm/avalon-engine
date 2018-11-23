@@ -6,34 +6,34 @@ import { Role } from './role';
 
 // TODO: promote to a service
 export class RolesAssigner {
-  private _players: Player[];
-  private _levelPreset: LevelPreset;
+  private players: Player[];
+  private levelPreset: LevelPreset;
 
   constructor(players: Player[], levelPreset: LevelPreset) {
-    this._players     = players;
-    this._levelPreset = levelPreset;
+    this.players     = players;
+    this.levelPreset = levelPreset;
   }
 
   assignRoles(requestedRoleIds: RoleId[] = []): Player[] {
-    const roleIds = RolesAssigner._generateRolesConfig(requestedRoleIds);
-    const roles   = RolesAssigner._generateRoles(
+    const roleIds = RolesAssigner.generateRolesConfig(requestedRoleIds);
+    const roles   = RolesAssigner.generateRoles(
       roleIds,
-      this._levelPreset.getGoodCount(),
-      this._levelPreset.getEvilCount(),
+      this.levelPreset.getGoodCount(),
+      this.levelPreset.getEvilCount(),
     );
 
-    this._players.forEach((player) => player.setRole(roles.pop()));
+    this.players.forEach((player) => player.setRole(roles.pop()));
 
-    return this._players;
+    return this.players;
   }
 
-  static _generateRolesConfig(roleIds: RoleId[]): RoleId[] {
+  static generateRolesConfig(roleIds: RoleId[]): RoleId[] {
     const defaultRoleIds: RoleId[] = [RoleId.Merlin, RoleId.Assassin];
 
     return _.union(roleIds, defaultRoleIds);
   }
 
-  static _generateRoles(roleIds: RoleId[], goodCount: number, evilCount: number): Role[] {
+  static generateRoles(roleIds: RoleId[], goodCount: number, evilCount: number): Role[] {
     const roles = roleIds.map((roleId: RoleId) => {
       const role = new Role(roleId);
 
@@ -46,12 +46,12 @@ export class RolesAssigner {
 
     return _.shuffle(_.concat(
       roles,
-      RolesAssigner._generateServants(goodCount),
-      RolesAssigner._generateMinions(evilCount),
+      RolesAssigner.generateServants(goodCount),
+      RolesAssigner.generateMinions(evilCount),
     ));
   }
 
-  static _generateServants(count: number): Role[] {
+  static generateServants(count: number): Role[] {
     return _.shuffle([
       new Role(RoleId.Servant_1),
       new Role(RoleId.Servant_2),
@@ -61,7 +61,7 @@ export class RolesAssigner {
     ]).slice(0, count);
   }
 
-  static _generateMinions(count: number): Role[] {
+  static generateMinions(count: number): Role[] {
     return _.shuffle([
       new Role(RoleId.Minion_1),
       new Role(RoleId.Minion_2),

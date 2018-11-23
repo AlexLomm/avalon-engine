@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as fromErrors from '../src/errors';
-import { Quest } from '../src/quest';
+import { Quest, QuestStatus } from '../src/quest';
 import { Vote } from '../src/vote';
 
 test('should return number of players needed', () => {
@@ -20,13 +20,13 @@ describe('status', () => {
     const quest = new Quest({votesNeeded: 2, failsNeeded: 2, totalPlayers: 2});
 
     quest.addVote(new Vote('user-1', true));
-    expect(quest.getStatus()).toEqual(-1);
+    expect(quest.getStatus()).toEqual(QuestStatus.Unresolved);
 
     quest.addVote(new Vote('user-2', true));
-    expect(quest.getStatus()).toEqual(-1);
+    expect(quest.getStatus()).toEqual(QuestStatus.Unresolved);
 
     quest.addVote(new Vote('user-1', false));
-    expect(quest.getStatus()).toEqual(-1);
+    expect(quest.getStatus()).toEqual(QuestStatus.Unresolved);
   });
 
   test('should return status: success', () => {
@@ -38,7 +38,7 @@ describe('status', () => {
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', true));
 
-    expect(quest.getStatus()).toStrictEqual(1);
+    expect(quest.getStatus()).toStrictEqual(QuestStatus.Won);
   });
 
   test('should return status: fail', () => {
@@ -50,7 +50,7 @@ describe('status', () => {
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', false));
 
-    expect(quest.getStatus()).toStrictEqual(0);
+    expect(quest.getStatus()).toStrictEqual(QuestStatus.Lost);
   });
 
   test('should return status: pending when the team has been rejected', () => {
@@ -62,7 +62,7 @@ describe('status', () => {
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', true));
 
-    expect(quest.getStatus()).toStrictEqual(-1);
+    expect(quest.getStatus()).toStrictEqual(QuestStatus.Unresolved);
   });
 
   test('should return if is complete', () => {
@@ -96,25 +96,6 @@ describe('team voting', () => {
     quest.addVote(new Vote('user-3', true));
 
     expect(quest.teamVotingAllowed()).toBeFalsy();
-  });
-
-  test('should not allow a player to vote twice in the same team voting round', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
-
-    quest.addVote(new Vote('user-1', true));
-
-    expect(() => quest.addVote(new Vote('user-1', false)))
-      .toThrow(fromErrors.AlreadyVotedForTeamError);
-  });
-
-  test('should allow a player to vote again in the next team voting round', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
-
-    quest.addVote(new Vote('user-1', false));
-    quest.addVote(new Vote('user-2', false));
-
-    expect(() => quest.addVote(new Vote('user-1', false)))
-      .not.toThrow(fromErrors.AlreadyVotedForQuestError);
   });
 
   test('should increment the tracker if team voting has failed', () => {
@@ -176,17 +157,6 @@ describe('team voting', () => {
 });
 
 describe('quest voting', () => {
-  test('should not allow a user to vote twice in a quest vote', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
-
-    quest.addVote(new Vote('user-1', true));
-    quest.addVote(new Vote('user-2', true));
-
-    quest.addVote(new Vote('user-1', true));
-    expect(() => quest.addVote(new Vote('user-1', false)))
-      .toThrow(fromErrors.AlreadyVotedForQuestError);
-  });
-
   test('should return whether everybody has voted for the quest or not', () => {
     const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
 

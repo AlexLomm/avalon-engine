@@ -1,29 +1,21 @@
-import * as _ from 'lodash';
 import * as fromErrors from '../src/errors';
 import { PlayersManager } from '../src/players-manager';
 import { Player } from '../src/player';
-import { LevelPreset } from '../src/level-preset';
+import { RoleId } from '../src/configs/roles.config';
+import * as helpers from './helpers/players-manager';
 
 let manager: PlayersManager;
 beforeEach(() => {
   manager = new PlayersManager();
 });
 
-// TODO: extract
-const addPlayersAndAssignRoles = (number: number, _manager: PlayersManager = manager) => {
-  addPlayersToManager(number, _manager);
-  assignRolesToManager(_manager);
-};
+/////////////////////////////////////////////
+// Curried helpers
+/////////////////////////////////////////////
 
-// TODO: extract
-const addPlayersToManager = (number: number, _manager: PlayersManager = manager) => {
-  _.times(number, (i: number) => _manager.add(new Player(`user-${i}`)));
-};
-
-// TODO: extract
-const assignRolesToManager = (_manager: PlayersManager = manager) => {
-  _manager.assignRoles(new LevelPreset(_manager.getAll().length));
-};
+const addPlayersToManager      = (number: number) => helpers.addPlayersToManager(number, manager);
+const assignRolesToManager     = () => helpers.assignRolesToManager(manager);
+const addPlayersAndAssignRoles = (number: number) => helpers.addPlayersAndAssignRoles(number, manager);
 
 describe('adding players', () => {
   test('should add a player', () => {
@@ -63,13 +55,6 @@ describe('adding players', () => {
     expect(() => manager.add(new Player('user-11')))
       .toThrow(fromErrors.PlayersMaximumReachedError);
   });
-
-  test('should make the first player a "creator"', () => {
-    manager.add(new Player('username-1'));
-    manager.add(new Player('username-2'));
-
-    expect(manager.getGameCreator().getUsername()).toEqual('username-1');
-  });
 });
 
 describe('roles assignment', () => {
@@ -91,16 +76,6 @@ describe('roles assignment', () => {
     assignRolesToManager();
 
     expect(manager.getAssassin()).toBeTruthy();
-  });
-
-  test('should preserve a creator after the role assignment phase', () => {
-    addPlayersToManager(7);
-
-    const gameCreator = manager.getGameCreator();
-
-    assignRolesToManager();
-
-    expect(manager.getGameCreator()).toBe(gameCreator);
   });
 });
 
@@ -192,8 +167,8 @@ describe('team proposition and submission', () => {
   test('should reset votes', () => {
     addPlayersToManager(7);
 
-    manager.vote('user-3', true);
-    manager.vote('user-4', true);
+    manager.generateVote('user-3', true);
+    manager.generateVote('user-4', true);
 
     manager.resetVotes();
 
@@ -206,28 +181,56 @@ describe('team proposition and submission', () => {
   test('should reset propositions', () => {
     addPlayersToManager(7);
 
-    manager.vote('user-3', true);
-    manager.vote('user-4', true);
+    manager.generateVote('user-3', true);
+    manager.generateVote('user-4', true);
 
-    manager.resetPropositions();
+    manager.reset();
 
     expect(manager.getProposedPlayers().length).toStrictEqual(0);
+  });
+
+  test('should reset votes, propositions and whether the team is submitted or not', () => {
+    addPlayersToManager(7);
+
+    manager.setIsSubmitted(true);
+    manager.generateVote('user-1', true);
+    manager.togglePlayerProposition(manager.getAll()[0].getUsername());
+
+    manager.reset();
+
+    expect(manager.getIsSubmitted()).toBeFalsy();
+    expect(manager.getProposedPlayers().length).toStrictEqual(0);
+    expect(manager.getIsSubmitted()).toBeFalsy();
   });
 });
 
 describe('voting', () => {
+  test('should throw if a nonexistent player tries to vote', () => {
+    addPlayersToManager(5);
+
+    expect(() => {
+      manager.generateVote('nonexistent', false);
+    }).toThrow(fromErrors.PlayerMissingError);
+  });
+
   test('should mark player as has voted', () => {
-    addPlayersToManager(7);
+    addPlayersToManager(5);
 
-    manager.vote('nonexistent', false);
-
-    expect(manager.getAll().find(p => !!p.getVote())).toBeFalsy();
-
-    manager.vote('user-3', false);
+    manager.generateVote('user-3', false);
 
     expect(
       manager.getAll().find(p => !!p.getVote()).getUsername(),
     ).toStrictEqual('user-3');
+  });
+
+  test('should throw if a player tries to vote twice', () => {
+    addPlayersToManager(5);
+
+    manager.generateVote('user-1', false);
+
+    expect(() => {
+      manager.generateVote('user-1', false);
+    }).toThrow(fromErrors.AlreadyVotedError);
   });
 
   test('should return if a player is allowed to vote for team', () => {
@@ -235,7 +238,7 @@ describe('voting', () => {
 
     expect(manager.teamVotingAllowedFor('user-1')).toBeTruthy();
 
-    manager.vote('user-1', true);
+    manager.generateVote('user-1', true);
 
     expect(manager.teamVotingAllowedFor('user-1')).toBeFalsy();
   });
@@ -249,7 +252,7 @@ describe('voting', () => {
 
     expect(manager.questVotingAllowedFor('user-1')).toBeTruthy();
 
-    manager.vote('user-1', true);
+    manager.generateVote('user-1', true);
 
     expect(manager.questVotingAllowedFor('user-1')).toBeFalsy();
   });
@@ -331,17 +334,46 @@ describe('assassination', () => {
 
     manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
 
-    expect(manager.isAssassinated(victim)).toBeFalsy();
+    expect(manager.getIsAssassinated(victim)).toBeFalsy();
 
     manager.assassinate(assassin.getUsername());
 
-    expect(manager.isAssassinated(victim)).toBeTruthy();
+    expect(manager.getIsAssassinated(victim)).toBeTruthy();
+  });
+
+  test('should return true if the assassination was successful', () => {
+    addPlayersAndAssignRoles(5);
+
+    const assassin = manager.getAssassin();
+    const merlin   = manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
+
+    manager.toggleVictimProposition(assassin.getUsername(), merlin.getUsername());
+
+    const wasMerlin = manager.assassinate(assassin.getUsername());
+
+    expect(wasMerlin).toBeTruthy();
+  });
+
+  test('should return false if the assassination was unsucsessful', () => {
+    addPlayersAndAssignRoles(5);
+
+    const assassin  = manager.getAssassin();
+    const nonMerlin = manager.getAll().find((p) => {
+      return p.getRole().getId() !== RoleId.Merlin
+        && !p.isAssassin();
+    });
+
+    manager.toggleVictimProposition(assassin.getUsername(), nonMerlin.getUsername());
+
+    const wasMerlin = manager.assassinate(assassin.getUsername());
+
+    expect(wasMerlin).toBeFalsy();
   });
 });
 
 describe('serialization', () => {
   test('should throw if no such player exists', () => {
-    expect(() => manager.serializeFor('nonexistent', false))
+    expect(() => manager.serialize('nonexistent', false))
       .toThrow(fromErrors.PlayerMissingError);
   });
 
@@ -349,11 +381,11 @@ describe('serialization', () => {
     addPlayersAndAssignRoles(5);
 
     const expected = [
-      'players', 'proposedPlayerUsernames', 'gameCreatorUsername',
-      'leaderUsername', 'isSubmitted', 'victimUsername', 'isAssassinated',
+      'players', 'proposedPlayerUsernames', 'leaderUsername',
+      'isSubmitted', 'victimUsername', 'isAssassinated',
     ].sort();
 
-    const actual = Object.keys(manager.serializeFor('user-1', false)).sort();
+    const actual = Object.keys(manager.serialize('user-1', false)).sort();
 
     expect(expected).toEqual(actual);
   });
@@ -364,7 +396,7 @@ describe('serialization', () => {
     manager.getAll().forEach((p) => jest.spyOn(p, 'serialize'));
 
     const votesRevealed = true;
-    manager.serializeFor('user-1', votesRevealed);
+    manager.serialize('user-1', votesRevealed);
 
     manager.getAll().forEach((p) => expect(p.serialize).toBeCalledTimes(1));
   });
@@ -375,26 +407,18 @@ describe('serialization', () => {
     manager.togglePlayerProposition('user-1');
     manager.togglePlayerProposition('user-2');
 
-    const serialized = manager.serializeFor('user-3', false);
+    const serialized = manager.serialize('user-3', false);
 
     expect(serialized.proposedPlayerUsernames)
       .toEqual(['user-1', 'user-2']);
-  });
-
-  test('should contain a game creator username', () => {
-    addPlayersAndAssignRoles(5);
-
-    const gameCreatorUsername = manager.serializeFor('user-1', false).gameCreatorUsername;
-    const usernames           = manager.getAll().map((p) => p.getUsername());
-
-    expect(usernames.includes(gameCreatorUsername)).toBeTruthy();
   });
 
   test('should contain a game leader username', () => {
     addPlayersAndAssignRoles(5);
 
     const expected = manager.getLeader().getUsername();
-    const actual   = manager.serializeFor('user-1', false).leaderUsername;
+    const actual   = manager.serialize('user-1', false)
+      .leaderUsername;
 
     expect(expected).toEqual(actual);
   });
@@ -404,7 +428,8 @@ describe('serialization', () => {
 
     manager.setIsSubmitted(true);
 
-    expect(manager.serializeFor('user-1', false).isSubmitted).toStrictEqual(true);
+    expect(manager.serialize('user-1', false).isSubmitted)
+      .toStrictEqual(true);
   });
 
   test('should contain the victim\'s username', () => {
@@ -416,7 +441,8 @@ describe('serialization', () => {
       nonAssassin.getUsername(),
     );
 
-    const victimUsername = manager.serializeFor('user-1', false).victimUsername;
+    const victimUsername = manager.serialize('user-1', false)
+      .victimUsername;
 
     expect(nonAssassin.getUsername()).toStrictEqual(victimUsername);
   });
@@ -432,7 +458,8 @@ describe('serialization', () => {
 
     manager.assassinate(manager.getAssassin().getUsername());
 
-    const isAssassinated = manager.serializeFor('user-1', false).isAssassinated;
+    const isAssassinated = manager.serialize('user-1', false)
+      .isAssassinated;
 
     expect(isAssassinated).toStrictEqual(true);
   });

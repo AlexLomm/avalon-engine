@@ -28,20 +28,11 @@ export class AlreadyExistsPlayerError extends BaseError {
   }
 }
 
-export class AlreadyVotedForTeamError extends BaseError {
+export class AlreadyVotedError extends BaseError {
   constructor() {
     super(
-      'You have already voted for the team.',
-      'ERR_TEAM_VOTED',
-    );
-  }
-}
-
-export class AlreadyVotedForQuestError extends BaseError {
-  constructor() {
-    super(
-      'You have already voted for the quest.',
-      'ERR_QUEST_VOTED',
+      'You have already voted.',
+      'ERR_AlREADY_VOTED',
     );
   }
 }
@@ -100,6 +91,15 @@ export class NoTimeForTeammatePropositionError extends BaseError {
   }
 }
 
+export class NoTimeForTeamSubmissionError extends BaseError {
+  constructor() {
+    super(
+      'This is not a team submission time.',
+      'ERR_NO_TEAM_SUB',
+    );
+  }
+}
+
 export class NoTimeForTeamVotingError extends BaseError {
   constructor() {
     super(
@@ -118,20 +118,20 @@ export class NoTimeForQuestVotingError extends BaseError {
   }
 }
 
-export class NoTimeForAssassinationError extends BaseError {
-  constructor() {
-    super(
-      'This is not an assassination time.',
-      'ERR_NO_ASSN',
-    );
-  }
-}
-
 export class NoTimeVictimPropositionError extends BaseError {
   constructor() {
     super(
       'This is not a victim proposition time.',
       'ERR_NO_VICTIM_PROP',
+    );
+  }
+}
+
+export class NoTimeForAssassinationError extends BaseError {
+  constructor() {
+    super(
+      'This is not an assassination time.',
+      'ERR_NO_ASSN',
     );
   }
 }

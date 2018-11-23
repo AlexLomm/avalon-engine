@@ -1,24 +1,24 @@
 export class Vote {
-  private _username: string;
-  private _value: boolean;
+  private username: string;
+  private value: boolean;
 
   constructor(username: string, value: boolean) {
-    this._username = username;
-    this._value    = value;
+    this.username = username;
+    this.value    = value;
   }
 
   getUsername() {
-    return this._username;
+    return this.username;
   }
 
   getValue() {
-    return this._value;
+    return this.value;
   }
 
   serialize() {
     return {
-      username: this._username,
-      value: this._value,
+      username: this.username,
+      value: this.value,
     };
   }
 }

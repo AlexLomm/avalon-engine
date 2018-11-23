@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
-import * as fromErrors from '../src/errors';
 import { Vote } from '../src/vote';
-import { QuestsManager } from '../src/quests-manager';
+import { QuestsManager, GameStatus, AssassinationStatus } from '../src/quests-manager';
 import { Quest } from '../src/quest';
 import { LevelPreset } from '../src/level-preset';
 
@@ -162,14 +161,6 @@ describe('assassination', () => {
 
     expect(manager.assassinationAllowed()).toBeFalsy();
   });
-
-  test('should not allow assassination attempt to resolve too early', () => {
-    expect(() => manager.setAssassinationStatus(false))
-      .toThrow(fromErrors.NoTimeForAssassinationError);
-
-    expect(() => manager.setAssassinationStatus(true))
-      .toThrow(fromErrors.NoTimeForAssassinationError);
-  });
 });
 
 describe('winner', () => {
@@ -186,13 +177,13 @@ describe('winner', () => {
   });
 
   test('should return status: "-1" if there are no three failed or won quests', () => {
-    expect(manager.getStatus()).toEqual(-1);
+    expect(manager.getGameStatus()).toEqual(GameStatus.Unfinished);
   });
 
   test('should return status: "0" if there are three failed quests', () => {
     failQuestsTimes(manager, 3);
 
-    expect(manager.getStatus()).toStrictEqual(0);
+    expect(manager.getGameStatus()).toStrictEqual(GameStatus.Lost);
   });
 
   test('should return status: "0" if the assassination succeeded', () => {
@@ -200,7 +191,7 @@ describe('winner', () => {
 
     manager.setAssassinationStatus(true);
 
-    expect(manager.getStatus()).toStrictEqual(0);
+    expect(manager.getGameStatus()).toStrictEqual(GameStatus.Lost);
   });
 
   test('should return status: "1" if the assassination failed', () => {
@@ -208,13 +199,13 @@ describe('winner', () => {
 
     manager.setAssassinationStatus(false);
 
-    expect(manager.getStatus()).toStrictEqual(1);
+    expect(manager.getGameStatus()).toStrictEqual(GameStatus.Won);
   });
 
   test('should not return status "1" if the assassination has not been attempted yet', () => {
     succeedQuestsTimes(manager, 3);
 
-    expect(manager.getStatus()).toStrictEqual(-1);
+    expect(manager.getGameStatus()).toStrictEqual(GameStatus.Unfinished);
   });
 });
 
@@ -226,7 +217,7 @@ describe('serialization', () => {
     const expected: any = {
       quests: [],
       teamVotingRoundIndex: 0,
-      assassinationStatus: -1,
+      assassinationStatus: AssassinationStatus.Unattempted,
     };
 
     const actual = manager.serialize();
