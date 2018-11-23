@@ -39,6 +39,12 @@ test('should say if can see another role', () => {
   expect(role2.canSee(role1)).toBeTruthy();
 });
 
+test('should see itself', () => {
+  const role = new Role(RoleId.Oberon);
+
+  expect(role.canSee(role)).toBeTruthy();
+});
+
 test('should return a serialized role', () => {
   const role = new Role(RoleId.Merlin);
 
