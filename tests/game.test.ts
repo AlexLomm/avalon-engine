@@ -25,6 +25,16 @@ describe('initialization', () => {
 });
 
 describe('game start', () => {
+  test('should set a creator', () => {
+    const game = new Game();
+
+    jest.spyOn(game.getMetaData(), 'setCreatorOnce');
+
+    game.addPlayer(new Player('user-1'));
+
+    expect(game.getMetaData().setCreatorOnce).toBeCalled();
+  });
+
   test('should not add a player when the game is started', () => {
     const game = new Game();
 

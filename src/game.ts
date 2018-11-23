@@ -40,8 +40,6 @@ export class Game {
 
   addPlayer(player: Player) {
     this.state.addPlayer(this, player);
-
-    this.metaData.setCreatorOnce(player);
   }
 
   start(roleIds: RoleId[] = []) {

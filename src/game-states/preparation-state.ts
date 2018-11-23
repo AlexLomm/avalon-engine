@@ -7,6 +7,7 @@ import { GameState } from './game-state-machine';
 export class PreparationState extends BaseState {
   addPlayer(game: Game, player: Player) {
     game.getPlayersManager().add(player);
+    game.getMetaData().setCreatorOnce(player);
   }
 
   start(game: Game, roleIds: RoleId[]) {

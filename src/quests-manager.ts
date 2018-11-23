@@ -1,7 +1,6 @@
 import { LevelPreset } from './level-preset';
 import { Quest, QuestStatus } from './quest';
 import { Vote } from './vote';
-import * as fromErrors from './errors';
 
 export enum GameStatus {
   Unfinished = 'Unfinished',
@@ -19,7 +18,6 @@ export class QuestsManager {
   private levelPreset: LevelPreset  = null;
   private quests: Quest[]           = [];
   private currentQuestIndex: number = 0;
-  // TODO: convert to enums
   private assassinationStatus       = AssassinationStatus.Unattempted;
 
   constructor() {
@@ -80,7 +78,6 @@ export class QuestsManager {
     return this.getCurrentQuest().isLastRoundOfTeamVoting();
   };
 
-  // TODO: convert to enums
   getGameStatus(): GameStatus {
     if (this.assassinationStatus !== AssassinationStatus.Unattempted) {
       return this.assassinationStatus === AssassinationStatus.CorrectGuess
