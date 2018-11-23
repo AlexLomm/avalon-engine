@@ -172,12 +172,20 @@ export class GameStateMachine {
 
   private waitFor(cb: () => void, ms: number): void {
     this.stateUpdatePromise = new Promise((resolve) => {
-      setTimeout(() => {
-        cb();
+      if (!ms) {
+        this.handle(cb, resolve);
 
-        resolve();
-      }, ms);
+        return;
+      }
+
+      setTimeout(() => this.handle(cb, resolve), ms);
     });
+  }
+
+  private handle(cb: () => void, resolve: () => void) {
+    cb();
+
+    resolve();
   }
 
   private simulateTeamApproval(game: Game) {

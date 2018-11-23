@@ -4,6 +4,9 @@ import { Game } from '../src/game';
 import { PlayersManager } from '../src/players-manager';
 import { QuestsManager, GameStatus } from '../src/quests-manager';
 import { Player } from '../src/player';
+import { PreparationState } from '../src/game-states/preparation-state';
+import { GameMetaData } from '../src/game-meta-data';
+import { GameStateMachine } from '../src/game-states/game-state-machine';
 import {
   proposeAndSubmitTeam,
   proposePlayers,
@@ -96,12 +99,22 @@ describe('post "reveal roles" phase', () => {
   let playersManager: PlayersManager;
   let questsManager: QuestsManager;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.useFakeTimers();
 
     playersManager = new PlayersManager();
     questsManager  = new QuestsManager();
-    game           = new Game(playersManager, questsManager);
+    game           = new Game(
+      playersManager,
+      questsManager,
+      new PreparationState(),
+      new GameMetaData(),
+      new GameStateMachine({
+        afterTeamProposition: 0,
+        afterTeamVoting: 0,
+        afterQuestVoting: 0,
+      }),
+    );
 
     addPlayersToGame(game, 5);
 
@@ -481,37 +494,27 @@ describe('post "reveal roles" phase', () => {
       expect(questsManager.getGameStatus()).toStrictEqual(GameStatus.Won);
     });
   });
-
-  describe('serialization', () => {
-    // TODO: refactor
-    test('should serialize initial game object', () => {
-      const playersManager = new PlayersManager();
-      const questsManager  = new QuestsManager();
-      const game           = new Game(playersManager, questsManager);
-
-      game.addPlayer(new Player('user-1'));
-      game.addPlayer(new Player('user-2'));
-      game.addPlayer(new Player('user-3'));
-      game.addPlayer(new Player('user-4'));
-      game.addPlayer(new Player('user-5'));
-
-      game.start();
-
-      const expected = {
-        meta: game.getMetaData().serialize(),
-        quests: questsManager.serialize(),
-        players: playersManager.serialize('user-1', true),
-      };
-
-      const actual = game.serialize('user-1');
-
-      expect(actual).toEqual(expected);
-    });
-  });
 });
 
-test('should ', () => {
-  fail();
+describe('serialization', () => {
+  // TODO: refactor
+  test('should serialize initial game object', () => {
+    const playersManager = new PlayersManager();
+    const questsManager  = new QuestsManager();
+    const game           = new Game(playersManager, questsManager);
 
-  // TODO: verify that machine is initialized
+    addPlayersToGame(game, 5);
+
+    game.start();
+
+    const expected = {
+      meta: game.getMetaData().serialize(),
+      quests: questsManager.serialize(),
+      players: playersManager.serialize('user-1', true),
+    };
+
+    const actual = game.serialize('user-1');
+
+    expect(actual).toEqual(expected);
+  });
 });
