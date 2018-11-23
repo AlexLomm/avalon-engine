@@ -6,9 +6,9 @@ export class GameMetaData {
   private id: string               = crypto.randomBytes(20).toString('hex');
   private createdAt: Date          = new Date();
   private levelPreset: LevelPreset = LevelPreset.null();
-  private gameCreator: Player;
-  private startedAt: Date;
-  private finishedAt: Date;
+  private gameCreator: Player      = null;
+  private startedAt: Date          = null;
+  private finishedAt: Date         = null;
 
   setCreatorOnce(gameCreator: Player) {
     if (this.gameCreator) return;

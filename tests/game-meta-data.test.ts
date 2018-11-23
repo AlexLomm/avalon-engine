@@ -56,3 +56,20 @@ test('should have a finish date set', () => {
 
   expect(gameMeta.serialize().finishedAt).toBeTruthy();
 });
+
+test('should contain the expected keys', () => {
+  const gameMeta = new GameMetaData();
+
+  const expected = [
+    'id',
+    'createdAt',
+    'levelPreset',
+    'gameCreator',
+    'startedAt',
+    'finishedAt',
+  ].sort();
+
+  const actual = Object.keys(gameMeta.serialize()).sort();
+
+  expect(expected).toEqual(actual);
+});
