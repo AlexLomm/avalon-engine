@@ -203,7 +203,7 @@ export class PlayersManager {
     }
 
     return {
-      players: this.serializePlayers(forPlayer, votesRevealed),
+      collection: this.serializePlayers(forPlayer, votesRevealed),
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
       leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,

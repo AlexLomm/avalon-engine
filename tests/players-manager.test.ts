@@ -381,7 +381,7 @@ describe('serialization', () => {
     addPlayersAndAssignRoles(5);
 
     const expected = [
-      'players', 'proposedPlayerUsernames', 'leaderUsername',
+      'collection', 'proposedPlayerUsernames', 'leaderUsername',
       'isSubmitted', 'victimUsername', 'isAssassinated',
     ].sort();
 
