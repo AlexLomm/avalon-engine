@@ -1,7 +1,8 @@
+import * as _ from 'lodash';
 import { Game } from '../../src/game';
 import { PlayersManager } from '../../src/players-manager';
-import * as _ from 'lodash';
 import { RoleId } from '../../src/configs/roles.config';
+import { Player } from '../../src/player';
 
 export function passQuestsWithResults(game: Game, results: boolean[] = []) {
   _.times(results.length, () => {
@@ -46,6 +47,10 @@ export function voteAllForQuest(game: Game, voteValue: boolean) {
   game.getPlayersManager()
     .getProposedPlayers()
     .forEach(p => game.voteForQuest(p.getUsername(), voteValue));
+}
+
+export function addPlayersToGame(game: Game, count: number) {
+  _.times(count, (i) => game.addPlayer(new Player(`user-${i}`)));
 }
 
 export function getNonAssassin(playersManager: PlayersManager) {

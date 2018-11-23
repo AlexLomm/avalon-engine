@@ -13,7 +13,8 @@ import {
   passQuestsWithResults,
   getNonAssassinNonMerlin,
   getMerlin,
-} from './helpers';
+  addPlayersToGame,
+} from './helpers/game';
 
 describe('initialization', () => {
   test('should contain a meta data object', () => {
@@ -84,7 +85,7 @@ describe('post "reveal roles" phase', () => {
     questsManager  = new QuestsManager();
     game           = new Game(playersManager, questsManager);
 
-    _.times(7, (i) => game.addPlayer(new Player(`user-${i}`)));
+    addPlayersToGame(game, 5);
 
     game.start();
 
@@ -475,4 +476,10 @@ describe('post "reveal roles" phase', () => {
       expect(actual).toEqual(expected);
     });
   });
+});
+
+test('should ', () => {
+  fail();
+
+  // TODO: verify that machine is initialized
 });
