@@ -29,26 +29,27 @@ export class GameStateMachine {
   //
   private stateUpdatePromise: Promise<void>;
 
-  constructor(private waitTimes: GameStateTransitionWaitTimes = {
-    // TODO: replace hardcoded values with values from config
-    afterTeamProposition: 5000,
-    afterTeamVoting: 5000,
-    afterQuestVoting: 5000,
-  }) {
+  constructor(
+    // TODO: import defaults from a config file
+    private waitTimes: GameStateTransitionWaitTimes = {
+      afterTeamProposition: 5000,
+      afterTeamVoting: 5000,
+      afterQuestVoting: 5000,
+    },
+  ) {
   }
 
-  init(game: Game) {
+  init(game: Game, startingState: GameState = GameState.Preparation) {
     if (this.isInit) return;
 
     this.isInit = true;
 
-    this.initTransitions();
-
+    this.initTransitions(startingState);
     this.initTransitionListeners(game);
   }
 
-  private initTransitions() {
-    this.fsm = new TypeState.FiniteStateMachine<GameState>(GameState.Preparation);
+  private initTransitions(startingState: GameState) {
+    this.fsm = new TypeState.FiniteStateMachine<GameState>(startingState);
 
     this.fsm.from(GameState.Preparation).to(GameState.TeamProposition);
     //
@@ -192,9 +193,7 @@ export class GameStateMachine {
 
     // if the state machine transition produced a promise,
     // return it. Otherwise - return a resolved promise
-    const stateUpdatePromise: Promise<void> = this.stateUpdatePromise
-      ? this.stateUpdatePromise
-      : Promise.resolve();
+    const stateUpdatePromise: Promise<void> = this.stateUpdatePromise || Promise.resolve();
 
     this.stateUpdatePromise = null;
 
