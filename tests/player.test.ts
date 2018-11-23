@@ -12,9 +12,11 @@ test('should return a username', () => {
   expect(player.getUsername()).toEqual('user-1');
 });
 
-test('should return a role', () => {
-  expect(player.getRole()).toBeFalsy();
+test('should start with an `Unknown` role', () => {
+  expect(new Player('user-1').getRole().getId()).toEqual(RoleId.Unknown);
+});
 
+test('should return a role', () => {
   const role = new Role(RoleId.Merlin);
   player.setRole(role);
 

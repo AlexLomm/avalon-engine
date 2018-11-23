@@ -7,8 +7,9 @@ export class Player {
   private role: Role;
   private vote: Vote;
 
-  constructor(username: string) {
+  constructor(username: string, initialRole = new Role(RoleId.Unknown)) {
     this.username = username;
+    this.role     = initialRole;
   }
 
   getUsername() {

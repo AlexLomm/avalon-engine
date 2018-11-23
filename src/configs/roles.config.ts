@@ -24,7 +24,7 @@ export enum RoleId {
   Minion_3,
 }
 
-export type RolesConfig = {[key in RoleId]: RoleConfig};
+export type RolesConfig = { [key in RoleId]: RoleConfig };
 
 export interface RoleConfig {
   id: RoleId;
@@ -35,7 +35,6 @@ export interface RoleConfig {
 }
 
 export const rolesConfig: RolesConfig = {
-  // TODO: signify somehow that this role has a special behavior (i.e not assignable to player)
   [RoleId.Unknown]: {
     id: RoleId.Unknown,
     name: 'Unknown',
