@@ -8,7 +8,7 @@ export abstract class BaseState {
     throw new fromErrors.AlreadyStartedGameError();
   }
 
-  start(game: Game, roleIds: RoleId[]) {
+  start(game: Game, roleIds: RoleId[]): Promise<void> {
     throw new fromErrors.AlreadyStartedGameError();
   }
 
@@ -20,11 +20,11 @@ export abstract class BaseState {
     throw new fromErrors.NoTimeForTeamSubmissionError();
   }
 
-  voteForTeam(game: Game, username: string, voteValue: boolean) {
+  voteForTeam(game: Game, username: string, voteValue: boolean): Promise<void> {
     throw new fromErrors.NoTimeForTeamVotingError();
   }
 
-  voteForQuest(game: Game, username: string, voteValue: boolean) {
+  voteForQuest(game: Game, username: string, voteValue: boolean): Promise<void> {
     throw new fromErrors.NoTimeForQuestVotingError();
   }
 

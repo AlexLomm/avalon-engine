@@ -42,20 +42,20 @@ export class Game {
     this.state.addPlayer(this, player);
   }
 
-  start(roleIds: RoleId[] = []) {
-    this.state.start(this, roleIds);
+  start(roleIds: RoleId[] = []): Promise<void> {
+    return this.state.start(this, roleIds);
   }
 
   submitTeam(leaderUsername: string) {
     this.state.submitTeam(this, leaderUsername);
   }
 
-  voteForQuest(username: string, voteValue: boolean) {
-    this.state.voteForQuest(this, username, voteValue);
+  voteForQuest(username: string, voteValue: boolean): Promise<void> {
+    return this.state.voteForQuest(this, username, voteValue);
   }
 
-  voteForTeam(username: string, voteValue: boolean) {
-    this.state.voteForTeam(this, username, voteValue);
+  voteForTeam(username: string, voteValue: boolean): Promise<void> {
+    return this.state.voteForTeam(this, username, voteValue);
   }
 
   toggleTeammateProposition(leaderUsername: string, username: string) {

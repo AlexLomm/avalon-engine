@@ -35,6 +35,14 @@ describe('game start', () => {
     expect(game.getMetaData().setCreatorOnce).toBeCalled();
   });
 
+  test('should return a promise', () => {
+    const game = new Game();
+
+    _.times(5, (i) => game.addPlayer(new Player(`user-${i}`)));
+
+    expect(game.start()).toBeInstanceOf(Promise);
+  });
+
   test('should not add a player when the game is started', () => {
     const game = new Game();
 
@@ -194,6 +202,12 @@ describe('post "reveal roles" phase', () => {
         .toThrow(fromErrors.DeniedTeamVotingError);
     });
 
+    test('should return a promise', () => {
+      proposeAndSubmitTeam(game, ['user-1', 'user-2']);
+
+      expect(game.voteForTeam('user-1', true)).toBeInstanceOf(Promise);
+    });
+
     test('should only allow voting once', () => {
       proposeAndSubmitTeam(game, ['user-1', 'user-2']);
 
@@ -328,6 +342,14 @@ describe('post "reveal roles" phase', () => {
       game.voteForQuest('user-1', true);
 
       expect(questsManager.addVote).toBeCalledTimes(1);
+    });
+
+    test('should return a promise', () => {
+      proposeAndSubmitTeam(game, ['user-1', 'user-2']);
+
+      voteAllForTeam(game, true);
+
+      expect(game.voteForQuest('user-1', true)).toBeInstanceOf(Promise);
     });
 
     test('should reset the votes after every proposed player has voted', () => {

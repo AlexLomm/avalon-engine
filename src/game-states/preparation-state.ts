@@ -17,6 +17,6 @@ export class PreparationState extends BaseState {
     game.getPlayersManager().assignRoles(levelPreset, roleIds);
     game.getQuestsManager().init(levelPreset);
 
-    game.getFsm().transitionTo(GameState.TeamProposition);
+    return game.getFsm().transitionTo(GameState.TeamProposition);
   }
 }

@@ -13,23 +13,21 @@ export class QuestVotingState extends BaseState {
     this.vote(game, username, voteValue);
 
     if (!this.questVotingIsOn(game)) {
-
-      // TODO: refactor
       if (game.getQuestsManager().getGameStatus() === GameStatus.Lost) {
-        game.getFsm().transitionTo(GameState.Finish);
+        return game.getFsm().transitionTo(GameState.Finish);
       }
 
-      else if (game.getQuestsManager().assassinationAllowed()) {
-        game.getFsm().transitionTo(GameState.Assassination);
+      if (game.getQuestsManager().assassinationAllowed()) {
+        return game.getFsm().transitionTo(GameState.Assassination);
       }
 
-      else {
-        game.getFsm().transitionTo(GameState.TeamProposition);
-      }
+      return game.getFsm().transitionTo(GameState.TeamProposition);
     }
+
+    return Promise.resolve();
   }
 
-  // TODO: dedupe
+  // TODO: dry up
   private vote(game: Game, username: string, voteValue: boolean) {
     const vote = game.getPlayersManager().generateVote(username, voteValue);
 

@@ -12,15 +12,17 @@ export class TeamVotingState extends BaseState {
     this.vote(game, username, voteValue);
 
     if (game.getQuestsManager().teamVotingSucceeded()) {
-      game.getFsm().transitionTo(GameState.QuestVoting);
+      return game.getFsm().transitionTo(GameState.QuestVoting);
     }
 
-    else if (game.getQuestsManager().teamVotingRoundFinished()) {
-      game.getFsm().transitionTo(GameState.TeamProposition);
+    if (game.getQuestsManager().teamVotingRoundFinished()) {
+      return game.getFsm().transitionTo(GameState.TeamProposition);
     }
+
+    return Promise.resolve();
   }
 
-  // TODO: dedupe
+  // TODO: dry up
   private vote(game: Game, username: string, voteValue: boolean) {
     const vote = game.getPlayersManager().generateVote(username, voteValue);
 
