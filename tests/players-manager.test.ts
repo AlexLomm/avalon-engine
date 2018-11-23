@@ -1,30 +1,21 @@
-import * as _ from 'lodash';
 import * as fromErrors from '../src/errors';
 import { PlayersManager } from '../src/players-manager';
 import { Player } from '../src/player';
-import { LevelPreset } from '../src/level-preset';
 import { RoleId } from '../src/configs/roles.config';
+import * as helpers from './helpers/players-manager';
 
 let manager: PlayersManager;
 beforeEach(() => {
   manager = new PlayersManager();
 });
 
-// TODO: extract
-const addPlayersAndAssignRoles = (number: number, _manager: PlayersManager = manager) => {
-  addPlayersToManager(number, _manager);
-  assignRolesToManager(_manager);
-};
+/////////////////////////////////////////////
+// Curried helpers
+/////////////////////////////////////////////
 
-// TODO: extract
-const addPlayersToManager = (number: number, _manager: PlayersManager = manager) => {
-  _.times(number, (i: number) => _manager.add(new Player(`user-${i}`)));
-};
-
-// TODO: extract
-const assignRolesToManager = (_manager: PlayersManager = manager) => {
-  _manager.assignRoles(new LevelPreset(_manager.getAll().length));
-};
+const addPlayersToManager      = (number: number) => helpers.addPlayersToManager(number, manager);
+const assignRolesToManager     = () => helpers.assignRolesToManager(manager);
+const addPlayersAndAssignRoles = (number: number) => helpers.addPlayersAndAssignRoles(number, manager);
 
 describe('adding players', () => {
   test('should add a player', () => {
