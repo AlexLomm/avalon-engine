@@ -25,6 +25,7 @@ export class Player {
   }
 
   generateVote(value: boolean) {
+    // TODO: remove
     this.vote = new Vote(this.username, value);
 
     return this.vote;

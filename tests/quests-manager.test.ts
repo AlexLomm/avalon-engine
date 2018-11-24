@@ -215,12 +215,12 @@ describe('serialization', () => {
 
     // TODO: add type
     const expected: any = {
-      quests: [],
+      collection: [],
       teamVotingRoundIndex: 0,
       assassinationStatus: AssassinationStatus.Unattempted,
     };
 
-    const actual = manager.serialize();
+    const actual = manager.serialize(false);
 
     expect(expected).toEqual(actual);
   });
@@ -229,9 +229,9 @@ describe('serialization', () => {
     const manager = new QuestsManager();
     manager.init(new LevelPreset(5));
 
-    const serializedQuest = manager.getAll()[0].serialize();
+    const serializedQuest = manager.getAll()[0].serialize(false);
 
-    expect(manager.serialize().quests[0]).toEqual(serializedQuest);
+    expect(manager.serialize(false).collection[0]).toEqual(serializedQuest);
   });
 
   test('should contain a team voting round tracker', () => {
@@ -244,7 +244,19 @@ describe('serialization', () => {
       currentQuest.addVote(new Vote(`user-${i}`, false));
     });
 
-    expect(manager.serialize().teamVotingRoundIndex)
+    expect(manager.serialize(false).teamVotingRoundIndex)
       .toEqual(currentQuest.getTeamVotingRoundIndex());
+  });
+
+  test('should serialize the quests with an appropriate flag set', () => {
+    const manager = new QuestsManager();
+    manager.init(new LevelPreset(5));
+
+    const quest = manager.getAll()[0];
+    jest.spyOn(quest, 'serialize');
+
+    manager.serialize(true);
+
+    expect(quest.serialize).toBeCalledWith(true);
   });
 });

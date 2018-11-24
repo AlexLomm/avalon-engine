@@ -28,4 +28,8 @@ export class TeamVotingState extends BaseState {
 
     game.getQuestsManager().addVote(vote);
   }
+
+  serialize(game: Game, forUsername: string) {
+    return super.serialize(game, forUsername, false);
+  }
 }

@@ -36,10 +36,10 @@ export abstract class BaseState {
     throw new fromErrors.NoTimeForAssassinationError();
   }
 
-  serialize(game: Game, forUsername: string, votesRevealed: boolean = false) {
+  serialize(game: Game, forUsername: string, resultsConcealed: boolean) {
     return {
       meta: game.getMetaData().serialize(),
-      quests: game.getQuestsManager().serialize(),
+      quests: game.getQuestsManager().serialize(resultsConcealed),
       players: game.getPlayersManager().serialize(forUsername, false),
     };
   }

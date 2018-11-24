@@ -39,4 +39,8 @@ export class QuestVotingState extends BaseState {
     return game.getPlayersManager().getIsSubmitted()
       && game.getQuestsManager().getCurrentQuest().questVotingAllowed();
   }
+
+  serialize(game: Game, forUsername: string) {
+    return super.serialize(game, forUsername, false);
+  }
 }

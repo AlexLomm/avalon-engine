@@ -32,4 +32,8 @@ export class TeamPropositionState extends BaseState {
 
     return proposedPlayersCount !== votesNeededCount;
   }
+
+  serialize(game: Game, forUsername: string) {
+    return super.serialize(game, forUsername, false);
+  }
 }

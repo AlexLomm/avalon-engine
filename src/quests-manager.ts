@@ -107,10 +107,10 @@ export class QuestsManager {
     }).length;
   };
 
-  serialize() {
+  serialize(resultsConcealed: boolean) {
     return {
       assassinationStatus: this.assassinationStatus,
-      quests: this.quests.map(q => q.serialize()),
+      collection: this.quests.map(q => q.serialize(resultsConcealed)),
       teamVotingRoundIndex: this.getCurrentQuest()
         ? this.getCurrentQuest().getTeamVotingRoundIndex()
         : 0,

@@ -100,8 +100,6 @@ describe('post "reveal roles" phase', () => {
   let questsManager: QuestsManager;
 
   beforeEach(async () => {
-    jest.useFakeTimers();
-
     playersManager = new PlayersManager();
     questsManager  = new QuestsManager();
     game           = new Game(
@@ -119,8 +117,6 @@ describe('post "reveal roles" phase', () => {
     addPlayersToGame(game, 5);
 
     game.start();
-
-    jest.runAllTimers();
   });
 
   describe('team proposition', () => {
@@ -497,24 +493,46 @@ describe('post "reveal roles" phase', () => {
 });
 
 describe('serialization', () => {
-  // TODO: refactor
-  test('should serialize initial game object', () => {
-    const playersManager = new PlayersManager();
-    const questsManager  = new QuestsManager();
-    const game           = new Game(playersManager, questsManager);
+  let playersManager: PlayersManager;
+  let questsManager: QuestsManager;
+  let game: Game;
+  beforeEach(() => {
+    playersManager = new PlayersManager();
+    questsManager  = new QuestsManager();
+    game           = new Game(
+      playersManager,
+      questsManager,
+      new PreparationState(),
+      new GameMetaData(),
+      new GameStateMachine({
+        afterTeamProposition: 0,
+        afterTeamVoting: 0,
+        afterQuestVoting: 0,
+      }),
+    );
+  });
 
-    addPlayersToGame(game, 5);
-
-    game.start();
+  test('should serialize an initial game object', () => {
+    game.addPlayer(new Player('user-1'));
 
     const expected = {
       meta: game.getMetaData().serialize(),
-      quests: questsManager.serialize(),
+      quests: questsManager.serialize(false),
       players: playersManager.serialize('user-1', true),
     };
 
-    const actual = game.serialize('user-1');
+    const actual = game.serialize('user-1', true);
 
     expect(actual).toEqual(expected);
+  });
+
+  test('should serialize the quests with the appropriate flag set', () => {
+    jest.spyOn(game.getQuestsManager(), 'serialize');
+
+    game.addPlayer(new Player('user-1'));
+
+    game.serialize('user-1', true);
+
+    expect(game.getQuestsManager().serialize).toBeCalledWith(true);
   });
 });
