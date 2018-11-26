@@ -1,4 +1,4 @@
-import { GameMetaData } from '../src/game-meta-data';
+import { GameMetaData, GameStatus } from '../src/game-meta-data';
 import { LevelPreset } from '../src/level-preset';
 import { Player } from '../src/player';
 
@@ -64,6 +64,7 @@ test('should contain the expected keys', () => {
     'id',
     'createdAt',
     'levelPreset',
+    'gameStatus',
     'gameCreator',
     'startedAt',
     'finishedAt',
@@ -72,4 +73,26 @@ test('should contain the expected keys', () => {
   const actual = Object.keys(gameMeta.serialize()).sort();
 
   expect(expected).toEqual(actual);
+});
+
+test('should have the game status set as "Unfinished" by default', () => {
+  const gameMeta = new GameMetaData();
+
+  expect(gameMeta.serialize().gameStatus).toEqual('Unfinished');
+});
+
+test('should set the game status to "Won"', () => {
+  const gameMeta = new GameMetaData();
+
+  gameMeta.setGameStatus(GameStatus.Won);
+
+  expect(gameMeta.getGameStatus()).toEqual(GameStatus.Won);
+});
+
+test('should set the game status to "Lost"', () => {
+  const gameMeta = new GameMetaData();
+
+  gameMeta.setGameStatus(GameStatus.Lost);
+
+  expect(gameMeta.getGameStatus()).toEqual(GameStatus.Lost);
 });
