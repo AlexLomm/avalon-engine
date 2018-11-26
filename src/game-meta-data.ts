@@ -15,6 +15,7 @@ export class GameMetaData {
   private gameStatus: GameStatus   = GameStatus.Unfinished;
   private gameCreator: Player      = null;
   private startedAt: Date          = null;
+  // TODO: rethink the simultaneous use of `finishedAt` and `gameStatus`
   private finishedAt: Date         = null;
 
   setGameStatus(gameStatus: GameStatus) {

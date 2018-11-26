@@ -2,11 +2,11 @@ import * as _ from 'lodash';
 import * as fromErrors from '../src/errors';
 import { Game } from '../src/game';
 import { PlayersManager } from '../src/players-manager';
-import { QuestsManager, GameStatus } from '../src/quests-manager';
+import { QuestsManager } from '../src/quests-manager';
 import { Player } from '../src/player';
 import { PreparationState } from '../src/game-states/preparation-state';
-import { GameMetaData } from '../src/game-meta-data';
-import { GameStateMachine } from '../src/game-states/game-state-machine';
+import { GameMetaData, GameStatus } from '../src/game-meta-data';
+import { GameStateMachine, GameState } from '../src/game-states/game-state-machine';
 import {
   proposeAndSubmitTeam,
   proposePlayers,
@@ -396,6 +396,26 @@ describe('post "reveal roles" phase', () => {
 
       expect(previousQuest).not.toBe(questsManager.getCurrentQuest());
     });
+
+    test('should transition to the assassination phase, if at least 3 quests succeeded', () => {
+      passQuestsWithResults(game, [true, true]);
+
+      jest.spyOn(game.getFsm(), 'transitionTo');
+
+      passQuestsWithResults(game, [true]);
+
+      expect(game.getFsm().transitionTo).toBeCalledWith(GameState.Assassination);
+    });
+
+    test('should set the game status to "Lost", if there are at least 3 failed quests', () => {
+      passQuestsWithResults(game, [false, false]);
+
+      expect(game.getMetaData().getGameStatus()).toEqual(GameStatus.Unfinished);
+
+      passQuestsWithResults(game, [false]);
+
+      expect(game.getMetaData().getGameStatus()).toEqual(GameStatus.Lost);
+    });
   });
 
   describe('assassination', () => {
@@ -419,7 +439,7 @@ describe('post "reveal roles" phase', () => {
         .toThrow(fromErrors.NoTimeVictimPropositionError);
     });
 
-    test('should toggle assassination victim', () => {
+    test('should toggle the victim selection', () => {
       const assassin = playersManager.getAssassin();
       const victim   = getNonAssassin(playersManager);
 
@@ -457,16 +477,16 @@ describe('post "reveal roles" phase', () => {
       passQuestsWithResults(game, [true, true, true]);
 
       jest.spyOn(playersManager, 'assassinate');
-      jest.spyOn(questsManager, 'setAssassinationStatus');
+      jest.spyOn(game.getMetaData(), 'setGameStatus');
 
       game.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
       game.assassinate(assassin.getUsername());
 
       expect(playersManager.assassinate).toBeCalledTimes(1);
-      expect(questsManager.setAssassinationStatus).toBeCalledTimes(1);
+      expect(game.getMetaData().setGameStatus).toBeCalledTimes(1);
     });
 
-    test('should set the game status to "0", if the victim was Merlin', () => {
+    test('should set the game status to "Lost", if the victim was Merlin', () => {
       const assassin = playersManager.getAssassin();
       const merlin   = getMerlin(playersManager);
 
@@ -475,10 +495,10 @@ describe('post "reveal roles" phase', () => {
       game.toggleVictimProposition(assassin.getUsername(), merlin.getUsername());
       game.assassinate(assassin.getUsername());
 
-      expect(questsManager.getGameStatus()).toStrictEqual(GameStatus.Lost);
+      expect(game.getMetaData().getGameStatus()).toEqual(GameStatus.Lost);
     });
 
-    test('should set the game status to "1", if the victim was not Merlin', () => {
+    test('should set the game status to "Won", if the victim was not Merlin', () => {
       const assassin  = playersManager.getAssassin();
       const nonMerlin = getNonAssassinNonMerlin(playersManager);
 
@@ -487,7 +507,7 @@ describe('post "reveal roles" phase', () => {
       game.toggleVictimProposition(assassin.getUsername(), nonMerlin.getUsername());
       game.assassinate(assassin.getUsername());
 
-      expect(questsManager.getGameStatus()).toStrictEqual(GameStatus.Won);
+      expect(game.getMetaData().getGameStatus()).toStrictEqual(GameStatus.Won);
     });
   });
 });
@@ -512,7 +532,7 @@ describe('serialization', () => {
     );
   });
 
-  test('should serialize an initial game object', () => {
+  test('should correctly serialize the game in it\'s initial state', () => {
     game.addPlayer(new Player('user-1'));
 
     const expected = {
@@ -521,7 +541,7 @@ describe('serialization', () => {
       players: playersManager.serialize('user-1'),
     };
 
-    const actual = game.serialize('user-1', true);
+    const actual = game.serialize('user-1');
 
     expect(actual).toEqual(expected);
   });
@@ -531,7 +551,7 @@ describe('serialization', () => {
 
     game.addPlayer(new Player('user-1'));
 
-    game.serialize('user-1', true);
+    game.serialize('user-1');
 
     expect(game.getQuestsManager().serialize).toBeCalledWith(true);
   });

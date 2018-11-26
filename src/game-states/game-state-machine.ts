@@ -5,6 +5,7 @@ import { QuestVotingState } from './quest-voting-state';
 import { FrozenState } from './frozen-state';
 import { TypeState } from 'typestate';
 import { AssassinationState } from './assassination-state';
+import { GameStatus } from '../game-meta-data';
 
 export enum GameState {
   Preparation           = 'Preparation',
@@ -13,7 +14,8 @@ export enum GameState {
   TeamVotingPreApproved = 'TeamVotingPreApproved',
   QuestVoting           = 'QuestVoting',
   Assassination         = 'Assassination',
-  Finish                = 'Finish',
+  GameLost              = 'GameLost',
+  GameWon               = 'GameWon',
 }
 
 export interface GameStateTransitionWaitTimes {
@@ -63,9 +65,10 @@ export class GameStateMachine {
     //
     this.fsm.from(GameState.QuestVoting).to(GameState.TeamProposition);
     this.fsm.from(GameState.QuestVoting).to(GameState.Assassination);
-    this.fsm.from(GameState.QuestVoting).to(GameState.Finish);
+    this.fsm.from(GameState.QuestVoting).to(GameState.GameLost);
     //
-    this.fsm.from(GameState.Assassination).to(GameState.Finish);
+    this.fsm.from(GameState.Assassination).to(GameState.GameLost);
+    this.fsm.from(GameState.Assassination).to(GameState.GameWon);
   }
 
   private initTransitionListeners(game: Game) {
@@ -159,10 +162,23 @@ export class GameStateMachine {
       }
     });
 
-    this.fsm.on(GameState.Finish, (from: GameState) => {
+    this.fsm.on(GameState.GameLost, (from: GameState) => {
       switch (from) {
         case GameState.QuestVoting:
         case GameState.Assassination:
+          game.getMetaData().setGameStatus(GameStatus.Lost);
+
+          game.setState(new FrozenState());
+
+          break;
+      }
+    });
+
+    this.fsm.on(GameState.GameWon, (from: GameState) => {
+      switch (from) {
+        case GameState.Assassination:
+          game.getMetaData().setGameStatus(GameStatus.Won);
+
           game.setState(new FrozenState());
 
           break;

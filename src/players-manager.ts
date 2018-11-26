@@ -11,7 +11,6 @@ export class PlayersManager {
   private proposedPlayers: Player[] = [];
   private leaderIndex: number       = -1;
   private victim: Player;
-  private isAssassinated: boolean   = false;
 
   constructor() {
   }
@@ -26,8 +25,6 @@ export class PlayersManager {
       throw new fromErrors.RequiredVictimError();
     }
 
-    this.isAssassinated = true;
-
     return this.assassinationSucceeded();
   }
 
@@ -39,11 +36,6 @@ export class PlayersManager {
   // TODO: remove
   getVictim(): Player {
     return this.victim;
-  }
-
-  // TODO: make private
-  getIsAssassinated(player: Player): boolean {
-    return this.victim === player && this.isAssassinated;
   }
 
   // TODO: make private
@@ -208,7 +200,6 @@ export class PlayersManager {
       leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
       victimUsername: PlayersManager.getUsernameOrNull(this.getVictim()),
-      isAssassinated: this.isAssassinated,
     };
   }
 

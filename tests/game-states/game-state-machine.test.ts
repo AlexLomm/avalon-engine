@@ -106,8 +106,9 @@ describe('transition timings', () => {
   test.each`
     from                        | to
     ${GameState.Preparation}    | ${GameState.TeamProposition}}
-    ${GameState.Assassination}  | ${GameState.Finish}}
-    ${GameState.QuestVoting}    | ${GameState.Finish}}
+    ${GameState.Assassination}  | ${GameState.GameLost}}
+    ${GameState.Assassination}  | ${GameState.GameWon}}
+    ${GameState.QuestVoting}    | ${GameState.GameLost}}
   `('transition from $from to $to should happen instantly',
     ({from, to}) => {
       jest.useFakeTimers();

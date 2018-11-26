@@ -2,7 +2,6 @@ import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
 import { GameState } from './game-state-machine';
-import { GameStatus } from '../quests-manager';
 
 export class QuestVotingState extends BaseState {
   protected resultsConcealed = true;
@@ -15,11 +14,13 @@ export class QuestVotingState extends BaseState {
     this.vote(game, username, voteValue);
 
     if (!this.questVotingIsOn(game)) {
-      if (game.getQuestsManager().getGameStatus() === GameStatus.Lost) {
-        return game.getFsm().transitionTo(GameState.Finish);
+      const manager = game.getQuestsManager();
+
+      if (manager.getFailedQuestsCount() >= 3) {
+        return game.getFsm().transitionTo(GameState.GameLost);
       }
 
-      if (game.getQuestsManager().assassinationAllowed()) {
+      if (manager.getSucceededQuestsCount() >= 3) {
         return game.getFsm().transitionTo(GameState.Assassination);
       }
 

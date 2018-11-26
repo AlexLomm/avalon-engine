@@ -5,7 +5,7 @@ import { RoleId } from '../../src/configs/roles.config';
 import { Player } from '../../src/player';
 
 export function passQuestsWithResults(game: Game, results: boolean[] = []) {
-  _.times(results.length, () => {
+  results.forEach((result: boolean) => {
     const usernames: string[] = [];
 
     _.times(
@@ -17,7 +17,7 @@ export function passQuestsWithResults(game: Game, results: boolean[] = []) {
 
     voteAllForTeam(game, true);
 
-    voteAllForQuest(game, true);
+    voteAllForQuest(game, result);
   });
 }
 
