@@ -59,6 +59,10 @@ export class QuestsManager {
     return this.getCurrentQuest().getVotesNeeded();
   }
 
+  questVotingAllowed() {
+    return this.getCurrentQuest().questVotingAllowed();
+  }
+
   // TODO: make private
   getCurrentQuest() {
     return this.quests[this.currentQuestIndex];

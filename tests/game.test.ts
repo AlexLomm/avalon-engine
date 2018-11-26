@@ -6,7 +6,7 @@ import { QuestsManager } from '../src/quests-manager';
 import { Player } from '../src/player';
 import { PreparationState } from '../src/game-states/preparation-state';
 import { GameMetaData, GameStatus } from '../src/game-meta-data';
-import { GameStateMachine, GameState } from '../src/game-states/game-state-machine';
+import { GameStateMachine, GameState, GameEvent } from '../src/game-states/game-state-machine';
 import {
   proposeAndSubmitTeam,
   proposePlayers,
@@ -36,14 +36,6 @@ describe('game start', () => {
     game.addPlayer(new Player('user-1'));
 
     expect(game.getMetaData().setCreatorOnce).toBeCalled();
-  });
-
-  test('should return a promise', () => {
-    const game = new Game();
-
-    _.times(5, (i) => game.addPlayer(new Player(`user-${i}`)));
-
-    expect(game.start()).toBeInstanceOf(Promise);
   });
 
   test('should not add a player when the game is started', () => {
@@ -211,12 +203,6 @@ describe('post "reveal roles" phase', () => {
         .toThrow(fromErrors.DeniedTeamVotingError);
     });
 
-    test('should return a promise', () => {
-      proposeAndSubmitTeam(game, ['user-1', 'user-2']);
-
-      expect(game.voteForTeam('user-1', true)).toBeInstanceOf(Promise);
-    });
-
     test('should only allow voting once', () => {
       proposeAndSubmitTeam(game, ['user-1', 'user-2']);
 
@@ -351,14 +337,6 @@ describe('post "reveal roles" phase', () => {
       game.voteForQuest('user-1', true);
 
       expect(questsManager.addVote).toBeCalledTimes(1);
-    });
-
-    test('should return a promise', () => {
-      proposeAndSubmitTeam(game, ['user-1', 'user-2']);
-
-      voteAllForTeam(game, true);
-
-      expect(game.voteForQuest('user-1', true)).toBeInstanceOf(Promise);
     });
 
     test('should reset the votes after every proposed player has voted', () => {
@@ -554,5 +532,48 @@ describe('serialization', () => {
     game.serialize('user-1');
 
     expect(game.getQuestsManager().serialize).toBeCalledWith(true);
+  });
+});
+
+describe('event emission', () => {
+  let playersManager: PlayersManager;
+  let questsManager: QuestsManager;
+  let game: Game;
+  beforeEach(() => {
+    playersManager = new PlayersManager();
+    questsManager  = new QuestsManager();
+    game           = new Game(
+      playersManager,
+      questsManager,
+      new PreparationState(),
+      new GameMetaData(),
+      new GameStateMachine({
+        afterTeamProposition: 0,
+        afterTeamVoting: 0,
+        afterQuestVoting: 0,
+      }),
+    );
+  });
+
+  test('should emit on state change', () => {
+    let i = 0;
+
+    game.on(GameEvent.StateChange, () => i++);
+
+    game.addPlayer(new Player('user-1'));
+
+    expect(i).toStrictEqual(1);
+  });
+
+  test('should remove an event listener', () => {
+    let i = 0;
+
+    const listener = () => i++;
+    game.on(GameEvent.StateChange, listener);
+    game.off(GameEvent.StateChange, listener);
+
+    game.addPlayer(new Player('user-1'));
+
+    expect(i).toStrictEqual(0);
   });
 });

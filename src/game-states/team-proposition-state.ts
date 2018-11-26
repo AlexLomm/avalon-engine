@@ -1,7 +1,7 @@
 import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
-import { GameState } from './game-state-machine';
+import { GameState, GameEvent } from './game-state-machine';
 
 export class TeamPropositionState extends BaseState {
   protected resultsConcealed = true;
@@ -12,6 +12,8 @@ export class TeamPropositionState extends BaseState {
     }
 
     game.getPlayersManager().togglePlayerProposition(username);
+
+    game.emit(GameEvent.StateChange);
   }
 
   submitTeam(game: Game, leaderUsername: string) {

@@ -1,6 +1,6 @@
 import { Game } from '../game';
 import { BaseState } from './base-state';
-import { GameState } from './game-state-machine';
+import { GameState, GameEvent } from './game-state-machine';
 
 export class AssassinationState extends BaseState {
   protected resultsConcealed = true;
@@ -10,6 +10,8 @@ export class AssassinationState extends BaseState {
       assassinsUsername,
       victimsUsername,
     );
+
+    game.emit(GameEvent.StateChange);
   }
 
   assassinate(game: Game, assassinsUsername: string) {
@@ -17,6 +19,6 @@ export class AssassinationState extends BaseState {
       ? GameState.GameLost
       : GameState.GameWon;
 
-    return game.getFsm().transitionTo(state);
+    game.getFsm().transitionTo(state);
   }
 }

@@ -1,7 +1,7 @@
 import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
-import { GameState } from './game-state-machine';
+import { GameState, GameEvent } from './game-state-machine';
 
 export class QuestVotingState extends BaseState {
   protected resultsConcealed = true;
@@ -17,17 +17,23 @@ export class QuestVotingState extends BaseState {
       const manager = game.getQuestsManager();
 
       if (manager.getFailedQuestsCount() >= 3) {
-        return game.getFsm().transitionTo(GameState.GameLost);
+        game.getFsm().transitionTo(GameState.GameLost);
+
+        return;
       }
 
       if (manager.getSucceededQuestsCount() >= 3) {
-        return game.getFsm().transitionTo(GameState.Assassination);
+        game.getFsm().transitionTo(GameState.Assassination);
+
+        return;
       }
 
-      return game.getFsm().transitionTo(GameState.TeamProposition);
+      game.getFsm().transitionTo(GameState.TeamProposition);
+
+      return;
     }
 
-    return Promise.resolve();
+    game.emit(GameEvent.StateChange);
   }
 
   // TODO: dry up
@@ -40,6 +46,6 @@ export class QuestVotingState extends BaseState {
   // TODO: rename
   private questVotingIsOn(game: Game) {
     return game.getPlayersManager().getIsSubmitted()
-      && game.getQuestsManager().getCurrentQuest().questVotingAllowed();
+      && game.getQuestsManager().questVotingAllowed();
   }
 }

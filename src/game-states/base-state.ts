@@ -6,43 +6,35 @@ import { RoleId } from '../configs/roles.config';
 export abstract class BaseState {
   protected abstract resultsConcealed: boolean;
 
-  // TODO: emit a "stateChange" event
-  addPlayer(game: Game, player: Player) {
+  addPlayer(game: Game, player: Player): void {
     throw new fromErrors.AlreadyStartedGameError();
   }
 
-  // TODO: emit a "stateChange" event
-  start(game: Game, roleIds: RoleId[]): Promise<void> {
+  start(game: Game, roleIds: RoleId[]): void {
     throw new fromErrors.AlreadyStartedGameError();
   }
 
-  // TODO: emit a "stateChange" event
-  toggleTeammateProposition(game: Game, leaderUsername: string, username: string) {
+  toggleTeammateProposition(game: Game, leaderUsername: string, username: string): void {
     throw new fromErrors.NoTimeForTeammatePropositionError();
   }
 
-  // TODO: emit a "stateChange" event
-  submitTeam(game: Game, leaderUsername: string) {
+  submitTeam(game: Game, leaderUsername: string): void {
     throw new fromErrors.NoTimeForTeamSubmissionError();
   }
 
-  // TODO: emit a "stateChange" event
-  voteForTeam(game: Game, username: string, voteValue: boolean): Promise<void> {
+  voteForTeam(game: Game, username: string, voteValue: boolean): void {
     throw new fromErrors.NoTimeForTeamVotingError();
   }
 
-  // TODO: emit a "stateChange" event
-  voteForQuest(game: Game, username: string, voteValue: boolean): Promise<void> {
+  voteForQuest(game: Game, username: string, voteValue: boolean): void {
     throw new fromErrors.NoTimeForQuestVotingError();
   }
 
-  // TODO: emit a "stateChange" event
-  toggleVictimProposition(game: Game, assassinsUsername: string, victimsUsername: string) {
+  toggleVictimProposition(game: Game, assassinsUsername: string, victimsUsername: string): void {
     throw new fromErrors.NoTimeVictimPropositionError();
   }
 
-  // TODO: emit a "stateChange" event
-  assassinate(game: Game, assassinsUsername: string) {
+  assassinate(game: Game, assassinsUsername: string): void {
     throw new fromErrors.NoTimeForAssassinationError();
   }
 
