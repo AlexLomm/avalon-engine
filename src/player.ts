@@ -5,6 +5,7 @@ import { RoleId } from './configs/roles.config';
 export class Player {
   private username: string;
   private role: Role;
+  // TODO: remove
   private vote: Vote;
 
   constructor(username: string, initialRole = new Role(RoleId.Unknown)) {
@@ -48,22 +49,14 @@ export class Player {
   }
 
   // TODO: refactor
-  serialize(roleRevealed: boolean, voteRevealed: boolean) {
+  serialize(roleRevealed: boolean) {
     const serializedRole = !(this.role && roleRevealed)
       ? new Role(RoleId.Unknown).serialize()
       : this.role.serialize();
 
-    let serializedVote = null;
-    if (this.vote && !voteRevealed) {
-      serializedVote = new Vote(this.username, null).serialize();
-    } else if (this.vote && voteRevealed) {
-      serializedVote = this.vote.serialize();
-    }
-
     return {
       username: this.username,
       role: serializedRole,
-      vote: serializedVote,
     };
   }
 }

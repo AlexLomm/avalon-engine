@@ -59,15 +59,15 @@ describe('voting', () => {
 
 describe('serialization', () => {
   test('should return necessary values', () => {
-    const expected = ['username', 'role', 'vote'].sort();
-    const actual   = Object.keys(player.serialize(false, false)).sort();
+    const expected = ['username', 'role'].sort();
+    const actual   = Object.keys(player.serialize(false)).sort();
 
     expect(expected).toEqual(actual);
   });
 
   test('should contain a hidden role when no role is assigned', () => {
     const expected = new Role(RoleId.Unknown).serialize();
-    const actual   = player.serialize(true, false).role;
+    const actual   = player.serialize(true).role;
 
     expect(expected).toEqual(actual);
   });
@@ -76,7 +76,7 @@ describe('serialization', () => {
     player.setRole(new Role(RoleId.Merlin));
 
     const expected = new Role(RoleId.Unknown).serialize();
-    const actual   = player.serialize(false, false).role;
+    const actual   = player.serialize(false).role;
 
     expect(expected).toEqual(actual);
   });
@@ -86,24 +86,8 @@ describe('serialization', () => {
     player.setRole(role);
 
     const expected = role.serialize();
-    const actual   = player.serialize(true, false).role;
+    const actual   = player.serialize(true).role;
 
     expect(actual).toEqual(expected);
-  });
-
-  test('should contain `null` if a vote hasn\'t been cast', () => {
-    expect(player.serialize(false, false).vote).toStrictEqual(null);
-  });
-
-  test('should contain `null` as a vote value if the vote has not been yet revealed', () => {
-    player.generateVote(true);
-
-    expect(player.serialize(false, false).vote.value).toStrictEqual(null);
-  });
-
-  test('should reveal the vote value', () => {
-    player.generateVote(true);
-
-    expect(player.serialize(false, true).vote.value).toStrictEqual(true);
   });
 });

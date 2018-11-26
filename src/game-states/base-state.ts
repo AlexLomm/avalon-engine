@@ -40,7 +40,7 @@ export abstract class BaseState {
     return {
       meta: game.getMetaData().serialize(),
       quests: game.getQuestsManager().serialize(resultsConcealed),
-      players: game.getPlayersManager().serialize(forUsername, false),
+      players: game.getPlayersManager().serialize(forUsername),
     };
   }
 }

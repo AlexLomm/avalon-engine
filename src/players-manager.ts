@@ -196,14 +196,14 @@ export class PlayersManager {
     this.proposedPlayers = [];
   }
 
-  serialize(forPlayerUsername: string, votesRevealed: boolean) {
+  serialize(forPlayerUsername: string) {
     const forPlayer = this.findPlayer(forPlayerUsername);
     if (!forPlayer) {
       throw new fromErrors.PlayerMissingError();
     }
 
     return {
-      collection: this.serializePlayers(forPlayer, votesRevealed),
+      collection: this.serializePlayers(forPlayer),
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
       leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
@@ -212,11 +212,11 @@ export class PlayersManager {
     };
   }
 
-  private serializePlayers(forPlayer: Player, votesRevealed: boolean) {
+  private serializePlayers(forPlayer: Player) {
     return this.players.map((p) => {
       const roleRevealed = forPlayer.canSee(p);
 
-      return p.serialize(roleRevealed, votesRevealed);
+      return p.serialize(roleRevealed);
     });
   }
 

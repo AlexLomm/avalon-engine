@@ -518,7 +518,7 @@ describe('serialization', () => {
     const expected = {
       meta: game.getMetaData().serialize(),
       quests: questsManager.serialize(false),
-      players: playersManager.serialize('user-1', true),
+      players: playersManager.serialize('user-1'),
     };
 
     const actual = game.serialize('user-1', true);
