@@ -1,3 +1,4 @@
+import EventEmitter from 'events';
 import { Game } from '../game';
 import { TeamPropositionState } from './team-proposition-state';
 import { TeamVotingState } from './team-voting-state';
@@ -6,6 +7,7 @@ import { FrozenState } from './frozen-state';
 import { TypeState } from 'typestate';
 import { AssassinationState } from './assassination-state';
 import { GameStatus } from '../game-meta-data';
+import { BaseState } from './base-state';
 
 export enum GameState {
   Preparation           = 'Preparation',
@@ -18,6 +20,10 @@ export enum GameState {
   GameWon               = 'GameWon',
 }
 
+export enum GameEvent {
+  StateChange = 'stateChange',
+}
+
 export interface GameStateTransitionWaitTimes {
   afterTeamProposition: number,
   afterTeamVoting: number,
@@ -25,11 +31,10 @@ export interface GameStateTransitionWaitTimes {
 }
 
 export class GameStateMachine {
-  private isInit: boolean = false;
+  private isInit: boolean;
   private fsm: TypeState.FiniteStateMachine<GameState>;
   private game: Game;
-  //
-  private stateUpdatePromise: Promise<void>;
+  private eventEmitter: EventEmitter = new EventEmitter();
 
   constructor(
     // TODO: import defaults from a config file
@@ -77,28 +82,28 @@ export class GameStateMachine {
     this.fsm.on(GameState.TeamProposition, (from: GameState) => {
       switch (from) {
         case GameState.Preparation:
-          game.setState(new TeamPropositionState());
+          this.setState(game, new TeamPropositionState());
 
           break;
         case GameState.TeamVoting:
-          game.setState(new FrozenState());
+          this.setState(game, new FrozenState());
 
           this.waitFor(() => {
             game.getPlayersManager().reset();
 
-            game.setState(new TeamPropositionState());
+            this.setState(game, new TeamPropositionState());
           }, this.waitTimes.afterTeamVoting);
 
           break;
         case GameState.QuestVoting:
-          game.setState(new FrozenState());
+          this.setState(game, new FrozenState());
 
           this.waitFor(() => {
             game.getPlayersManager().reset();
 
             game.getQuestsManager().nextQuest();
 
-            game.setState(new TeamPropositionState());
+            this.setState(game, new TeamPropositionState());
           }, this.waitTimes.afterQuestVoting);
 
           break;
@@ -108,10 +113,12 @@ export class GameStateMachine {
     this.fsm.on(GameState.TeamVoting, (from: GameState) => {
       switch (from) {
         case GameState.TeamProposition:
+          this.setState(game, new FrozenState());
+
           this.waitFor(() => {
             game.getPlayersManager().setIsSubmitted(true);
 
-            game.setState(new TeamVotingState());
+            this.setState(game, new TeamVotingState());
           }, this.waitTimes.afterTeamProposition);
 
           break;
@@ -121,10 +128,12 @@ export class GameStateMachine {
     this.fsm.on(GameState.TeamVotingPreApproved, (from: GameState) => {
       switch (from) {
         case GameState.TeamProposition:
+          this.setState(game, new FrozenState());
+
           this.waitFor(() => {
             game.getPlayersManager().setIsSubmitted(true);
 
-            game.setState(new TeamVotingState());
+            this.setState(game, new TeamVotingState());
 
             this.simulateTeamApproval(game);
           }, this.waitTimes.afterTeamProposition);
@@ -137,12 +146,12 @@ export class GameStateMachine {
       switch (from) {
         case GameState.TeamVotingPreApproved:
         case GameState.TeamVoting:
-          game.setState(new FrozenState());
+          this.setState(game, new FrozenState());
 
           this.waitFor(() => {
             game.getPlayersManager().resetVotes();
 
-            game.setState(new QuestVotingState());
+            this.setState(game, new QuestVotingState());
           }, this.waitTimes.afterTeamVoting);
 
           break;
@@ -152,10 +161,12 @@ export class GameStateMachine {
     this.fsm.on(GameState.Assassination, (from: GameState) => {
       switch (from) {
         case GameState.QuestVoting:
+          this.setState(game, new FrozenState());
+
           this.waitFor(() => {
             game.getPlayersManager().reset();
 
-            game.setState(new AssassinationState());
+            this.setState(game, new AssassinationState());
           }, this.waitTimes.afterQuestVoting);
 
           break;
@@ -168,7 +179,7 @@ export class GameStateMachine {
         case GameState.Assassination:
           game.getMetaData().setGameStatus(GameStatus.Lost);
 
-          game.setState(new FrozenState());
+          this.setState(game, new FrozenState());
 
           break;
       }
@@ -179,29 +190,27 @@ export class GameStateMachine {
         case GameState.Assassination:
           game.getMetaData().setGameStatus(GameStatus.Won);
 
-          game.setState(new FrozenState());
+          this.setState(game, new FrozenState());
 
           break;
       }
     });
   }
 
-  private waitFor(cb: () => void, ms: number): void {
-    this.stateUpdatePromise = new Promise((resolve) => {
-      if (!ms) {
-        this.handle(cb, resolve);
+  private waitFor(cb: () => void, timeoutMs: number) {
+    if (!timeoutMs) {
+      cb();
 
-        return;
-      }
+      return;
+    }
 
-      setTimeout(() => this.handle(cb, resolve), ms);
-    });
+    setTimeout(() => cb(), timeoutMs);
   }
 
-  private handle(cb: () => void, resolve: () => void) {
-    cb();
+  private setState(game: Game, state: BaseState) {
+    game.setState(state);
 
-    resolve();
+    this.eventEmitter.emit('stateChange');
   }
 
   private simulateTeamApproval(game: Game) {
@@ -214,13 +223,13 @@ export class GameStateMachine {
 
   transitionTo(state: GameState) {
     this.fsm.go(state);
+  }
 
-    // if the state machine transition produced a promise,
-    // return it. Otherwise - return a resolved promise
-    const stateUpdatePromise: Promise<void> = this.stateUpdatePromise || Promise.resolve();
+  on(gameEvent: GameEvent, cb: () => void) {
+    this.eventEmitter.on(gameEvent, cb);
+  }
 
-    this.stateUpdatePromise = null;
-
-    return stateUpdatePromise;
+  off(gameEvent: GameEvent, cb: () => void) {
+    this.eventEmitter.off(gameEvent, cb);
   }
 }
