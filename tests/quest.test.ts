@@ -187,7 +187,7 @@ describe('serialization', () => {
       questVotes: [],
     };
 
-    const actual = quest.serialize();
+    const actual = quest.serialize(false);
 
     expect(expected).toEqual(actual);
   });
@@ -198,10 +198,19 @@ describe('serialization', () => {
     const vote = new Vote('user-1', true);
     quest.addVote(new Vote('user-1', true));
 
-    expect(quest.serialize().teamVotes[0]).toEqual(vote.serialize());
+    expect(quest.serialize(false).teamVotes[0]).toEqual(vote.serialize());
   });
 
-  test('should contain the quest votes', () => {
+  test('should contain the anonymous team votes', () => {
+    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+
+    quest.addVote(new Vote('user-1', true));
+
+    expect(quest.serialize(true).teamVotes[0])
+      .toEqual(new Vote('user-1', null).serialize());
+  });
+
+  test('should reveal the vote value without revealing the voter', () => {
     const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
 
     // team votes
@@ -210,9 +219,41 @@ describe('serialization', () => {
     quest.addVote(new Vote('user-3', true));
 
     // quest votes
-    const vote = new Vote('user-3', true);
-    quest.addVote(vote);
+    quest.addVote(new Vote('user-3', true));
 
-    expect(quest.serialize().questVotes[0]).toEqual(vote.serialize());
+    expect(quest.serialize(false).questVotes[0])
+      .toEqual(new Vote(null, true).serialize());
+  });
+
+  test('should indicate that someone has voted without revealing the vote value', () => {
+    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+
+    // team votes
+    quest.addVote(new Vote('user-1', true));
+    quest.addVote(new Vote('user-2', true));
+    quest.addVote(new Vote('user-3', true));
+
+    // quest votes
+    quest.addVote(new Vote('user-3', true));
+
+    expect(quest.serialize(true).questVotes[0])
+      .toEqual(new Vote('user-3', null).serialize());
+  });
+
+  test('should sort the revealed quest votes by value', () => {
+    const quest = new Quest({votesNeeded: 5, failsNeeded: 1, totalPlayers: 8});
+
+    _.times(8, (i: number) => quest.addVote(new Vote(`user-${i}`, true)));
+
+    quest.addVote(new Vote('user-1', false));
+    quest.addVote(new Vote('user-2', true));
+    quest.addVote(new Vote('user-3', false));
+    quest.addVote(new Vote('user-4', true));
+    quest.addVote(new Vote('user-5', true));
+
+    const votes = (quest.serialize(false).questVotes as Array<any>)
+      .map((obj: any) => obj.value);
+
+    expect(votes).toEqual([true, true, true, false, false]);
   });
 });

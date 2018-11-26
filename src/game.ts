@@ -1,3 +1,4 @@
+import EventEmitter from 'events';
 import { PlayersManager } from './players-manager';
 import { QuestsManager } from './quests-manager';
 import { PreparationState } from './game-states/preparation-state';
@@ -5,17 +6,34 @@ import { RoleId } from './configs/roles.config';
 import { BaseState } from './game-states/base-state';
 import { Player } from './player';
 import { GameMetaData } from './game-meta-data';
-import { GameStateMachine } from './game-states/game-state-machine';
+import { GameStateMachine, GameEvent } from './game-states/game-state-machine';
 
 export class Game {
   constructor(
-    private playersManager         = new PlayersManager(),
-    private questsManager          = new QuestsManager(),
-    private state: BaseState       = new PreparationState(),
-    private metaData: GameMetaData = new GameMetaData(),
-    private fsm: GameStateMachine  = new GameStateMachine(),
+    private playersManager             = new PlayersManager(),
+    private questsManager              = new QuestsManager(),
+    private state: BaseState           = new PreparationState(),
+    private metaData: GameMetaData     = new GameMetaData(),
+    private fsm: GameStateMachine      = new GameStateMachine(),
+    private eventEmitter: EventEmitter = new EventEmitter(),
   ) {
     this.fsm.init(this);
+
+    this.fsm.on(GameEvent.StateChange, () => {
+      this.eventEmitter.emit(GameEvent.StateChange);
+    });
+  }
+
+  emit(event: GameEvent) {
+    this.eventEmitter.emit(event);
+  }
+
+  on(event: GameEvent, cb: () => void) {
+    this.eventEmitter.on(event, cb);
+  }
+
+  off(event: GameEvent, cb: () => void) {
+    this.eventEmitter.off(event, cb);
   }
 
   setState(state: BaseState) {
@@ -42,20 +60,20 @@ export class Game {
     this.state.addPlayer(this, player);
   }
 
-  start(roleIds: RoleId[] = []): Promise<void> {
-    return this.state.start(this, roleIds);
+  start(roleIds: RoleId[] = []) {
+    this.state.start(this, roleIds);
   }
 
   submitTeam(leaderUsername: string) {
     this.state.submitTeam(this, leaderUsername);
   }
 
-  voteForQuest(username: string, voteValue: boolean): Promise<void> {
-    return this.state.voteForQuest(this, username, voteValue);
+  voteForQuest(username: string, voteValue: boolean) {
+    this.state.voteForQuest(this, username, voteValue);
   }
 
-  voteForTeam(username: string, voteValue: boolean): Promise<void> {
-    return this.state.voteForTeam(this, username, voteValue);
+  voteForTeam(username: string, voteValue: boolean) {
+    this.state.voteForTeam(this, username, voteValue);
   }
 
   toggleTeammateProposition(leaderUsername: string, username: string) {

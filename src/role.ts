@@ -38,6 +38,8 @@ export class Role {
 
   // TODO: cache in a table-like data structure
   canSee(anotherRole: Role) {
+    if (anotherRole.getId() === this.id) return true;
+
     const index = this.visibleRoleIds
       .findIndex((roleId) => roleId === anotherRole.getId());
 

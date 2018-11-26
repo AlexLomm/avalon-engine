@@ -1,10 +1,11 @@
 import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
-import { GameState } from './game-state-machine';
-import { GameStatus } from '../quests-manager';
+import { GameState, GameEvent } from './game-state-machine';
 
 export class QuestVotingState extends BaseState {
+  protected resultsConcealed = true;
+
   voteForQuest(game: Game, username: string, voteValue: boolean) {
     if (!game.getPlayersManager().questVotingAllowedFor(username)) {
       throw new fromErrors.DeniedQuestVotingError();
@@ -13,18 +14,26 @@ export class QuestVotingState extends BaseState {
     this.vote(game, username, voteValue);
 
     if (!this.questVotingIsOn(game)) {
-      if (game.getQuestsManager().getGameStatus() === GameStatus.Lost) {
-        return game.getFsm().transitionTo(GameState.Finish);
+      const manager = game.getQuestsManager();
+
+      if (manager.getFailedQuestsCount() >= 3) {
+        game.getFsm().transitionTo(GameState.GameLost);
+
+        return;
       }
 
-      if (game.getQuestsManager().assassinationAllowed()) {
-        return game.getFsm().transitionTo(GameState.Assassination);
+      if (manager.getSucceededQuestsCount() >= 3) {
+        game.getFsm().transitionTo(GameState.Assassination);
+
+        return;
       }
 
-      return game.getFsm().transitionTo(GameState.TeamProposition);
+      game.getFsm().transitionTo(GameState.TeamProposition);
+
+      return;
     }
 
-    return Promise.resolve();
+    game.emit(GameEvent.StateChange);
   }
 
   // TODO: dry up
@@ -37,6 +46,6 @@ export class QuestVotingState extends BaseState {
   // TODO: rename
   private questVotingIsOn(game: Game) {
     return game.getPlayersManager().getIsSubmitted()
-      && game.getQuestsManager().getCurrentQuest().questVotingAllowed();
+      && game.getQuestsManager().questVotingAllowed();
   }
 }

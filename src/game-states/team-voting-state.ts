@@ -1,9 +1,11 @@
 import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
-import { GameState } from './game-state-machine';
+import { GameState, GameEvent } from './game-state-machine';
 
 export class TeamVotingState extends BaseState {
+  protected resultsConcealed = true;
+
   voteForTeam(game: Game, username: string, voteValue: boolean) {
     if (!game.getPlayersManager().teamVotingAllowedFor(username)) {
       throw new fromErrors.DeniedTeamVotingError();
@@ -12,14 +14,18 @@ export class TeamVotingState extends BaseState {
     this.vote(game, username, voteValue);
 
     if (game.getQuestsManager().teamVotingSucceeded()) {
-      return game.getFsm().transitionTo(GameState.QuestVoting);
+      game.getFsm().transitionTo(GameState.QuestVoting);
+
+      return;
     }
 
     if (game.getQuestsManager().teamVotingRoundFinished()) {
-      return game.getFsm().transitionTo(GameState.TeamProposition);
+      game.getFsm().transitionTo(GameState.TeamProposition);
+
+      return;
     }
 
-    return Promise.resolve();
+    game.emit(GameEvent.StateChange);
   }
 
   // TODO: dry up

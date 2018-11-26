@@ -1,4 +1,9 @@
-import { GameStateMachine, GameState } from '../../src/game-states/game-state-machine';
+import {
+  GameStateMachine,
+  GameState,
+  GameEvent,
+  GameStateTransitionWaitTimes,
+} from '../../src/game-states/game-state-machine';
 import { Game } from '../../src/game';
 
 describe('initialization', () => {
@@ -29,10 +34,6 @@ describe('transition', () => {
     machine.init(game, GameState.TeamVoting);
   });
 
-  test('should return a promise upon transition', () => {
-    expect(machine.transitionTo(GameState.TeamProposition)).toBeInstanceOf(Promise);
-  });
-
   test('should set a game state', () => {
     machine.transitionTo(GameState.QuestVoting);
 
@@ -58,34 +59,108 @@ describe('transition', () => {
   });
 });
 
-describe('transition timings', () => {
-  test.each`
-    from  | to | expectedWaitTime | actualWaitTime
-    
-    ${GameState.TeamProposition}  | ${GameState.TeamVoting}             | ${1000} | ${{afterTeamProposition: 1000}}
-    ${GameState.TeamProposition}  | ${GameState.TeamVotingPreApproved}  | ${1000} | ${{afterTeamProposition: 1000}}
-    
-    ${GameState.TeamVoting}  | ${GameState.TeamProposition}  | ${1000} | ${{afterTeamVoting: 1000}}
-    ${GameState.TeamVoting}  | ${GameState.QuestVoting}      | ${1000} | ${{afterTeamVoting: 1000}}
-    
-    ${GameState.TeamVotingPreApproved}  | ${GameState.QuestVoting}      | ${1000} | ${{afterTeamVoting: 1000}}
-    
-    ${GameState.QuestVoting}  | ${GameState.TeamProposition}  | ${1000} | ${{afterQuestVoting: 1000}}
-    ${GameState.QuestVoting}  | ${GameState.Assassination}    | ${1000} | ${{afterQuestVoting: 1000}}
-  `('transition from $from to $to should happen exactly after $expectedWaitTime ms',
-    ({from, to, expectedWaitTime, actualWaitTime}) => {
-      jest.useFakeTimers();
+describe('events', () => {
+  let game: Game;
+  let machine: GameStateMachine;
+  beforeEach(() => {
+    jest.useFakeTimers();
 
-      const defaultWaitTimes = {
-        afterTeamProposition: 5000,
-        afterTeamVoting: 5000,
-        afterQuestVoting: 5000,
-      };
+    game    = new Game();
+    machine = new GameStateMachine();
+  });
 
-      const game    = new Game();
+  test('should add an event listener', () => {
+    machine.init(game, GameState.Preparation);
+
+    let i = 0;
+
+    machine.on(GameEvent.StateChange, () => i++);
+
+    machine.transitionTo(GameState.TeamProposition);
+
+    expect(i).toStrictEqual(1);
+  });
+
+  test('should remove an event listener', () => {
+    machine.init(game, GameState.Preparation);
+
+    let i = 0;
+
+    const listener = () => i++;
+    machine.on(GameEvent.StateChange, listener);
+    machine.off(GameEvent.StateChange, listener);
+
+    machine.transitionTo(GameState.TeamProposition);
+
+    expect(i).toStrictEqual(0);
+  });
+});
+
+describe('timed transitions', () => {
+  const timedTransitions = [
+    {
+      from: GameState.TeamProposition,
+      to: GameState.TeamVoting,
+      expectedWait: 1000,
+      actualWait: {afterTeamProposition: 1000},
+    },
+    {
+      from: GameState.TeamProposition,
+      to: GameState.TeamVotingPreApproved,
+      expectedWait: 1000,
+      actualWait: {afterTeamProposition: 1000},
+    },
+    {
+      from: GameState.TeamVoting,
+      to: GameState.TeamProposition,
+      expectedWait: 1000,
+      actualWait: {afterTeamVoting: 1000},
+    },
+    {
+      from: GameState.TeamVoting,
+      to: GameState.QuestVoting,
+      expectedWait: 1000,
+      actualWait: {afterTeamVoting: 1000},
+    },
+    {
+      from: GameState.TeamVotingPreApproved,
+      to: GameState.QuestVoting,
+      expectedWait: 1000,
+      actualWait: {afterTeamVoting: 1000},
+    },
+    {
+      from: GameState.QuestVoting,
+      to: GameState.TeamProposition,
+      expectedWait: 1000,
+      actualWait: {afterQuestVoting: 1000},
+    },
+    {
+      from: GameState.QuestVoting,
+      to: GameState.Assassination,
+      expectedWait: 1000,
+      actualWait: {afterQuestVoting: 1000},
+    },
+  ];
+
+  let game: Game;
+  let defaultWait: GameStateTransitionWaitTimes;
+  beforeEach(() => {
+    jest.useFakeTimers();
+
+    defaultWait = {
+      afterTeamProposition: 5000,
+      afterTeamVoting: 5000,
+      afterQuestVoting: 5000,
+    };
+
+    game = new Game();
+  });
+
+  timedTransitions.forEach(({from, to, expectedWait, actualWait}) => {
+    test(`should transition from ${from} to ${to} in exactly ${expectedWait}ms`, () => {
       const machine = new GameStateMachine({
-        ...defaultWaitTimes,
-        ...actualWaitTime,
+        ...defaultWait,
+        ...actualWait,
       });
       machine.init(game, from);
 
@@ -93,31 +168,72 @@ describe('transition timings', () => {
 
       const spy = jest.spyOn(game, 'setState');
 
-      jest.advanceTimersByTime(expectedWaitTime * 0.95);
+      jest.advanceTimersByTime(expectedWait * 0.95);
 
       expect(spy).not.toBeCalled();
 
-      jest.advanceTimersByTime(expectedWaitTime * 0.05);
+      jest.advanceTimersByTime(expectedWait * 0.05);
 
       expect(spy).toBeCalled();
-    },
-  );
+    });
+  });
 
-  test.each`
-    from                        | to
-    ${GameState.Preparation}    | ${GameState.TeamProposition}}
-    ${GameState.Assassination}  | ${GameState.Finish}}
-    ${GameState.QuestVoting}    | ${GameState.Finish}}
-  `('transition from $from to $to should happen instantly',
-    ({from, to}) => {
-      jest.useFakeTimers();
+  timedTransitions.forEach(({from, to}) => {
+    test(`should fire an event twice, while transitioning from ${from} to ${to}`, () => {
+      const machine = new GameStateMachine(defaultWait);
 
-      const game    = new Game();
-      const machine = new GameStateMachine({
-        afterTeamProposition: 5000,
-        afterTeamVoting: 5000,
-        afterQuestVoting: 5000,
-      });
+      machine.init(game, from);
+
+      let i = 0;
+
+      machine.on(GameEvent.StateChange, () => i++);
+
+      machine.transitionTo(to);
+
+      expect(i).toStrictEqual(1);
+
+      jest.advanceTimersByTime(4900);
+
+      expect(i).toStrictEqual(1);
+
+      jest.advanceTimersByTime(100);
+
+      expect(i).toStrictEqual(2);
+    });
+  });
+});
+
+describe('instant transitions', () => {
+  const instantTransitions = [
+    {from: GameState.Preparation, to: GameState.TeamProposition},
+    {from: GameState.Assassination, to: GameState.GameLost},
+    {from: GameState.Assassination, to: GameState.GameWon},
+    {from: GameState.QuestVoting, to: GameState.GameLost},
+  ];
+
+  let game: Game;
+  let machine: GameStateMachine;
+  let defaultWait: GameStateTransitionWaitTimes;
+  beforeEach(() => {
+    jest.useFakeTimers();
+
+    defaultWait = {
+      afterTeamProposition: 5000,
+      afterTeamVoting: 5000,
+      afterQuestVoting: 5000,
+    };
+
+    game = new Game();
+
+    machine = new GameStateMachine({
+      afterTeamProposition: 5000,
+      afterTeamVoting: 5000,
+      afterQuestVoting: 5000,
+    });
+  });
+
+  instantTransitions.forEach(({from, to}) => {
+    test(`should transition from ${from} to ${to} instantly`, () => {
       machine.init(game, from);
 
       const spy = jest.spyOn(game, 'setState');
@@ -125,6 +241,22 @@ describe('transition timings', () => {
       machine.transitionTo(to);
 
       expect(spy).toBeCalledTimes(1);
-    },
-  );
+    });
+  });
+
+  instantTransitions.forEach(({from, to}) => {
+    test(`should fire an event, while transitioning from ${from} to ${to}`, () => {
+      machine.init(game, from);
+
+      let i = 0;
+
+      machine.on(GameEvent.StateChange, () => i++);
+
+      expect(i).toStrictEqual(0);
+
+      machine.transitionTo(to);
+
+      expect(i).toStrictEqual(1);
+    });
+  });
 });

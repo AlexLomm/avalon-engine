@@ -11,7 +11,6 @@ export class PlayersManager {
   private proposedPlayers: Player[] = [];
   private leaderIndex: number       = -1;
   private victim: Player;
-  private isAssassinated: boolean   = false;
 
   constructor() {
   }
@@ -26,8 +25,6 @@ export class PlayersManager {
       throw new fromErrors.RequiredVictimError();
     }
 
-    this.isAssassinated = true;
-
     return this.assassinationSucceeded();
   }
 
@@ -39,11 +36,6 @@ export class PlayersManager {
   // TODO: remove
   getVictim(): Player {
     return this.victim;
-  }
-
-  // TODO: make private
-  getIsAssassinated(player: Player): boolean {
-    return this.victim === player && this.isAssassinated;
   }
 
   // TODO: make private
@@ -196,27 +188,26 @@ export class PlayersManager {
     this.proposedPlayers = [];
   }
 
-  serialize(forPlayerUsername: string, votesRevealed: boolean) {
+  serialize(forPlayerUsername: string) {
     const forPlayer = this.findPlayer(forPlayerUsername);
     if (!forPlayer) {
       throw new fromErrors.PlayerMissingError();
     }
 
     return {
-      players: this.serializePlayers(forPlayer, votesRevealed),
+      collection: this.serializePlayers(forPlayer),
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
       leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
       victimUsername: PlayersManager.getUsernameOrNull(this.getVictim()),
-      isAssassinated: this.isAssassinated,
     };
   }
 
-  private serializePlayers(forPlayer: Player, votesRevealed: boolean) {
+  private serializePlayers(forPlayer: Player) {
     return this.players.map((p) => {
       const roleRevealed = forPlayer.canSee(p);
 
-      return p.serialize(roleRevealed, votesRevealed);
+      return p.serialize(roleRevealed);
     });
   }
 

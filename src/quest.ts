@@ -134,12 +134,30 @@ export class Quest {
     return this.teamVotingRoundIndex === this.teamVoteRounds.length - 1;
   }
 
-  serialize() {
+  serialize(resultsConcealed: boolean) {
     return {
       failsNeeded: this.failsNeeded,
       votesNeeded: this.votesNeeded,
-      teamVotes: this.getCurrentTeamVotingRound().map(vote => vote.serialize()),
-      questVotes: this.questVotes.map(vote => vote.serialize()),
+      teamVotes: this.getSerializedTeamVotes(resultsConcealed),
+      questVotes: this.getSerializedQuestVotes(resultsConcealed),
     };
+  }
+
+  private getSerializedTeamVotes(resultsConcealed: boolean) {
+    const votes = this.getCurrentTeamVotingRound();
+
+    return resultsConcealed
+      ? votes.map(v => new Vote(v.getUsername(), null).serialize())
+      : votes.map(v => v.serialize());
+  }
+
+  private getSerializedQuestVotes(resultsConcealed: boolean) {
+    if (resultsConcealed) {
+      return this.questVotes.map(v => new Vote(v.getUsername(), null).serialize());
+    }
+
+    const votes = this.questVotes.map(v => new Vote(null, v.getValue()));
+
+    return votes.sort((a: Vote, b: Vote) => a.getValue() ? -1 : 1);
   }
 }

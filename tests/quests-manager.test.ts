@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
 import { Vote } from '../src/vote';
-import { QuestsManager, GameStatus, AssassinationStatus } from '../src/quests-manager';
+import { QuestsManager } from '../src/quests-manager';
 import { Quest } from '../src/quest';
 import { LevelPreset } from '../src/level-preset';
 
-const resolveQuestsTimes = function (manager: QuestsManager, voteValue: boolean, times: number) {
+function resolveQuestsTimes(manager: QuestsManager, voteValue: boolean, times: number) {
   _.times(times, () => {
     // approve the team
     _.times(manager.getLevelPreset().getPlayerCount(), (i: number) => {
@@ -18,15 +18,15 @@ const resolveQuestsTimes = function (manager: QuestsManager, voteValue: boolean,
 
     manager.nextQuest();
   });
-};
+}
 
-const failQuestsTimes = function (manager: QuestsManager, times: number) {
+function failQuestsTimes(manager: QuestsManager, times: number) {
   resolveQuestsTimes(manager, false, times);
-};
+}
 
-const succeedQuestsTimes = function (manager: QuestsManager, times: number) {
+function succeedQuestsTimes(manager: QuestsManager, times: number) {
   resolveQuestsTimes(manager, true, times);
-};
+}
 
 describe('initialization', () => {
   test('should initialize quests', () => {
@@ -130,97 +130,17 @@ describe('team voting', () => {
   });
 });
 
-describe('assassination', () => {
-  let manager: QuestsManager;
-  let preset: LevelPreset;
-  beforeEach(() => {
-    manager = new QuestsManager();
-    preset  = new LevelPreset(5);
-
-    manager.init(preset);
-  });
-
-  test('should return that assassination is allowed after three successful quests', () => {
-    expect(manager.assassinationAllowed()).toBeFalsy();
-
-    succeedQuestsTimes(manager, 3);
-
-    expect(manager.assassinationAllowed()).toBeTruthy();
-  });
-
-  test('should return that assassination is not allowed if one has already occurred', () => {
-    succeedQuestsTimes(manager, 3);
-
-    manager.setAssassinationStatus(true);
-
-    expect(manager.assassinationAllowed()).toBeFalsy();
-  });
-
-  test('should not allow assassination if the team "evil" has already won', () => {
-    failQuestsTimes(manager, 3);
-
-    expect(manager.assassinationAllowed()).toBeFalsy();
-  });
-});
-
-describe('winner', () => {
-  let manager: QuestsManager;
-  let preset: LevelPreset;
-  let currentQuest: Quest;
-  beforeEach(() => {
-    manager = new QuestsManager();
-    preset  = new LevelPreset(5);
-
-    manager.init(preset);
-
-    currentQuest = manager.getCurrentQuest();
-  });
-
-  test('should return status: "-1" if there are no three failed or won quests', () => {
-    expect(manager.getGameStatus()).toEqual(GameStatus.Unfinished);
-  });
-
-  test('should return status: "0" if there are three failed quests', () => {
-    failQuestsTimes(manager, 3);
-
-    expect(manager.getGameStatus()).toStrictEqual(GameStatus.Lost);
-  });
-
-  test('should return status: "0" if the assassination succeeded', () => {
-    succeedQuestsTimes(manager, 3);
-
-    manager.setAssassinationStatus(true);
-
-    expect(manager.getGameStatus()).toStrictEqual(GameStatus.Lost);
-  });
-
-  test('should return status: "1" if the assassination failed', () => {
-    succeedQuestsTimes(manager, 3);
-
-    manager.setAssassinationStatus(false);
-
-    expect(manager.getGameStatus()).toStrictEqual(GameStatus.Won);
-  });
-
-  test('should not return status "1" if the assassination has not been attempted yet', () => {
-    succeedQuestsTimes(manager, 3);
-
-    expect(manager.getGameStatus()).toStrictEqual(GameStatus.Unfinished);
-  });
-});
-
 describe('serialization', () => {
   test('should return an empty state', () => {
     const manager = new QuestsManager();
 
     // TODO: add type
     const expected: any = {
-      quests: [],
+      collection: [],
       teamVotingRoundIndex: 0,
-      assassinationStatus: AssassinationStatus.Unattempted,
     };
 
-    const actual = manager.serialize();
+    const actual = manager.serialize(false);
 
     expect(expected).toEqual(actual);
   });
@@ -229,9 +149,9 @@ describe('serialization', () => {
     const manager = new QuestsManager();
     manager.init(new LevelPreset(5));
 
-    const serializedQuest = manager.getAll()[0].serialize();
+    const serializedQuest = manager.getAll()[0].serialize(false);
 
-    expect(manager.serialize().quests[0]).toEqual(serializedQuest);
+    expect(manager.serialize(false).collection[0]).toEqual(serializedQuest);
   });
 
   test('should contain a team voting round tracker', () => {
@@ -244,7 +164,41 @@ describe('serialization', () => {
       currentQuest.addVote(new Vote(`user-${i}`, false));
     });
 
-    expect(manager.serialize().teamVotingRoundIndex)
+    expect(manager.serialize(false).teamVotingRoundIndex)
       .toEqual(currentQuest.getTeamVotingRoundIndex());
   });
+
+  test('should serialize the quests with an appropriate flag set', () => {
+    const manager = new QuestsManager();
+    manager.init(new LevelPreset(5));
+
+    const quest = manager.getAll()[0];
+    jest.spyOn(quest, 'serialize');
+
+    manager.serialize(true);
+
+    expect(quest.serialize).toBeCalledWith(true);
+  });
+});
+
+test('should get the amount of failed quests', () => {
+  const manager = new QuestsManager();
+  manager.init(new LevelPreset(7));
+
+  succeedQuestsTimes(manager, 2);
+
+  failQuestsTimes(manager, 3);
+
+  expect(manager.getFailedQuestsCount()).toEqual(3);
+});
+
+test('should get the amount of succeeded quests', () => {
+  const manager = new QuestsManager();
+  manager.init(new LevelPreset(7));
+
+  failQuestsTimes(manager, 1);
+
+  succeedQuestsTimes(manager, 2);
+
+  expect(manager.getSucceededQuestsCount()).toEqual(2);
 });

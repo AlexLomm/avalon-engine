@@ -2,11 +2,11 @@ import * as _ from 'lodash';
 import * as fromErrors from '../src/errors';
 import { Game } from '../src/game';
 import { PlayersManager } from '../src/players-manager';
-import { QuestsManager, GameStatus } from '../src/quests-manager';
+import { QuestsManager } from '../src/quests-manager';
 import { Player } from '../src/player';
 import { PreparationState } from '../src/game-states/preparation-state';
-import { GameMetaData } from '../src/game-meta-data';
-import { GameStateMachine } from '../src/game-states/game-state-machine';
+import { GameMetaData, GameStatus } from '../src/game-meta-data';
+import { GameStateMachine, GameState, GameEvent } from '../src/game-states/game-state-machine';
 import {
   proposeAndSubmitTeam,
   proposePlayers,
@@ -36,14 +36,6 @@ describe('game start', () => {
     game.addPlayer(new Player('user-1'));
 
     expect(game.getMetaData().setCreatorOnce).toBeCalled();
-  });
-
-  test('should return a promise', () => {
-    const game = new Game();
-
-    _.times(5, (i) => game.addPlayer(new Player(`user-${i}`)));
-
-    expect(game.start()).toBeInstanceOf(Promise);
   });
 
   test('should not add a player when the game is started', () => {
@@ -100,8 +92,6 @@ describe('post "reveal roles" phase', () => {
   let questsManager: QuestsManager;
 
   beforeEach(async () => {
-    jest.useFakeTimers();
-
     playersManager = new PlayersManager();
     questsManager  = new QuestsManager();
     game           = new Game(
@@ -119,8 +109,6 @@ describe('post "reveal roles" phase', () => {
     addPlayersToGame(game, 5);
 
     game.start();
-
-    jest.runAllTimers();
   });
 
   describe('team proposition', () => {
@@ -213,12 +201,6 @@ describe('post "reveal roles" phase', () => {
       expect(() => game.voteForTeam('user-3', true)).not.toThrow();
       expect(() => game.voteForTeam('nonexistent', true))
         .toThrow(fromErrors.DeniedTeamVotingError);
-    });
-
-    test('should return a promise', () => {
-      proposeAndSubmitTeam(game, ['user-1', 'user-2']);
-
-      expect(game.voteForTeam('user-1', true)).toBeInstanceOf(Promise);
     });
 
     test('should only allow voting once', () => {
@@ -357,14 +339,6 @@ describe('post "reveal roles" phase', () => {
       expect(questsManager.addVote).toBeCalledTimes(1);
     });
 
-    test('should return a promise', () => {
-      proposeAndSubmitTeam(game, ['user-1', 'user-2']);
-
-      voteAllForTeam(game, true);
-
-      expect(game.voteForQuest('user-1', true)).toBeInstanceOf(Promise);
-    });
-
     test('should reset the votes after every proposed player has voted', () => {
       proposeAndSubmitTeam(game, ['user-1', 'user-2']);
 
@@ -400,6 +374,26 @@ describe('post "reveal roles" phase', () => {
 
       expect(previousQuest).not.toBe(questsManager.getCurrentQuest());
     });
+
+    test('should transition to the assassination phase, if at least 3 quests succeeded', () => {
+      passQuestsWithResults(game, [true, true]);
+
+      jest.spyOn(game.getFsm(), 'transitionTo');
+
+      passQuestsWithResults(game, [true]);
+
+      expect(game.getFsm().transitionTo).toBeCalledWith(GameState.Assassination);
+    });
+
+    test('should set the game status to "Lost", if there are at least 3 failed quests', () => {
+      passQuestsWithResults(game, [false, false]);
+
+      expect(game.getMetaData().getGameStatus()).toEqual(GameStatus.Unfinished);
+
+      passQuestsWithResults(game, [false]);
+
+      expect(game.getMetaData().getGameStatus()).toEqual(GameStatus.Lost);
+    });
   });
 
   describe('assassination', () => {
@@ -423,7 +417,7 @@ describe('post "reveal roles" phase', () => {
         .toThrow(fromErrors.NoTimeVictimPropositionError);
     });
 
-    test('should toggle assassination victim', () => {
+    test('should toggle the victim selection', () => {
       const assassin = playersManager.getAssassin();
       const victim   = getNonAssassin(playersManager);
 
@@ -461,16 +455,16 @@ describe('post "reveal roles" phase', () => {
       passQuestsWithResults(game, [true, true, true]);
 
       jest.spyOn(playersManager, 'assassinate');
-      jest.spyOn(questsManager, 'setAssassinationStatus');
+      jest.spyOn(game.getMetaData(), 'setGameStatus');
 
       game.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
       game.assassinate(assassin.getUsername());
 
       expect(playersManager.assassinate).toBeCalledTimes(1);
-      expect(questsManager.setAssassinationStatus).toBeCalledTimes(1);
+      expect(game.getMetaData().setGameStatus).toBeCalledTimes(1);
     });
 
-    test('should set the game status to "0", if the victim was Merlin', () => {
+    test('should set the game status to "Lost", if the victim was Merlin', () => {
       const assassin = playersManager.getAssassin();
       const merlin   = getMerlin(playersManager);
 
@@ -479,10 +473,10 @@ describe('post "reveal roles" phase', () => {
       game.toggleVictimProposition(assassin.getUsername(), merlin.getUsername());
       game.assassinate(assassin.getUsername());
 
-      expect(questsManager.getGameStatus()).toStrictEqual(GameStatus.Lost);
+      expect(game.getMetaData().getGameStatus()).toEqual(GameStatus.Lost);
     });
 
-    test('should set the game status to "1", if the victim was not Merlin', () => {
+    test('should set the game status to "Won", if the victim was not Merlin', () => {
       const assassin  = playersManager.getAssassin();
       const nonMerlin = getNonAssassinNonMerlin(playersManager);
 
@@ -491,30 +485,95 @@ describe('post "reveal roles" phase', () => {
       game.toggleVictimProposition(assassin.getUsername(), nonMerlin.getUsername());
       game.assassinate(assassin.getUsername());
 
-      expect(questsManager.getGameStatus()).toStrictEqual(GameStatus.Won);
+      expect(game.getMetaData().getGameStatus()).toStrictEqual(GameStatus.Won);
     });
   });
 });
 
 describe('serialization', () => {
-  // TODO: refactor
-  test('should serialize initial game object', () => {
-    const playersManager = new PlayersManager();
-    const questsManager  = new QuestsManager();
-    const game           = new Game(playersManager, questsManager);
+  let playersManager: PlayersManager;
+  let questsManager: QuestsManager;
+  let game: Game;
+  beforeEach(() => {
+    playersManager = new PlayersManager();
+    questsManager  = new QuestsManager();
+    game           = new Game(
+      playersManager,
+      questsManager,
+      new PreparationState(),
+      new GameMetaData(),
+      new GameStateMachine({
+        afterTeamProposition: 0,
+        afterTeamVoting: 0,
+        afterQuestVoting: 0,
+      }),
+    );
+  });
 
-    addPlayersToGame(game, 5);
-
-    game.start();
+  test('should correctly serialize the game in it\'s initial state', () => {
+    game.addPlayer(new Player('user-1'));
 
     const expected = {
       meta: game.getMetaData().serialize(),
-      quests: questsManager.serialize(),
-      players: playersManager.serialize('user-1', true),
+      quests: questsManager.serialize(false),
+      players: playersManager.serialize('user-1'),
     };
 
     const actual = game.serialize('user-1');
 
     expect(actual).toEqual(expected);
+  });
+
+  test('should serialize the quests with the appropriate flag set', () => {
+    jest.spyOn(game.getQuestsManager(), 'serialize');
+
+    game.addPlayer(new Player('user-1'));
+
+    game.serialize('user-1');
+
+    expect(game.getQuestsManager().serialize).toBeCalledWith(true);
+  });
+});
+
+describe('event emission', () => {
+  let playersManager: PlayersManager;
+  let questsManager: QuestsManager;
+  let game: Game;
+  beforeEach(() => {
+    playersManager = new PlayersManager();
+    questsManager  = new QuestsManager();
+    game           = new Game(
+      playersManager,
+      questsManager,
+      new PreparationState(),
+      new GameMetaData(),
+      new GameStateMachine({
+        afterTeamProposition: 0,
+        afterTeamVoting: 0,
+        afterQuestVoting: 0,
+      }),
+    );
+  });
+
+  test('should emit on state change', () => {
+    let i = 0;
+
+    game.on(GameEvent.StateChange, () => i++);
+
+    game.addPlayer(new Player('user-1'));
+
+    expect(i).toStrictEqual(1);
+  });
+
+  test('should remove an event listener', () => {
+    let i = 0;
+
+    const listener = () => i++;
+    game.on(GameEvent.StateChange, listener);
+    game.off(GameEvent.StateChange, listener);
+
+    game.addPlayer(new Player('user-1'));
+
+    expect(i).toStrictEqual(0);
   });
 });

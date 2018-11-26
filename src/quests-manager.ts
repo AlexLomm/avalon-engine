@@ -2,32 +2,13 @@ import { LevelPreset } from './level-preset';
 import { Quest, QuestStatus } from './quest';
 import { Vote } from './vote';
 
-export enum GameStatus {
-  Unfinished = 'Unfinished',
-  Won        = 'Won',
-  Lost       = 'Lost',
-}
-
-export enum AssassinationStatus {
-  Unattempted    = 'Unattempted',
-  IncorrectGuess = 'IncorrectGuess',
-  CorrectGuess   = 'CorrectGuess'
-}
-
 export class QuestsManager {
   private levelPreset: LevelPreset  = null;
   private quests: Quest[]           = [];
   private currentQuestIndex: number = 0;
-  private assassinationStatus       = AssassinationStatus.Unattempted;
 
   constructor() {
   }
-
-  setAssassinationStatus(isSuccessful: boolean) {
-    this.assassinationStatus = isSuccessful
-      ? AssassinationStatus.CorrectGuess
-      : AssassinationStatus.IncorrectGuess;
-  };
 
   getLevelPreset() {
     return this.levelPreset;
@@ -51,7 +32,19 @@ export class QuestsManager {
   };
 
   addVote(vote: Vote) {
-    return this.getCurrentQuest().addVote(vote);
+    this.getCurrentQuest().addVote(vote);
+  };
+
+  getFailedQuestsCount() {
+    return this.quests
+      .filter((q) => q.getStatus() === QuestStatus.Lost)
+      .length;
+  };
+
+  getSucceededQuestsCount() {
+    return this.quests
+      .filter((q) => q.getStatus() === QuestStatus.Won)
+      .length;
   };
 
   teamVotingRoundFinished() {
@@ -66,6 +59,11 @@ export class QuestsManager {
     return this.getCurrentQuest().getVotesNeeded();
   }
 
+  questVotingAllowed() {
+    return this.getCurrentQuest().questVotingAllowed();
+  }
+
+  // TODO: make private
   getCurrentQuest() {
     return this.quests[this.currentQuestIndex];
   };
@@ -78,39 +76,9 @@ export class QuestsManager {
     return this.getCurrentQuest().isLastRoundOfTeamVoting();
   };
 
-  getGameStatus(): GameStatus {
-    if (this.assassinationStatus !== AssassinationStatus.Unattempted) {
-      return this.assassinationStatus === AssassinationStatus.CorrectGuess
-        ? GameStatus.Lost
-        : GameStatus.Won;
-    }
-
-    if (this.getFailedQuestsCount() >= 3) return GameStatus.Lost;
-
-    return GameStatus.Unfinished;
-  };
-
-  assassinationAllowed() {
-    return this.getSucceededQuestsCount() >= 3
-      && this.assassinationStatus === AssassinationStatus.Unattempted;
-  };
-
-  private getFailedQuestsCount() {
-    return this.getAll().filter((q) => {
-      return q.getStatus() === QuestStatus.Lost;
-    }).length;
-  };
-
-  private getSucceededQuestsCount() {
-    return this.getAll().filter(q => {
-      return q.getStatus() === QuestStatus.Won;
-    }).length;
-  };
-
-  serialize() {
+  serialize(resultsConcealed: boolean) {
     return {
-      assassinationStatus: this.assassinationStatus,
-      quests: this.quests.map(q => q.serialize()),
+      collection: this.quests.map(q => q.serialize(resultsConcealed)),
       teamVotingRoundIndex: this.getCurrentQuest()
         ? this.getCurrentQuest().getTeamVotingRoundIndex()
         : 0,
