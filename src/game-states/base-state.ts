@@ -4,6 +4,8 @@ import { Player } from '../player';
 import { RoleId } from '../configs/roles.config';
 
 export abstract class BaseState {
+  protected abstract resultsConcealed: boolean;
+
   addPlayer(game: Game, player: Player) {
     throw new fromErrors.AlreadyStartedGameError();
   }
@@ -36,10 +38,10 @@ export abstract class BaseState {
     throw new fromErrors.NoTimeForAssassinationError();
   }
 
-  serialize(game: Game, forUsername: string, resultsConcealed: boolean) {
+  serialize(game: Game, forUsername: string) {
     return {
       meta: game.getMetaData().serialize(),
-      quests: game.getQuestsManager().serialize(resultsConcealed),
+      quests: game.getQuestsManager().serialize(this.resultsConcealed),
       players: game.getPlayersManager().serialize(forUsername),
     };
   }

@@ -4,6 +4,8 @@ import { Game } from '../game';
 import { GameState } from './game-state-machine';
 
 export class TeamVotingState extends BaseState {
+  protected resultsConcealed = true;
+
   voteForTeam(game: Game, username: string, voteValue: boolean) {
     if (!game.getPlayersManager().teamVotingAllowedFor(username)) {
       throw new fromErrors.DeniedTeamVotingError();
@@ -27,9 +29,5 @@ export class TeamVotingState extends BaseState {
     const vote = game.getPlayersManager().generateVote(username, voteValue);
 
     game.getQuestsManager().addVote(vote);
-  }
-
-  serialize(game: Game, forUsername: string) {
-    return super.serialize(game, forUsername, false);
   }
 }

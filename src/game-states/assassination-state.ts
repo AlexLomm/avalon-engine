@@ -3,6 +3,8 @@ import { BaseState } from './base-state';
 import * as fromErrors from '../errors';
 
 export class AssassinationState extends BaseState {
+  protected resultsConcealed = true;
+
   toggleVictimProposition(game: Game, assassinsUsername: string, victimsUsername: string) {
     game.getPlayersManager().toggleVictimProposition(
       assassinsUsername,

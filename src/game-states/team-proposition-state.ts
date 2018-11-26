@@ -4,6 +4,8 @@ import { Game } from '../game';
 import { GameState } from './game-state-machine';
 
 export class TeamPropositionState extends BaseState {
+  protected resultsConcealed = true;
+
   toggleTeammateProposition(game: Game, leaderUsername: string, username: string) {
     if (!game.getPlayersManager().playerPropositionAllowedFor(leaderUsername)) {
       throw new fromErrors.DeniedTeammatePropositionError();
@@ -31,9 +33,5 @@ export class TeamPropositionState extends BaseState {
     const votesNeededCount     = game.getQuestsManager().getVotesNeeded();
 
     return proposedPlayersCount !== votesNeededCount;
-  }
-
-  serialize(game: Game, forUsername: string) {
-    return super.serialize(game, forUsername, false);
   }
 }

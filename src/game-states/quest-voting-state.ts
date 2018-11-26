@@ -5,6 +5,8 @@ import { GameState } from './game-state-machine';
 import { GameStatus } from '../quests-manager';
 
 export class QuestVotingState extends BaseState {
+  protected resultsConcealed = true;
+
   voteForQuest(game: Game, username: string, voteValue: boolean) {
     if (!game.getPlayersManager().questVotingAllowedFor(username)) {
       throw new fromErrors.DeniedQuestVotingError();
@@ -38,9 +40,5 @@ export class QuestVotingState extends BaseState {
   private questVotingIsOn(game: Game) {
     return game.getPlayersManager().getIsSubmitted()
       && game.getQuestsManager().getCurrentQuest().questVotingAllowed();
-  }
-
-  serialize(game: Game, forUsername: string) {
-    return super.serialize(game, forUsername, false);
   }
 }

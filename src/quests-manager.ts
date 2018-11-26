@@ -2,12 +2,14 @@ import { LevelPreset } from './level-preset';
 import { Quest, QuestStatus } from './quest';
 import { Vote } from './vote';
 
+// TODO: move to the meta information
 export enum GameStatus {
   Unfinished = 'Unfinished',
   Won        = 'Won',
   Lost       = 'Lost',
 }
 
+// TODO: move to the players manager
 export enum AssassinationStatus {
   Unattempted    = 'Unattempted',
   IncorrectGuess = 'IncorrectGuess',

@@ -5,6 +5,8 @@ import { BaseState } from './base-state';
 import { GameState } from './game-state-machine';
 
 export class PreparationState extends BaseState {
+  protected resultsConcealed = true;
+
   addPlayer(game: Game, player: Player) {
     game.getPlayersManager().add(player);
     game.getMetaData().setCreatorOnce(player);

@@ -70,7 +70,7 @@ export class Game {
     this.state.assassinate(this, assassinsUsername);
   }
 
-  serialize(forUsername: string, resultsConcealed: boolean) {
-    return this.state.serialize(this, forUsername, resultsConcealed);
+  serialize(forUsername: string) {
+    return this.state.serialize(this, forUsername);
   }
 }
