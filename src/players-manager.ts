@@ -33,11 +33,6 @@ export class PlayersManager {
     return this.victim.getRole().getId() === RoleId.Merlin;
   }
 
-  // TODO: remove
-  getVictim(): Player {
-    return this.victim;
-  }
-
   // TODO: make private
   getAssassin(): Player {
     return this.players.find((p) => p.isAssassin());
@@ -199,7 +194,7 @@ export class PlayersManager {
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
       leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
-      victimUsername: PlayersManager.getUsernameOrNull(this.getVictim()),
+      victimUsername: PlayersManager.getUsernameOrNull(this.victim),
     };
   }
 

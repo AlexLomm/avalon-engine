@@ -282,7 +282,7 @@ describe('assassination', () => {
   test('should toggle victim proposition', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    expect(manager.getVictim()).toBeFalsy();
+    expect(manager.serialize('user-1').victimUsername).toBeFalsy();
 
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
@@ -290,14 +290,14 @@ describe('assassination', () => {
       nonAssassin.getUsername(),
     );
 
-    expect(manager.getVictim()).toBe(nonAssassin);
+    expect(manager.serialize('user-1').victimUsername).toEqual(nonAssassin.getUsername());
 
     manager.toggleVictimProposition(
       manager.getAssassin().getUsername(),
       nonAssassin.getUsername(),
     );
 
-    expect(manager.getVictim()).toBeFalsy();
+    expect(manager.serialize('user-1').victimUsername).toBeFalsy();
   });
 
   test('should throw for assassination attempt, when no victim is proposed', () => {
