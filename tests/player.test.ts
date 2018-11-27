@@ -24,14 +24,36 @@ test('should return a role', () => {
 });
 
 test('should say if can see another player', () => {
-  const player1 = new Player('user-1');
-  player1.setRole(new Role(RoleId.Merlin));
+  const merlin = new Player('user-1');
+  merlin.setRole(new Role(RoleId.Merlin));
 
-  const player2 = new Player('user-2');
-  player2.setRole(new Role(RoleId.Minion_1));
+  const minion = new Player('user-2');
+  minion.setRole(new Role(RoleId.Minion_1));
 
-  expect(player1.canSee(player2)).toBeTruthy();
-  expect(player2.canSee(player1)).toBeFalsy();
+  expect(merlin.canSee(minion)).toBeTruthy();
+  expect(minion.canSee(merlin)).toBeFalsy();
+});
+
+test('should return if is assassin', () => {
+  const nonAssassin = new Player('user-1');
+  nonAssassin.setRole(new Role(RoleId.Minion_1));
+
+  const assassin = new Player('user-1');
+  assassin.setRole(new Role(RoleId.Assassin));
+
+  expect(nonAssassin.isAssassin()).toBeFalsy();
+  expect(assassin.isAssassin()).toBeTruthy();
+});
+
+test('should return if is merlin', () => {
+  const nonMerlin = new Player('user-1');
+  nonMerlin.setRole(new Role(RoleId.Mordred));
+
+  const merlin = new Player('user-1');
+  merlin.setRole(new Role(RoleId.Merlin));
+
+  expect(nonMerlin.isMerlin()).toBeFalsy();
+  expect(merlin.isMerlin()).toBeTruthy();
 });
 
 describe('voting', () => {

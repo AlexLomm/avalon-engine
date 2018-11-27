@@ -18,22 +18,28 @@ export class PlayersManagerHelper {
     manager.assignRoles(new LevelPreset(manager.getAll().length));
   }
 
-  static getNonAssassin(playersManager: PlayersManager) {
-    return playersManager.getAll().find(
-      (p) => p.getUsername() !== playersManager.getAssassin().getUsername(),
-    );
+  static getAssassin(manager: PlayersManager) {
+    return manager.getAll().find(p => p.isAssassin());
   }
 
-  static getMerlin(playersManager: PlayersManager) {
-    return playersManager.getAll().find(
+  static getMerlin(manager: PlayersManager) {
+    return manager.getAll().find(
       (p) => p.getRole().getId() === RoleId.Merlin,
     );
   }
 
-  static getNonAssassinNonMerlin(playersManager: PlayersManager) {
-    return playersManager.getAll()
+  static getNonAssassin(manager: PlayersManager) {
+    const assassinsUsername = PlayersManagerHelper.getAssassin(manager).getUsername();
+
+    return manager.getAll().find((p) => p.getUsername() !== assassinsUsername);
+  }
+
+  static getNonAssassinNonMerlin(manager: PlayersManager) {
+    const assassinsUsername = PlayersManagerHelper.getAssassin(manager).getUsername();
+
+    return manager.getAll()
       .find(p => {
-        return p.getUsername() !== playersManager.getAssassin().getUsername()
+        return p.getUsername() !== assassinsUsername
           && p.getRole().getId() !== RoleId.Merlin;
       });
   }

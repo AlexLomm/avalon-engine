@@ -11,13 +11,13 @@ export class PlayersManager {
   private proposedPlayers: Player[] = [];
   private leaderIndex: number       = -1;
   private victim: Player;
+  private assassin: Player;
 
   constructor() {
   }
 
   assassinate(assassinsUsername: string) {
-    const assassin = this.getAssassin();
-    if (!assassin || assassin.getUsername() !== assassinsUsername) {
+    if (!this.assassin || this.assassin.getUsername() !== assassinsUsername) {
       throw new fromErrors.DeniedAssassinationError();
     }
 
@@ -30,12 +30,7 @@ export class PlayersManager {
 
   // TODO: replace the hardcoded value a with config
   private assassinationSucceeded() {
-    return this.victim.getRole().getId() === RoleId.Merlin;
-  }
-
-  // TODO: make private
-  getAssassin(): Player {
-    return this.players.find((p) => p.isAssassin());
+    return this.victim.isMerlin();
   }
 
   // TODO: remove
@@ -71,11 +66,11 @@ export class PlayersManager {
     assassinsUsername: string,
     victimUsername: string,
   ) {
-    if (this.getAssassin().getUsername() !== assassinsUsername) {
+    if (this.assassin.getUsername() !== assassinsUsername) {
       throw new fromErrors.DeniedVictimPropositionError();
     }
 
-    if (this.getAssassin().getUsername() === victimUsername) {
+    if (this.assassin.getUsername() === victimUsername) {
       throw new fromErrors.DeniedSelfSacrificeError();
     }
 
@@ -111,6 +106,8 @@ export class PlayersManager {
       this.players,
       levelPreset,
     ).assignRoles(roleIds);
+
+    this.assassin = this.players.find(p => p.isAssassin());
 
     this.nextLeader();
   }

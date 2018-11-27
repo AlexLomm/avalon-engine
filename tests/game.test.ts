@@ -389,7 +389,7 @@ describe('post "reveal roles" phase', () => {
 
   describe('assassination', () => {
     test('should throw if it is not an appropriate time to propose a victim', () => {
-      const assassin = playersManager.getAssassin();
+      const assassin = PlayersManagerHelper.getAssassin(playersManager);
       const victim   = PlayersManagerHelper.getNonAssassin(playersManager);
 
       expect(() => game.toggleVictimProposition(
@@ -409,7 +409,7 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should toggle the victim selection', () => {
-      const assassin = playersManager.getAssassin();
+      const assassin = PlayersManagerHelper.getAssassin(playersManager);
       const victim   = PlayersManagerHelper.getNonAssassin(playersManager);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
@@ -427,7 +427,7 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should throw if it is not an appropriate time for assassination', () => {
-      const assassin = playersManager.getAssassin();
+      const assassin = PlayersManagerHelper.getAssassin(playersManager);
 
       expect(() => game.assassinate(assassin.getUsername()))
         .toThrow(fromErrors.NoTimeForAssassinationError);
@@ -440,7 +440,7 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should persist assassination results', () => {
-      const assassin = playersManager.getAssassin();
+      const assassin = PlayersManagerHelper.getAssassin(playersManager);
       const victim   = PlayersManagerHelper.getNonAssassin(playersManager);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
@@ -456,7 +456,7 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should set the game status to "Lost", if the victim was Merlin', () => {
-      const assassin = playersManager.getAssassin();
+      const assassin = PlayersManagerHelper.getAssassin(playersManager);
       const merlin   = PlayersManagerHelper.getMerlin(playersManager);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
@@ -468,7 +468,7 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should set the game status to "Won", if the victim was not Merlin', () => {
-      const assassin  = playersManager.getAssassin();
+      const assassin  = PlayersManagerHelper.getAssassin(playersManager);
       const nonMerlin = PlayersManagerHelper.getNonAssassinNonMerlin(playersManager);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);

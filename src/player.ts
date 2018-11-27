@@ -44,6 +44,10 @@ export class Player {
     return this.role && this.role.getId() === RoleId.Assassin;
   }
 
+  isMerlin() {
+    return this.role && this.role.getId() === RoleId.Merlin;
+  }
+
   canSee(anotherPlayer: Player) {
     return this.role.canSee(anotherPlayer.getRole());
   }

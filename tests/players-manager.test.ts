@@ -9,10 +9,6 @@ beforeEach(() => {
   manager = new PlayersManager();
 });
 
-/////////////////////////////////////////////
-// Curried helpers
-/////////////////////////////////////////////
-
 describe('adding players', () => {
   test('should add a player', () => {
     expect(manager.getAll().length).toBeFalsy();
@@ -67,11 +63,11 @@ describe('roles assignment', () => {
   test('should have an assassin appointed', () => {
     PlayersManagerHelper.fillPlayers(manager, 7);
 
-    expect(manager.getAssassin()).toBeFalsy();
+    expect(PlayersManagerHelper.getAssassin(manager)).toBeFalsy();
 
     PlayersManagerHelper.assignRoles(manager);
 
-    expect(manager.getAssassin()).toBeTruthy();
+    expect(PlayersManagerHelper.getAssassin(manager)).toBeTruthy();
   });
 });
 
@@ -273,8 +269,8 @@ describe('assassination', () => {
 
     expect(() => {
       manager.toggleVictimProposition(
-        manager.getAssassin().getUsername(),
-        manager.getAssassin().getUsername(),
+        PlayersManagerHelper.getAssassin(manager).getUsername(),
+        PlayersManagerHelper.getAssassin(manager).getUsername(),
       );
     }).toThrow(fromErrors.DeniedSelfSacrificeError);
   });
@@ -286,14 +282,14 @@ describe('assassination', () => {
 
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
-      manager.getAssassin().getUsername(),
+      PlayersManagerHelper.getAssassin(manager).getUsername(),
       nonAssassin.getUsername(),
     );
 
     expect(manager.serialize('user-1').victimUsername).toEqual(nonAssassin.getUsername());
 
     manager.toggleVictimProposition(
-      manager.getAssassin().getUsername(),
+      PlayersManagerHelper.getAssassin(manager).getUsername(),
       nonAssassin.getUsername(),
     );
 
@@ -303,14 +299,14 @@ describe('assassination', () => {
   test('should throw for assassination attempt, when no victim is proposed', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    expect(() => manager.assassinate(manager.getAssassin().getUsername()))
+    expect(() => manager.assassinate(PlayersManagerHelper.getAssassin(manager).getUsername()))
       .toThrow(fromErrors.RequiredVictimError);
   });
 
   test('should throw if a non-assassin tries to assassinate', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    const assassin    = manager.getAssassin();
+    const assassin    = PlayersManagerHelper.getAssassin(manager);
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
 
     manager.toggleVictimProposition(
@@ -325,7 +321,7 @@ describe('assassination', () => {
   test('should return whether that the assassination was successful', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    const assassin = manager.getAssassin();
+    const assassin = PlayersManagerHelper.getAssassin(manager);
     const victim   = manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
 
     manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
@@ -338,7 +334,7 @@ describe('assassination', () => {
   test('should return whether the assassination was unsuccessful', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    const assassin = manager.getAssassin();
+    const assassin = PlayersManagerHelper.getAssassin(manager);
     const victim   = PlayersManagerHelper.getNonAssassinNonMerlin(manager);
 
     manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
@@ -351,7 +347,7 @@ describe('assassination', () => {
   test('should return true if the assassination was successful', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
-    const assassin = manager.getAssassin();
+    const assassin = PlayersManagerHelper.getAssassin(manager);
     const merlin   = manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
 
     manager.toggleVictimProposition(assassin.getUsername(), merlin.getUsername());
@@ -364,7 +360,7 @@ describe('assassination', () => {
   test('should return false if the assassination was unsucsessful', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
-    const assassin  = manager.getAssassin();
+    const assassin  = PlayersManagerHelper.getAssassin(manager);
     const nonMerlin = manager.getAll().find((p) => {
       return p.getRole().getId() !== RoleId.Merlin
         && !p.isAssassin();
@@ -446,7 +442,7 @@ describe('serialization', () => {
 
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
-      manager.getAssassin().getUsername(),
+      PlayersManagerHelper.getAssassin(manager).getUsername(),
       nonAssassin.getUsername(),
     );
 
