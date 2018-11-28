@@ -88,7 +88,7 @@ describe('serialization', () => {
   });
 
   test('should contain a hidden role when no role is assigned', () => {
-    const expected = new Role(RoleId.Unknown).serialize();
+    const expected = Role.null().serialize();
     const actual   = player.serialize(true).role;
 
     expect(expected).toEqual(actual);
@@ -97,7 +97,7 @@ describe('serialization', () => {
   test('should contain a hidden role, despite it being assigned', () => {
     player.setRole(new Role(RoleId.Merlin));
 
-    const expected = new Role(RoleId.Unknown).serialize();
+    const expected = Role.null().serialize();
     const actual   = player.serialize(false).role;
 
     expect(expected).toEqual(actual);

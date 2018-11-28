@@ -28,7 +28,7 @@ export class PlayersManager {
     return this.assassinationSucceeded();
   }
 
-  // TODO: replace the hardcoded value a with config
+  // TODO: replace the hardcoded value with a config
   private assassinationSucceeded() {
     return this.victim.isMerlin();
   }

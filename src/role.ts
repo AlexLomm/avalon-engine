@@ -16,6 +16,11 @@ export class Role {
     this.visibleRoleIds = rolesConfig[id].visibleRoleIds;
   }
 
+  // TODO: cache
+  static null() {
+    return new Role(RoleId.Unknown);
+  }
+
   getId() {
     return this.id;
   };

@@ -8,7 +8,7 @@ export class Player {
   // TODO: remove
   private vote: Vote;
 
-  constructor(username: string, initialRole = new Role(RoleId.Unknown)) {
+  constructor(username: string, initialRole = Role.null()) {
     this.username = username;
     this.role     = initialRole;
   }
@@ -52,10 +52,10 @@ export class Player {
     return this.role.canSee(anotherPlayer.getRole());
   }
 
-  // TODO: refactor
+  // TODO: cache
   serialize(roleRevealed: boolean) {
-    const serializedRole = !(this.role && roleRevealed)
-      ? new Role(RoleId.Unknown).serialize()
+    const serializedRole = !roleRevealed
+      ? Role.null().serialize()
       : this.role.serialize();
 
     return {
