@@ -28,6 +28,14 @@ export class PlayersManagerHelper {
     );
   }
 
+  static getProposedPlayers(manager: PlayersManager) {
+    const username = manager.getAll()[0].getUsername();
+
+    return manager.serialize(username)
+      .proposedPlayerUsernames
+      .map(username => manager.getAll().find(p => p.getUsername() === username));
+  }
+
   static getNonAssassin(manager: PlayersManager) {
     const assassinsUsername = PlayersManagerHelper.getAssassin(manager).getUsername();
 

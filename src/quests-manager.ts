@@ -60,7 +60,7 @@ export class QuestsManager {
     return this.getCurrentQuest().teamVotingSucceeded();
   };
 
-  getVotesNeeded() {
+  getVotesNeededCount() {
     return this.getCurrentQuest().getVotesNeededCount();
   }
 

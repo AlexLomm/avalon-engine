@@ -115,11 +115,11 @@ describe('team proposition and submission', () => {
 
     manager.togglePlayerProposition(null);
 
-    expect(manager.getProposedPlayers().length).toStrictEqual(0);
+    expect(manager.getProposedPlayersCount()).toStrictEqual(0);
 
     manager.togglePlayerProposition('user-2');
 
-    expect(manager.getProposedPlayers().pop().getUsername()).toEqual('user-2');
+    expect(manager.getProposedPlayersCount()).toBeTruthy();
   });
 
   test('should toggle a proposed player', () => {
@@ -128,7 +128,7 @@ describe('team proposition and submission', () => {
     manager.togglePlayerProposition('user-1');
     manager.togglePlayerProposition('user-1');
 
-    expect(manager.getProposedPlayers().length).toStrictEqual(0);
+    expect(manager.getProposedPlayersCount()).toStrictEqual(0);
   });
 
   test('should return if a player has right to submit a team', () => {
@@ -178,7 +178,7 @@ describe('team proposition and submission', () => {
 
     manager.reset();
 
-    expect(manager.getProposedPlayers().length).toStrictEqual(0);
+    expect(manager.getProposedPlayersCount()).toStrictEqual(0);
   });
 
   test('should reset votes, propositions and whether the team is submitted or not', () => {
@@ -191,7 +191,9 @@ describe('team proposition and submission', () => {
     manager.reset();
 
     expect(manager.getIsSubmitted()).toBeFalsy();
-    expect(manager.getProposedPlayers().length).toStrictEqual(0);
+
+    expect(manager.getProposedPlayersCount()).toStrictEqual(0);
+
     expect(manager.getIsSubmitted()).toBeFalsy();
   });
 });

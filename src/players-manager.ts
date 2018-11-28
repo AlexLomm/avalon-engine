@@ -46,9 +46,8 @@ export class PlayersManager {
     return this.players;
   }
 
-  // TODO: remove
-  getProposedPlayers(): Player[] {
-    return this.proposedPlayers;
+  getProposedPlayersCount(): number {
+    return this.proposedPlayers.length;
   }
 
   add(player: Player) {

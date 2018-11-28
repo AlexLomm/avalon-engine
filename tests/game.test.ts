@@ -245,7 +245,7 @@ describe('post "reveal roles" phase', () => {
 
       GameHelper.voteAllForTeam(game, false);
 
-      expect(playersManager.getProposedPlayers().length).toStrictEqual(0);
+      expect(playersManager.getProposedPlayersCount()).toStrictEqual(0);
     });
 
     test('should automatically vote affirmatively in case it is the last round of voting', () => {

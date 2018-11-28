@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import { Game } from '../../src/game';
 import { Player } from '../../src/player';
+import { PlayersManagerHelper } from './players-manager.helper';
 
 export class GameHelper {
   static passQuestsWithResults(game: Game, results: boolean[] = []) {
@@ -43,8 +44,9 @@ export class GameHelper {
   }
 
   static voteAllForQuest(game: Game, voteValue: boolean) {
-    game.getPlayersManager()
-      .getProposedPlayers()
+    const manager = game.getPlayersManager();
+
+    PlayersManagerHelper.getProposedPlayers(manager)
       .forEach(p => game.voteForQuest(p.getUsername(), voteValue));
   }
 
