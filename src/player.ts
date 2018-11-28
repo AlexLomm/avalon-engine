@@ -1,6 +1,11 @@
-import { Role } from './role';
+import { Role, RoleSerialized } from './role';
 import { Vote } from './vote';
 import { RoleId } from './configs/roles.config';
+
+export interface PlayerSerialized {
+  username: string;
+  role: RoleSerialized;
+}
 
 export class Player {
   private username: string;
@@ -53,7 +58,7 @@ export class Player {
   }
 
   // TODO: cache
-  serialize(roleRevealed: boolean) {
+  serialize(roleRevealed: boolean): PlayerSerialized {
     const serializedRole = !roleRevealed
       ? Role.null().serialize()
       : this.role.serialize();

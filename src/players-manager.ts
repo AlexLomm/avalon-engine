@@ -1,9 +1,17 @@
 import * as _ from 'lodash';
 import * as fromErrors from './errors';
-import { Player } from './player';
+import { Player, PlayerSerialized } from './player';
 import { LevelPreset } from './level-preset';
 import { RolesAssigner } from './roles-assigner';
 import { RoleId } from './configs/roles.config';
+
+export interface PlayersManagerSerialized {
+  collection: PlayerSerialized[];
+  proposedPlayerUsernames: string[];
+  leader: string;
+  isSubmitted: boolean;
+  victim: string;
+}
 
 export class PlayersManager {
   private players: Player[]         = [];
@@ -180,7 +188,7 @@ export class PlayersManager {
     this.proposedPlayers = [];
   }
 
-  serialize(forPlayerUsername: string) {
+  serialize(forPlayerUsername: string): PlayersManagerSerialized {
     const forPlayer = this.findPlayer(forPlayerUsername);
     if (!forPlayer) {
       throw new fromErrors.PlayerMissingError();
@@ -189,9 +197,9 @@ export class PlayersManager {
     return {
       collection: this.serializePlayers(forPlayer),
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
-      leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
+      leader: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
-      victimUsername: PlayersManager.getUsernameOrNull(this.victim),
+      victim: PlayersManager.getUsernameOrNull(this.victim),
     };
   }
 

@@ -1,6 +1,11 @@
 import { LevelPreset } from './level-preset';
-import { Quest, QuestStatus } from './quest';
+import { Quest, QuestStatus, QuestSerialized } from './quest';
 import { Vote } from './vote';
+
+export interface QuestsManagerSerialized {
+  collection: QuestSerialized[];
+  teamVotingRoundIndex: number;
+}
 
 export class QuestsManager {
   private levelPreset: LevelPreset  = null;
@@ -24,8 +29,8 @@ export class QuestsManager {
     this.quests = this.levelPreset.getQuestsConfig().map(
       // TODO: add types
       (config) => new Quest({
-        votesNeeded: config.votesNeeded,
-        failsNeeded: config.failsNeeded,
+        votesNeededCount: config.votesNeededCount,
+        failsNeededCount: config.failsNeededCount,
         totalPlayers: this.levelPreset.getPlayerCount(),
       }),
     );
@@ -56,7 +61,7 @@ export class QuestsManager {
   };
 
   getVotesNeeded() {
-    return this.getCurrentQuest().getVotesNeeded();
+    return this.getCurrentQuest().getVotesNeededCount();
   }
 
   questVotingAllowed() {
@@ -76,7 +81,7 @@ export class QuestsManager {
     return this.getCurrentQuest().isLastRoundOfTeamVoting();
   };
 
-  serialize(resultsConcealed: boolean) {
+  serialize(resultsConcealed: boolean): QuestsManagerSerialized {
     return {
       collection: this.quests.map(q => q.serialize(resultsConcealed)),
       teamVotingRoundIndex: this.getCurrentQuest()

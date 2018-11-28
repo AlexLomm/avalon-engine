@@ -1,3 +1,8 @@
+export interface VoteSerialized {
+  username: string;
+  value: boolean;
+}
+
 export class Vote {
   private username: string;
   private value: boolean;
@@ -15,7 +20,7 @@ export class Vote {
     return this.value;
   }
 
-  serialize() {
+  serialize(): VoteSerialized {
     return {
       username: this.username,
       value: this.value,

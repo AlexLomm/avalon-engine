@@ -1,4 +1,4 @@
-import { Vote } from '../src/vote';
+import { Vote, VoteSerialized } from '../src/vote';
 
 test('should get vote', () => {
   const vote = new Vote('user-1', true);
@@ -17,8 +17,7 @@ test('should serialize', () => {
 
   const actual = vote.serialize();
 
-  // TODO: add type
-  const expected: any = {
+  const expected: VoteSerialized = {
     username: 'some-user',
     value: false,
   };

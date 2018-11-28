@@ -278,7 +278,7 @@ describe('assassination', () => {
   test('should toggle victim proposition', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    expect(manager.serialize('user-1').victimUsername).toBeFalsy();
+    expect(manager.serialize('user-1').victim).toBeFalsy();
 
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
@@ -286,14 +286,14 @@ describe('assassination', () => {
       nonAssassin.getUsername(),
     );
 
-    expect(manager.serialize('user-1').victimUsername).toEqual(nonAssassin.getUsername());
+    expect(manager.serialize('user-1').victim).toEqual(nonAssassin.getUsername());
 
     manager.toggleVictimProposition(
       PlayersManagerHelper.getAssassin(manager).getUsername(),
       nonAssassin.getUsername(),
     );
 
-    expect(manager.serialize('user-1').victimUsername).toBeFalsy();
+    expect(manager.serialize('user-1').victim).toBeFalsy();
   });
 
   test('should throw for assassination attempt, when no victim is proposed', () => {
@@ -386,9 +386,9 @@ describe('serialization', () => {
     const expected = [
       'collection',
       'proposedPlayerUsernames',
-      'leaderUsername',
+      'leader',
       'isSubmitted',
-      'victimUsername',
+      'victim',
     ].sort();
 
     const actual = Object.keys(manager.serialize('user-1')).sort();
@@ -423,7 +423,7 @@ describe('serialization', () => {
 
     const expected = manager.getLeader().getUsername();
     const actual   = manager.serialize('user-1')
-      .leaderUsername;
+      .leader;
 
     expect(expected).toEqual(actual);
   });
@@ -447,7 +447,7 @@ describe('serialization', () => {
     );
 
     const victimUsername = manager.serialize('user-1')
-      .victimUsername;
+      .victim;
 
     expect(nonAssassin.getUsername()).toStrictEqual(victimUsername);
   });

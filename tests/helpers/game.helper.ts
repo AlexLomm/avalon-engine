@@ -8,7 +8,7 @@ export class GameHelper {
       const usernames: string[] = [];
 
       _.times(
-        game.getQuestsManager().getCurrentQuest().getVotesNeeded(),
+        game.getQuestsManager().getCurrentQuest().getVotesNeededCount(),
         (i) => usernames.push(`user-${i}`),
       );
 
