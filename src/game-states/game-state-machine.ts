@@ -8,6 +8,7 @@ import { TypeState } from 'typestate';
 import { AssassinationState } from './assassination-state';
 import { GameStatus } from '../game-meta-data';
 import { BaseState } from './base-state';
+import { FinishState } from './finish-state';
 
 export enum GameState {
   Preparation           = 'Preparation',
@@ -179,7 +180,7 @@ export class GameStateMachine {
         case GameState.Assassination:
           game.getMetaData().finish(GameStatus.Lost);
 
-          this.setState(game, new FrozenState());
+          this.setState(game, new FinishState());
 
           break;
       }
@@ -190,7 +191,7 @@ export class GameStateMachine {
         case GameState.Assassination:
           game.getMetaData().finish(GameStatus.Won);
 
-          this.setState(game, new FrozenState());
+          this.setState(game, new FinishState());
 
           break;
       }

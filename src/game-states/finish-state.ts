@@ -1,6 +1,6 @@
 import { BaseState } from './base-state';
 
-export class FrozenState extends BaseState {
+export class FinishState extends BaseState {
   protected resultsConcealed = false;
-  protected rolesConcealed   = true;
+  protected rolesConcealed   = false;
 }

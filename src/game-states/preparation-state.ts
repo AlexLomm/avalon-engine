@@ -6,6 +6,7 @@ import { GameState, GameEvent } from './game-state-machine';
 
 export class PreparationState extends BaseState {
   protected resultsConcealed = true;
+  protected rolesConcealed   = true;
 
   addPlayer(game: Game, player: Player) {
     game.getPlayersManager().add(player);

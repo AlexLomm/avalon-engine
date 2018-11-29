@@ -5,6 +5,7 @@ import { GameState, GameEvent } from './game-state-machine';
 
 export class QuestVotingState extends BaseState {
   protected resultsConcealed = true;
+  protected rolesConcealed   = true;
 
   voteForQuest(game: Game, username: string, voteValue: boolean) {
     if (!game.getPlayersManager().questVotingAllowedFor(username)) {

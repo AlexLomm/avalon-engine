@@ -4,7 +4,8 @@ import { Player } from '../player';
 import { RoleId } from '../configs/roles.config';
 
 export abstract class BaseState {
-  protected abstract resultsConcealed: boolean;
+  protected abstract resultsConcealed: boolean = true;
+  protected abstract rolesConcealed: boolean   = true;
 
   addPlayer(game: Game, player: Player): void {
     throw new fromErrors.AlreadyStartedGameError();
@@ -42,7 +43,7 @@ export abstract class BaseState {
     return {
       meta: game.getMetaData().serialize(),
       quests: game.getQuestsManager().serialize(this.resultsConcealed),
-      players: game.getPlayersManager().serialize(forUsername),
+      players: game.getPlayersManager().serialize(forUsername, this.rolesConcealed),
     };
   }
 }
