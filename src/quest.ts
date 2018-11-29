@@ -14,6 +14,7 @@ export enum QuestStatus {
   Won        = 'Won',
 }
 
+// TODO: convert to using states
 export class Quest {
   private votesNeededCount: number;
   private failsNeededCount: number;
@@ -142,20 +143,21 @@ export class Quest {
     return this.teamVotingRoundIndex === this.teamVoteRounds.length - 1;
   }
 
-  serialize(resultsOmitted: boolean, resultsConcealed: boolean): QuestSerialized {
-    const teamVotes  = resultsOmitted ? [] : this.getSerializedTeamVotes(resultsConcealed);
-    const questVotes = resultsOmitted ? [] : this.getSerializedQuestVotes(resultsConcealed);
-
+  serialize(votesOmitted: boolean, resultsConcealed: boolean): QuestSerialized {
     return {
       status: this.getStatus(),
       failsNeededCount: this.failsNeededCount,
       votesNeededCount: this.votesNeededCount,
-      teamVotes: teamVotes,
-      questVotes: questVotes,
+      teamVotes: this.getSerializedTeamVotes(votesOmitted, resultsConcealed),
+      questVotes: this.getSerializedQuestVotes(votesOmitted, resultsConcealed),
     };
   }
 
-  private getSerializedTeamVotes(resultsConcealed: boolean): VoteSerialized[] {
+  private getSerializedTeamVotes(votesOmitted: boolean, resultsConcealed: boolean): VoteSerialized[] {
+    if (votesOmitted || this.questVotingAllowed() || this.isComplete()) {
+      return [];
+    }
+
     const votes = this.getCurrentTeamVotingRound();
 
     return resultsConcealed
@@ -163,9 +165,11 @@ export class Quest {
       : votes.map(v => v.serialize());
   }
 
-  private getSerializedQuestVotes(resultsConcealed: boolean): VoteSerialized[] {
+  private getSerializedQuestVotes(votesOmitted: boolean, resultsConcealed: boolean): VoteSerialized[] {
+    if (votesOmitted) return [];
+
     if (resultsConcealed) {
-      return this.questVotes.map(v => new Vote(v.getUsername(), null).serialize());
+      return this.questVotes.map((v) => new Vote(v.getUsername(), null).serialize());
     }
 
     const votes = this.questVotes.map(v => new Vote(null, v.getValue()));

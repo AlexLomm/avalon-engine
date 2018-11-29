@@ -92,9 +92,9 @@ export class QuestsManager {
 
   private getSerializedQuests(resultsConcealed: boolean) {
     return this.quests.map(q => {
-      const isOmitted = q !== this.getCurrentQuest();
+      const votesOmitted = q !== this.getCurrentQuest();
 
-      return q.serialize(isOmitted, resultsConcealed);
+      return q.serialize(votesOmitted, resultsConcealed);
     });
   }
 }

@@ -175,14 +175,14 @@ describe('serialization', () => {
     _.times(2, (i) => manager.addVote(new Vote(`user-${i}`, true)));
 
     const beforeNextQuest = manager.serialize(false);
-    expect(beforeNextQuest.collection[0].teamVotes.length).toBeTruthy();
-    expect(beforeNextQuest.collection[0].questVotes.length).toBeTruthy();
+    expect(beforeNextQuest.collection[0].teamVotes.length).toStrictEqual(0);
+    expect(beforeNextQuest.collection[0].questVotes.length).toStrictEqual(2);
 
     manager.nextQuest();
 
     const afterNextQuest = manager.serialize(false);
-    expect(afterNextQuest.collection[0].teamVotes.length).toBeFalsy();
-    expect(afterNextQuest.collection[0].questVotes.length).toBeFalsy();
+    expect(afterNextQuest.collection[0].teamVotes.length).toStrictEqual(0);
+    expect(afterNextQuest.collection[0].questVotes.length).toStrictEqual(0);
   });
 });
 

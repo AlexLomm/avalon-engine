@@ -264,10 +264,10 @@ describe('serialization', () => {
     _.times(5, (i: number) => quest.addVote(new Vote(`user-${i}`, true)));
 
     // quest votes
-    _.times(1, (i: number) => quest.addVote(new Vote(`user-${i}`, true)));
+    _.times(2, (i: number) => quest.addVote(new Vote(`user-${i}`, true)));
 
-    const serialized = quest.serialize(true, true);
-    expect(serialized.teamVotes.length).toBeFalsy();
-    expect(serialized.questVotes.length).toBeFalsy();
+    const serialized = quest.serialize(false, true);
+    expect(serialized.teamVotes.length).toStrictEqual(0);
+    expect(serialized.questVotes.length).toStrictEqual(2);
   });
 });
