@@ -180,6 +180,7 @@ describe('serialization', () => {
     const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 3});
 
     const expected: QuestSerialized = {
+      status: QuestStatus.Unresolved,
       votesNeededCount: 2,
       failsNeededCount: 1,
       teamVotes: [],

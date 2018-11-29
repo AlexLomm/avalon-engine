@@ -1,6 +1,7 @@
 import { Vote, VoteSerialized } from './vote';
 
 export interface QuestSerialized {
+  status: string;
   failsNeededCount: number;
   votesNeededCount: number;
   teamVotes: VoteSerialized[];
@@ -146,6 +147,7 @@ export class Quest {
     const questVotes = resultsOmitted ? [] : this.getSerializedQuestVotes(resultsConcealed);
 
     return {
+      status: this.getStatus(),
       failsNeededCount: this.failsNeededCount,
       votesNeededCount: this.votesNeededCount,
       teamVotes: teamVotes,
