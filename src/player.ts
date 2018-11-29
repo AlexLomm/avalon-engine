@@ -1,6 +1,11 @@
-import { Role } from './role';
+import { Role, RoleSerialized } from './role';
 import { Vote } from './vote';
 import { RoleId } from './configs/roles.config';
+
+export interface PlayerSerialized {
+  username: string;
+  role: RoleSerialized;
+}
 
 export class Player {
   private username: string;
@@ -8,7 +13,7 @@ export class Player {
   // TODO: remove
   private vote: Vote;
 
-  constructor(username: string, initialRole = new Role(RoleId.Unknown)) {
+  constructor(username: string, initialRole = Role.null()) {
     this.username = username;
     this.role     = initialRole;
   }
@@ -44,14 +49,18 @@ export class Player {
     return this.role && this.role.getId() === RoleId.Assassin;
   }
 
+  isMerlin() {
+    return this.role && this.role.getId() === RoleId.Merlin;
+  }
+
   canSee(anotherPlayer: Player) {
     return this.role.canSee(anotherPlayer.getRole());
   }
 
-  // TODO: refactor
-  serialize(roleRevealed: boolean) {
-    const serializedRole = !(this.role && roleRevealed)
-      ? new Role(RoleId.Unknown).serialize()
+  // TODO: cache
+  serialize(roleRevealed: boolean): PlayerSerialized {
+    const serializedRole = !roleRevealed
+      ? Role.null().serialize()
       : this.role.serialize();
 
     return {

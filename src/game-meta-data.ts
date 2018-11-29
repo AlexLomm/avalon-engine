@@ -1,6 +1,16 @@
 import * as crypto from 'crypto';
-import { LevelPreset } from './level-preset';
+import { LevelPreset, LevelPresetSerialized } from './level-preset';
 import { Player } from './player';
+
+export interface GameMetaDataSerialized {
+  id: string;
+  createdAt: string;
+  startedAt: string;
+  finishedAt: string;
+  levelPreset: LevelPresetSerialized;
+  gameStatus: string;
+  gameCreator: string;
+}
 
 export enum GameStatus {
   Unfinished = 'Unfinished',
@@ -11,12 +21,12 @@ export enum GameStatus {
 export class GameMetaData {
   private id: string               = crypto.randomBytes(20).toString('hex');
   private createdAt: Date          = new Date();
+  private startedAt: Date          = null;
+  private finishedAt: Date         = null;
   private levelPreset: LevelPreset = LevelPreset.null();
+  // TODO: rethink the simultaneous use of `finishedAt` and `gameStatus`
   private gameStatus: GameStatus   = GameStatus.Unfinished;
   private gameCreator: Player      = null;
-  private startedAt: Date          = null;
-  // TODO: rethink the simultaneous use of `finishedAt` and `gameStatus`
-  private finishedAt: Date         = null;
 
   setGameStatus(gameStatus: GameStatus) {
     this.gameStatus = gameStatus;
@@ -43,13 +53,13 @@ export class GameMetaData {
     this.finishedAt = new Date();
   }
 
-  serialize() {
+  serialize(): GameMetaDataSerialized {
     return {
       id: this.id,
-      createdAt: this.createdAt,
+      createdAt: this.createdAt ? this.createdAt.toString() : null,
+      startedAt: this.startedAt ? this.startedAt.toString() : null,
+      finishedAt: this.finishedAt ? this.finishedAt.toString() : null,
       levelPreset: this.levelPreset.serialize(),
-      startedAt: this.startedAt,
-      finishedAt: this.finishedAt,
       gameStatus: this.gameStatus,
       gameCreator: this.gameCreator ? this.gameCreator.getUsername() : null,
     };

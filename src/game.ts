@@ -1,12 +1,18 @@
 import EventEmitter from 'events';
-import { PlayersManager } from './players-manager';
-import { QuestsManager } from './quests-manager';
+import { PlayersManager, PlayersManagerSerialized } from './players-manager';
+import { QuestsManager, QuestsManagerSerialized } from './quests-manager';
 import { PreparationState } from './game-states/preparation-state';
 import { RoleId } from './configs/roles.config';
 import { BaseState } from './game-states/base-state';
 import { Player } from './player';
-import { GameMetaData } from './game-meta-data';
+import { GameMetaData, GameMetaDataSerialized } from './game-meta-data';
 import { GameStateMachine, GameEvent } from './game-states/game-state-machine';
+
+export interface GameSerialized {
+  meta: GameMetaDataSerialized;
+  players: PlayersManagerSerialized;
+  quests: QuestsManagerSerialized;
+}
 
 export class Game {
   constructor(
@@ -88,7 +94,7 @@ export class Game {
     this.state.assassinate(this, assassinsUsername);
   }
 
-  serialize(forUsername: string) {
+  serialize(forUsername: string): GameSerialized {
     return this.state.serialize(this, forUsername);
   }
 }

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import { Vote } from '../src/vote';
-import { QuestsManager } from '../src/quests-manager';
+import { QuestsManager, QuestsManagerSerialized } from '../src/quests-manager';
 import { Quest } from '../src/quest';
 import { LevelPreset } from '../src/level-preset';
 
@@ -12,7 +12,7 @@ function resolveQuestsTimes(manager: QuestsManager, voteValue: boolean, times: n
     });
 
     // fail or succeed a quest (depends on `vote`)
-    _.times(manager.getCurrentQuest().getVotesNeeded(), (i) => {
+    _.times(manager.getCurrentQuest().getVotesNeededCount(), (i) => {
       manager.addVote(new Vote(`user-${i}`, voteValue));
     });
 
@@ -134,8 +134,7 @@ describe('serialization', () => {
   test('should return an empty state', () => {
     const manager = new QuestsManager();
 
-    // TODO: add type
-    const expected: any = {
+    const expected: QuestsManagerSerialized = {
       collection: [],
       teamVotingRoundIndex: 0,
     };

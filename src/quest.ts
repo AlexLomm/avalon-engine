@@ -1,4 +1,11 @@
-import { Vote } from './vote';
+import { Vote, VoteSerialized } from './vote';
+
+export interface QuestSerialized {
+  failsNeededCount: number;
+  votesNeededCount: number;
+  teamVotes: VoteSerialized[];
+  questVotes: VoteSerialized[];
+}
 
 export enum QuestStatus {
   Unresolved = 'Unresolved',
@@ -7,29 +14,29 @@ export enum QuestStatus {
 }
 
 export class Quest {
-  private votesNeeded: number;
-  private failsNeeded: number;
+  private votesNeededCount: number;
+  private failsNeededCount: number;
   private totalPlayers: number;
   private teamVoteRounds: Vote[][]     = [[], [], [], [], []];
   private teamVotingRoundIndex: number = 0;
   private questVotes: Vote[]           = [];
 
   constructor(config: {
-    votesNeeded: number,
-    failsNeeded: number,
+    votesNeededCount: number,
+    failsNeededCount: number,
     totalPlayers: number
   }) {
-    this.votesNeeded  = config.votesNeeded;
-    this.failsNeeded  = config.failsNeeded;
-    this.totalPlayers = config.totalPlayers;
+    this.votesNeededCount = config.votesNeededCount;
+    this.failsNeededCount = config.failsNeededCount;
+    this.totalPlayers     = config.totalPlayers;
   }
 
-  getVotesNeeded() {
-    return this.votesNeeded;
+  getVotesNeededCount() {
+    return this.votesNeededCount;
   }
 
-  getFailsNeeded() {
-    return this.failsNeeded;
+  getFailsNeededCount() {
+    return this.failsNeededCount;
   }
 
   // a.k.a "vote tracker"
@@ -38,7 +45,7 @@ export class Quest {
   }
 
   questVotingFinished() {
-    return this.questVotes.length === this.votesNeeded;
+    return this.questVotes.length === this.votesNeededCount;
   }
 
   isComplete() {
@@ -54,7 +61,7 @@ export class Quest {
   }
 
   private questVotingFailed() {
-    return this.failsCount() < this.failsNeeded;
+    return this.failsCount() < this.failsNeededCount;
   }
 
   private failsCount() {
@@ -85,7 +92,7 @@ export class Quest {
 
   questVotingAllowed() {
     return this.teamVotingSucceeded()
-      && this.questVotes.length < this.votesNeeded;
+      && this.questVotes.length < this.votesNeededCount;
   }
 
   teamVotingSucceeded() {
@@ -134,16 +141,16 @@ export class Quest {
     return this.teamVotingRoundIndex === this.teamVoteRounds.length - 1;
   }
 
-  serialize(resultsConcealed: boolean) {
+  serialize(resultsConcealed: boolean): QuestSerialized {
     return {
-      failsNeeded: this.failsNeeded,
-      votesNeeded: this.votesNeeded,
+      failsNeededCount: this.failsNeededCount,
+      votesNeededCount: this.votesNeededCount,
       teamVotes: this.getSerializedTeamVotes(resultsConcealed),
       questVotes: this.getSerializedQuestVotes(resultsConcealed),
     };
   }
 
-  private getSerializedTeamVotes(resultsConcealed: boolean) {
+  private getSerializedTeamVotes(resultsConcealed: boolean): VoteSerialized[] {
     const votes = this.getCurrentTeamVotingRound();
 
     return resultsConcealed
@@ -151,13 +158,15 @@ export class Quest {
       : votes.map(v => v.serialize());
   }
 
-  private getSerializedQuestVotes(resultsConcealed: boolean) {
+  private getSerializedQuestVotes(resultsConcealed: boolean): VoteSerialized[] {
     if (resultsConcealed) {
       return this.questVotes.map(v => new Vote(v.getUsername(), null).serialize());
     }
 
     const votes = this.questVotes.map(v => new Vote(null, v.getValue()));
 
-    return votes.sort((a: Vote, b: Vote) => a.getValue() ? -1 : 1);
+    votes.sort((a: Vote, b: Vote) => a.getValue() ? -1 : 1);
+
+    return votes.map(vote => vote.serialize());
   }
 }

@@ -1,9 +1,17 @@
 import * as _ from 'lodash';
 import * as fromErrors from './errors';
-import { Player } from './player';
+import { Player, PlayerSerialized } from './player';
 import { LevelPreset } from './level-preset';
 import { RolesAssigner } from './roles-assigner';
 import { RoleId } from './configs/roles.config';
+
+export interface PlayersManagerSerialized {
+  collection: PlayerSerialized[];
+  proposedPlayerUsernames: string[];
+  leader: string;
+  isSubmitted: boolean;
+  victim: string;
+}
 
 export class PlayersManager {
   private players: Player[]         = [];
@@ -11,13 +19,13 @@ export class PlayersManager {
   private proposedPlayers: Player[] = [];
   private leaderIndex: number       = -1;
   private victim: Player;
+  private assassin: Player;
 
   constructor() {
   }
 
   assassinate(assassinsUsername: string) {
-    const assassin = this.getAssassin();
-    if (!assassin || assassin.getUsername() !== assassinsUsername) {
+    if (!this.assassin || this.assassin.getUsername() !== assassinsUsername) {
       throw new fromErrors.DeniedAssassinationError();
     }
 
@@ -28,19 +36,9 @@ export class PlayersManager {
     return this.assassinationSucceeded();
   }
 
-  // TODO: replace the hardcoded value a with config
+  // TODO: replace the hardcoded value with a config
   private assassinationSucceeded() {
-    return this.victim.getRole().getId() === RoleId.Merlin;
-  }
-
-  // TODO: remove
-  getVictim(): Player {
-    return this.victim;
-  }
-
-  // TODO: make private
-  getAssassin(): Player {
-    return this.players.find((p) => p.isAssassin());
+    return this.victim.isMerlin();
   }
 
   // TODO: remove
@@ -48,9 +46,8 @@ export class PlayersManager {
     return this.players;
   }
 
-  // TODO: remove
-  getProposedPlayers(): Player[] {
-    return this.proposedPlayers;
+  getProposedPlayersCount(): number {
+    return this.proposedPlayers.length;
   }
 
   add(player: Player) {
@@ -76,11 +73,11 @@ export class PlayersManager {
     assassinsUsername: string,
     victimUsername: string,
   ) {
-    if (this.getAssassin().getUsername() !== assassinsUsername) {
+    if (this.assassin.getUsername() !== assassinsUsername) {
       throw new fromErrors.DeniedVictimPropositionError();
     }
 
-    if (this.getAssassin().getUsername() === victimUsername) {
+    if (this.assassin.getUsername() === victimUsername) {
       throw new fromErrors.DeniedSelfSacrificeError();
     }
 
@@ -116,6 +113,8 @@ export class PlayersManager {
       this.players,
       levelPreset,
     ).assignRoles(roleIds);
+
+    this.assassin = this.players.find(p => p.isAssassin());
 
     this.nextLeader();
   }
@@ -188,7 +187,7 @@ export class PlayersManager {
     this.proposedPlayers = [];
   }
 
-  serialize(forPlayerUsername: string) {
+  serialize(forPlayerUsername: string): PlayersManagerSerialized {
     const forPlayer = this.findPlayer(forPlayerUsername);
     if (!forPlayer) {
       throw new fromErrors.PlayerMissingError();
@@ -197,9 +196,9 @@ export class PlayersManager {
     return {
       collection: this.serializePlayers(forPlayer),
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
-      leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
+      leader: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
-      victimUsername: PlayersManager.getUsernameOrNull(this.getVictim()),
+      victim: PlayersManager.getUsernameOrNull(this.victim),
     };
   }
 

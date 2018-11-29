@@ -1,23 +1,23 @@
 import * as _ from 'lodash';
 import * as fromErrors from '../src/errors';
-import { Quest, QuestStatus } from '../src/quest';
+import { Quest, QuestStatus, QuestSerialized } from '../src/quest';
 import { Vote } from '../src/vote';
 
 test('should return number of players needed', () => {
-  const quest = new Quest({votesNeeded: 3, failsNeeded: 1, totalPlayers: 2});
+  const quest = new Quest({votesNeededCount: 3, failsNeededCount: 1, totalPlayers: 2});
 
-  expect(quest.getVotesNeeded()).toEqual(3);
+  expect(quest.getVotesNeededCount()).toEqual(3);
 });
 
 test('should return number of fails needed', () => {
-  const quest = new Quest({votesNeeded: 1, failsNeeded: 3, totalPlayers: 2});
+  const quest = new Quest({votesNeededCount: 1, failsNeededCount: 3, totalPlayers: 2});
 
-  expect(quest.getFailsNeeded()).toEqual(3);
+  expect(quest.getFailsNeededCount()).toEqual(3);
 });
 
 describe('status', () => {
   test('should return status: pending', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 2, totalPlayers: 2});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 2, totalPlayers: 2});
 
     quest.addVote(new Vote('user-1', true));
     expect(quest.getStatus()).toEqual(QuestStatus.Unresolved);
@@ -30,7 +30,7 @@ describe('status', () => {
   });
 
   test('should return status: success', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 2});
 
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', true));
@@ -42,7 +42,7 @@ describe('status', () => {
   });
 
   test('should return status: fail', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 2});
 
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', true));
@@ -54,7 +54,7 @@ describe('status', () => {
   });
 
   test('should return status: pending when the team has been rejected', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 2});
 
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', false));
@@ -66,7 +66,7 @@ describe('status', () => {
   });
 
   test('should return if is complete', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 2});
 
     expect(quest.isComplete()).toBeFalsy();
 
@@ -84,7 +84,7 @@ describe('status', () => {
 
 describe('team voting', () => {
   test('should require every player to vote for team', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 3});
 
     expect(quest.teamVotingAllowed()).toBeTruthy();
 
@@ -99,7 +99,7 @@ describe('team voting', () => {
   });
 
   test('should increment the tracker if team voting has failed', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 2});
 
     expect(quest.getTeamVotingRoundIndex()).toEqual(0);
 
@@ -115,7 +115,7 @@ describe('team voting', () => {
   });
 
   test('should return whether team voting round is over if the round failed', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 2});
 
     expect(quest.teamVotingRoundFinished()).toBeFalsy();
 
@@ -130,7 +130,7 @@ describe('team voting', () => {
   });
 
   test('should return whether team voting round is over if the round succeeded', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 2});
 
     quest.addVote(new Vote('user-1', true));
     quest.addVote(new Vote('user-2', true));
@@ -143,7 +143,7 @@ describe('team voting', () => {
   });
 
   test('should return if it\'s the last round of team voting', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 2});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 2});
 
     expect(quest.isLastRoundOfTeamVoting()).toBeFalsy();
 
@@ -158,7 +158,7 @@ describe('team voting', () => {
 
 describe('quest voting', () => {
   test('should return whether everybody has voted for the quest or not', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 3});
 
     expect(quest.questVotingFinished()).toBeFalsy();
 
@@ -177,12 +177,11 @@ describe('quest voting', () => {
 
 describe('serialization', () => {
   test('should serialize an empty quest', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 3});
 
-    // TODO: add type
-    const expected: any = {
-      votesNeeded: 2,
-      failsNeeded: 1,
+    const expected: QuestSerialized = {
+      votesNeededCount: 2,
+      failsNeededCount: 1,
       teamVotes: [],
       questVotes: [],
     };
@@ -193,7 +192,7 @@ describe('serialization', () => {
   });
 
   test('should contain serialized votes of the current team voting round', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 3});
 
     const vote = new Vote('user-1', true);
     quest.addVote(new Vote('user-1', true));
@@ -202,7 +201,7 @@ describe('serialization', () => {
   });
 
   test('should contain the anonymous team votes', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 3});
 
     quest.addVote(new Vote('user-1', true));
 
@@ -211,7 +210,7 @@ describe('serialization', () => {
   });
 
   test('should reveal the vote value without revealing the voter', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 3});
 
     // team votes
     quest.addVote(new Vote('user-1', true));
@@ -226,7 +225,7 @@ describe('serialization', () => {
   });
 
   test('should indicate that someone has voted without revealing the vote value', () => {
-    const quest = new Quest({votesNeeded: 2, failsNeeded: 1, totalPlayers: 3});
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 3});
 
     // team votes
     quest.addVote(new Vote('user-1', true));
@@ -241,7 +240,7 @@ describe('serialization', () => {
   });
 
   test('should sort the revealed quest votes by value', () => {
-    const quest = new Quest({votesNeeded: 5, failsNeeded: 1, totalPlayers: 8});
+    const quest = new Quest({votesNeededCount: 5, failsNeededCount: 1, totalPlayers: 8});
 
     _.times(8, (i: number) => quest.addVote(new Vote(`user-${i}`, true)));
 

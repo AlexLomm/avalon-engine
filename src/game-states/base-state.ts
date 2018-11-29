@@ -1,5 +1,5 @@
 import * as fromErrors from '../errors';
-import { Game } from '../game';
+import { Game, GameSerialized } from '../game';
 import { Player } from '../player';
 import { RoleId } from '../configs/roles.config';
 
@@ -38,7 +38,7 @@ export abstract class BaseState {
     throw new fromErrors.NoTimeForAssassinationError();
   }
 
-  serialize(game: Game, forUsername: string) {
+  serialize(game: Game, forUsername: string): GameSerialized {
     return {
       meta: game.getMetaData().serialize(),
       quests: game.getQuestsManager().serialize(this.resultsConcealed),

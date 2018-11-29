@@ -1,6 +1,13 @@
 // TODO: cache roles
 import { Loyalty, rolesConfig, RoleId } from './configs/roles.config';
 
+export interface RoleSerialized {
+  id: string;
+  name: string;
+  description: string;
+  loyalty: string;
+}
+
 export class Role {
   id: RoleId;
   name: string;
@@ -14,6 +21,11 @@ export class Role {
     this.description    = rolesConfig[id].description;
     this.loyalty        = rolesConfig[id].loyalty;
     this.visibleRoleIds = rolesConfig[id].visibleRoleIds;
+  }
+
+  // TODO: cache
+  static null() {
+    return new Role(RoleId.Unknown);
   }
 
   getId() {
@@ -46,7 +58,7 @@ export class Role {
     return index > -1;
   }
 
-  serialize() {
+  serialize(): RoleSerialized {
     return {
       id: this.id,
       name: this.name,

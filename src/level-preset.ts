@@ -1,6 +1,11 @@
 import { levelPresets, QuestConfig } from './configs/level-presets.config';
 import * as fromErrors from './errors';
 
+export interface LevelPresetSerialized {
+  goodCount: number;
+  evilCount: number;
+}
+
 export class LevelPreset {
   private goodCount: number;
   private evilCount: number;
@@ -38,7 +43,7 @@ export class LevelPreset {
     return this.goodCount + this.evilCount;
   }
 
-  serialize() {
+  serialize(): LevelPresetSerialized {
     return {
       goodCount: this.goodCount,
       evilCount: this.evilCount,
