@@ -180,13 +180,14 @@ describe('serialization', () => {
     const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 3});
 
     const expected: QuestSerialized = {
+      status: QuestStatus.Unresolved,
       votesNeededCount: 2,
       failsNeededCount: 1,
       teamVotes: [],
       questVotes: [],
     };
 
-    const actual = quest.serialize(false);
+    const actual = quest.serialize(false, false);
 
     expect(expected).toEqual(actual);
   });
@@ -197,7 +198,7 @@ describe('serialization', () => {
     const vote = new Vote('user-1', true);
     quest.addVote(new Vote('user-1', true));
 
-    expect(quest.serialize(false).teamVotes[0]).toEqual(vote.serialize());
+    expect(quest.serialize(false, false).teamVotes[0]).toEqual(vote.serialize());
   });
 
   test('should contain the anonymous team votes', () => {
@@ -205,7 +206,7 @@ describe('serialization', () => {
 
     quest.addVote(new Vote('user-1', true));
 
-    expect(quest.serialize(true).teamVotes[0])
+    expect(quest.serialize(false, true).teamVotes[0])
       .toEqual(new Vote('user-1', null).serialize());
   });
 
@@ -220,7 +221,7 @@ describe('serialization', () => {
     // quest votes
     quest.addVote(new Vote('user-3', true));
 
-    expect(quest.serialize(false).questVotes[0])
+    expect(quest.serialize(false, false).questVotes[0])
       .toEqual(new Vote(null, true).serialize());
   });
 
@@ -235,7 +236,7 @@ describe('serialization', () => {
     // quest votes
     quest.addVote(new Vote('user-3', true));
 
-    expect(quest.serialize(true).questVotes[0])
+    expect(quest.serialize(false, true).questVotes[0])
       .toEqual(new Vote('user-3', null).serialize());
   });
 
@@ -250,9 +251,23 @@ describe('serialization', () => {
     quest.addVote(new Vote('user-4', true));
     quest.addVote(new Vote('user-5', true));
 
-    const votes = (quest.serialize(false).questVotes as Array<any>)
+    const votes = (quest.serialize(false, false).questVotes as Array<any>)
       .map((obj: any) => obj.value);
 
     expect(votes).toEqual([true, true, true, false, false]);
+  });
+
+  test('should omit the voting results', () => {
+    const quest = new Quest({votesNeededCount: 2, failsNeededCount: 1, totalPlayers: 5});
+
+    // team votes
+    _.times(5, (i: number) => quest.addVote(new Vote(`user-${i}`, true)));
+
+    // quest votes
+    _.times(2, (i: number) => quest.addVote(new Vote(`user-${i}`, true)));
+
+    const serialized = quest.serialize(false, true);
+    expect(serialized.teamVotes.length).toStrictEqual(0);
+    expect(serialized.questVotes.length).toStrictEqual(2);
   });
 });

@@ -1,6 +1,7 @@
 import { Vote, VoteSerialized } from './vote';
 
 export interface QuestSerialized {
+  status: string;
   failsNeededCount: number;
   votesNeededCount: number;
   teamVotes: VoteSerialized[];
@@ -13,6 +14,7 @@ export enum QuestStatus {
   Won        = 'Won',
 }
 
+// TODO: convert to using states
 export class Quest {
   private votesNeededCount: number;
   private failsNeededCount: number;
@@ -141,16 +143,21 @@ export class Quest {
     return this.teamVotingRoundIndex === this.teamVoteRounds.length - 1;
   }
 
-  serialize(resultsConcealed: boolean): QuestSerialized {
+  serialize(votesOmitted: boolean, resultsConcealed: boolean): QuestSerialized {
     return {
+      status: this.getStatus(),
       failsNeededCount: this.failsNeededCount,
       votesNeededCount: this.votesNeededCount,
-      teamVotes: this.getSerializedTeamVotes(resultsConcealed),
-      questVotes: this.getSerializedQuestVotes(resultsConcealed),
+      teamVotes: this.getSerializedTeamVotes(votesOmitted, resultsConcealed),
+      questVotes: this.getSerializedQuestVotes(votesOmitted, resultsConcealed),
     };
   }
 
-  private getSerializedTeamVotes(resultsConcealed: boolean): VoteSerialized[] {
+  private getSerializedTeamVotes(votesOmitted: boolean, resultsConcealed: boolean): VoteSerialized[] {
+    if (votesOmitted || this.questVotingAllowed() || this.isComplete()) {
+      return [];
+    }
+
     const votes = this.getCurrentTeamVotingRound();
 
     return resultsConcealed
@@ -158,9 +165,11 @@ export class Quest {
       : votes.map(v => v.serialize());
   }
 
-  private getSerializedQuestVotes(resultsConcealed: boolean): VoteSerialized[] {
+  private getSerializedQuestVotes(votesOmitted: boolean, resultsConcealed: boolean): VoteSerialized[] {
+    if (votesOmitted) return [];
+
     if (resultsConcealed) {
-      return this.questVotes.map(v => new Vote(v.getUsername(), null).serialize());
+      return this.questVotes.map((v) => new Vote(v.getUsername(), null).serialize());
     }
 
     const votes = this.questVotes.map(v => new Vote(null, v.getValue()));

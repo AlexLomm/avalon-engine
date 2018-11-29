@@ -446,13 +446,13 @@ describe('post "reveal roles" phase', () => {
       GameHelper.passQuestsWithResults(game, [true, true, true]);
 
       jest.spyOn(playersManager, 'assassinate');
-      jest.spyOn(game.getMetaData(), 'setGameStatus');
+      jest.spyOn(game.getMetaData(), 'finish');
 
       game.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
       game.assassinate(assassin.getUsername());
 
       expect(playersManager.assassinate).toBeCalledTimes(1);
-      expect(game.getMetaData().setGameStatus).toBeCalledTimes(1);
+      expect(game.getMetaData().finish).toBeCalledTimes(1);
     });
 
     test('should set the game status to "Lost", if the victim was Merlin', () => {

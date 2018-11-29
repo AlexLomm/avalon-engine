@@ -148,7 +148,7 @@ describe('serialization', () => {
     const manager = new QuestsManager();
     manager.init(new LevelPreset(5));
 
-    const serializedQuest = manager.getAll()[0].serialize(false);
+    const serializedQuest = manager.getAll()[0].serialize(false,false);
 
     expect(manager.serialize(false).collection[0]).toEqual(serializedQuest);
   });
@@ -167,16 +167,22 @@ describe('serialization', () => {
       .toEqual(currentQuest.getTeamVotingRoundIndex());
   });
 
-  test('should serialize the quests with an appropriate flag set', () => {
+  test('should reveal votes only for the current quest', () => {
     const manager = new QuestsManager();
     manager.init(new LevelPreset(5));
 
-    const quest = manager.getAll()[0];
-    jest.spyOn(quest, 'serialize');
+    _.times(5, (i) => manager.addVote(new Vote(`user-${i}`, true)));
+    _.times(2, (i) => manager.addVote(new Vote(`user-${i}`, true)));
 
-    manager.serialize(true);
+    const beforeNextQuest = manager.serialize(false);
+    expect(beforeNextQuest.collection[0].teamVotes.length).toStrictEqual(0);
+    expect(beforeNextQuest.collection[0].questVotes.length).toStrictEqual(2);
 
-    expect(quest.serialize).toBeCalledWith(true);
+    manager.nextQuest();
+
+    const afterNextQuest = manager.serialize(false);
+    expect(afterNextQuest.collection[0].teamVotes.length).toStrictEqual(0);
+    expect(afterNextQuest.collection[0].questVotes.length).toStrictEqual(0);
   });
 });
 

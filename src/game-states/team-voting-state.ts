@@ -5,6 +5,7 @@ import { GameState, GameEvent } from './game-state-machine';
 
 export class TeamVotingState extends BaseState {
   protected resultsConcealed = true;
+  protected rolesConcealed   = true;
 
   voteForTeam(game: Game, username: string, voteValue: boolean) {
     if (!game.getPlayersManager().teamVotingAllowedFor(username)) {

@@ -52,7 +52,7 @@ test('should have a starting date set', () => {
 test('should have a finish date set', () => {
   const gameMeta = new GameMetaData();
 
-  gameMeta.finish();
+  gameMeta.finish(GameStatus.Lost);
 
   expect(gameMeta.serialize().finishedAt).toBeTruthy();
 });
@@ -84,7 +84,7 @@ test('should have the game status set as "Unfinished" by default', () => {
 test('should set the game status to "Won"', () => {
   const gameMeta = new GameMetaData();
 
-  gameMeta.setGameStatus(GameStatus.Won);
+  gameMeta.finish(GameStatus.Won);
 
   expect(gameMeta.getGameStatus()).toEqual(GameStatus.Won);
 });
@@ -92,7 +92,7 @@ test('should set the game status to "Won"', () => {
 test('should set the game status to "Lost"', () => {
   const gameMeta = new GameMetaData();
 
-  gameMeta.setGameStatus(GameStatus.Lost);
+  gameMeta.finish(GameStatus.Lost);
 
   expect(gameMeta.getGameStatus()).toEqual(GameStatus.Lost);
 });

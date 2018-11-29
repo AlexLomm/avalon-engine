@@ -187,14 +187,14 @@ export class PlayersManager {
     this.proposedPlayers = [];
   }
 
-  serialize(forPlayerUsername: string): PlayersManagerSerialized {
+  serialize(forPlayerUsername: string, rolesConcealed: boolean): PlayersManagerSerialized {
     const forPlayer = this.findPlayer(forPlayerUsername);
     if (!forPlayer) {
       throw new fromErrors.PlayerMissingError();
     }
 
     return {
-      collection: this.serializePlayers(forPlayer),
+      collection: this.serializePlayers(forPlayer, rolesConcealed),
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
       leader: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
@@ -202,9 +202,9 @@ export class PlayersManager {
     };
   }
 
-  private serializePlayers(forPlayer: Player) {
+  private serializePlayers(forPlayer: Player, rolesConcealed: boolean) {
     return this.players.map((p) => {
-      const roleRevealed = forPlayer.canSee(p);
+      const roleRevealed = !rolesConcealed || forPlayer.canSee(p);
 
       return p.serialize(roleRevealed);
     });

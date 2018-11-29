@@ -4,6 +4,7 @@ import { GameState, GameEvent } from './game-state-machine';
 
 export class AssassinationState extends BaseState {
   protected resultsConcealed = true;
+  protected rolesConcealed   = true;
 
   toggleVictimProposition(game: Game, assassinsUsername: string, victimsUsername: string) {
     game.getPlayersManager().toggleVictimProposition(

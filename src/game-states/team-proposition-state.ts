@@ -5,6 +5,7 @@ import { GameState, GameEvent } from './game-state-machine';
 
 export class TeamPropositionState extends BaseState {
   protected resultsConcealed = true;
+  protected rolesConcealed   = true;
 
   toggleTeammateProposition(game: Game, leaderUsername: string, username: string) {
     if (!game.getPlayersManager().playerPropositionAllowedFor(leaderUsername)) {

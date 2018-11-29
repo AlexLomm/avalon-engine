@@ -83,10 +83,18 @@ export class QuestsManager {
 
   serialize(resultsConcealed: boolean): QuestsManagerSerialized {
     return {
-      collection: this.quests.map(q => q.serialize(resultsConcealed)),
+      collection: this.getSerializedQuests(resultsConcealed),
       teamVotingRoundIndex: this.getCurrentQuest()
         ? this.getCurrentQuest().getTeamVotingRoundIndex()
         : 0,
     };
+  }
+
+  private getSerializedQuests(resultsConcealed: boolean) {
+    return this.quests.map(q => {
+      const votesOmitted = q !== this.getCurrentQuest();
+
+      return q.serialize(votesOmitted, resultsConcealed);
+    });
   }
 }
