@@ -141,12 +141,15 @@ export class Quest {
     return this.teamVotingRoundIndex === this.teamVoteRounds.length - 1;
   }
 
-  serialize(resultsConcealed: boolean): QuestSerialized {
+  serialize(resultsOmitted: boolean, resultsConcealed: boolean): QuestSerialized {
+    const teamVotes  = resultsOmitted ? [] : this.getSerializedTeamVotes(resultsConcealed);
+    const questVotes = resultsOmitted ? [] : this.getSerializedQuestVotes(resultsConcealed);
+
     return {
       failsNeededCount: this.failsNeededCount,
       votesNeededCount: this.votesNeededCount,
-      teamVotes: this.getSerializedTeamVotes(resultsConcealed),
-      questVotes: this.getSerializedQuestVotes(resultsConcealed),
+      teamVotes: teamVotes,
+      questVotes: questVotes,
     };
   }
 
