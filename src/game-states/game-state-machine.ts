@@ -177,7 +177,7 @@ export class GameStateMachine {
       switch (from) {
         case GameState.QuestVoting:
         case GameState.Assassination:
-          game.getMetaData().setGameStatus(GameStatus.Lost);
+          game.getMetaData().finish(GameStatus.Lost);
 
           this.setState(game, new FrozenState());
 
@@ -188,7 +188,7 @@ export class GameStateMachine {
     this.fsm.on(GameState.GameWon, (from: GameState) => {
       switch (from) {
         case GameState.Assassination:
-          game.getMetaData().setGameStatus(GameStatus.Won);
+          game.getMetaData().finish(GameStatus.Won);
 
           this.setState(game, new FrozenState());
 

@@ -28,10 +28,6 @@ export class GameMetaData {
   private gameStatus: GameStatus   = GameStatus.Unfinished;
   private gameCreator: Player      = null;
 
-  setGameStatus(gameStatus: GameStatus) {
-    this.gameStatus = gameStatus;
-  }
-
   getGameStatus() {
     return this.gameStatus;
   }
@@ -49,7 +45,9 @@ export class GameMetaData {
     return this.levelPreset;
   }
 
-  finish() {
+  finish(gameStatus: GameStatus) {
+    this.gameStatus = gameStatus;
+
     this.finishedAt = new Date();
   }
 
