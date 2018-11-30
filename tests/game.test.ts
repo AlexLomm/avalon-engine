@@ -88,13 +88,13 @@ describe('post "reveal roles" phase', () => {
     game           = new Game(
       playersManager,
       questsManager,
-      new PreparationState(),
       new GameMetaData(),
       new GameStateMachine({
         afterTeamProposition: 0,
         afterTeamVoting: 0,
         afterQuestVoting: 0,
       }),
+      new PreparationState(),
     );
 
     GameHelper.fillPlayers(game, 5);
@@ -491,13 +491,13 @@ describe('serialization', () => {
     game           = new Game(
       playersManager,
       questsManager,
-      new PreparationState(),
       new GameMetaData(),
       new GameStateMachine({
         afterTeamProposition: 0,
         afterTeamVoting: 0,
         afterQuestVoting: 0,
       }),
+      new PreparationState(),
     );
   });
 
@@ -507,7 +507,7 @@ describe('serialization', () => {
     const expected = {
       meta: game.getMetaData().serialize(),
       quests: questsManager.serialize(false),
-      players: playersManager.serialize('user-1'),
+      players: playersManager.serialize('user-1', false),
     };
 
     const actual = game.serialize('user-1');
@@ -536,13 +536,13 @@ describe('event emission', () => {
     game           = new Game(
       playersManager,
       questsManager,
-      new PreparationState(),
       new GameMetaData(),
       new GameStateMachine({
         afterTeamProposition: 0,
         afterTeamVoting: 0,
         afterQuestVoting: 0,
       }),
+      new PreparationState(),
     );
   });
 

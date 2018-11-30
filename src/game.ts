@@ -18,9 +18,9 @@ export class Game {
   constructor(
     private playersManager             = new PlayersManager(),
     private questsManager              = new QuestsManager(),
-    private state: BaseState           = new PreparationState(),
     private metaData: GameMetaData     = new GameMetaData(),
     private fsm: GameStateMachine      = new GameStateMachine(),
+    private state: BaseState           = new PreparationState(),
     private eventEmitter: EventEmitter = new EventEmitter(),
   ) {
     this.fsm.init(this);
