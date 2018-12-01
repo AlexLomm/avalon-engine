@@ -5,10 +5,13 @@ import { PlayersManager } from '../../src/players-manager';
 import { QuestsManager } from '../../src/quests-manager';
 import { Player } from '../../src/player';
 import { PreparationState } from '../../src/game-states/preparation-state';
-import { GameMetaData, GameStatus } from '../../src/game-meta-data';
-import { GameStateMachine, GameState, GameEvent } from '../../src/game-states/game-state-machine';
-import { GameHelper } from './helpers/game.helper';
-import { PlayersManagerHelper } from './helpers/players-manager.helper';
+import { GameMetaData } from '../../src/game-meta-data';
+import { GameStateMachine } from '../../src/game-states/game-state-machine';
+import { GameHelper } from '../helpers/game.helper';
+import { PlayersManagerHelper } from '../helpers/players-manager.helper';
+import { GameStatus } from '../../src/enums/game-status';
+import { GameState } from '../../src/enums/game-state';
+import { GameEvent } from '../../src/enums/game-event';
 
 describe('initialization', () => {
   test('should contain a meta data object', () => {

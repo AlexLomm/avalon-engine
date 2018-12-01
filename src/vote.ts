@@ -1,7 +1,4 @@
-export interface VoteSerialized {
-  username: string;
-  value: boolean;
-}
+import { VoteSerialized } from './types/vote-serialized';
 
 export class Vote {
   private username: string;

@@ -1,23 +1,10 @@
-export interface LevelPresetConfigs {
-  [key: number]: LevelPresetConfig;
-}
+import { LevelPresetsConfig } from '../types/level-presets-config';
 
-export interface LevelPresetConfig {
-  goodCount: number;
-  evilCount: number;
-  quests: QuestConfig[];
-}
-
-export interface QuestConfig {
-  votesNeededCount: number;
-  failsNeededCount: number;
-}
-
-export const levelPresets: LevelPresetConfigs = {
+export const levelPresets: LevelPresetsConfig = {
   '-1': {
     goodCount: null,
     evilCount: null,
-    quests: [],
+    quests: [null, null, null, null, null],
   },
   5: {
     goodCount: 3,

@@ -1,8 +1,8 @@
 import * as fromErrors from '../../src/errors';
 import { PlayersManager } from '../../src/players-manager';
 import { Player } from '../../src/player';
-import { RoleId } from '../../src/configs/roles.config';
-import { PlayersManagerHelper } from './helpers/players-manager.helper';
+import { PlayersManagerHelper } from '../helpers/players-manager.helper';
+import { RoleId } from '../../src/enums/role-id';
 
 let manager: PlayersManager;
 beforeEach(() => {

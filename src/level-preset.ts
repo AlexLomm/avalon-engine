@@ -1,17 +1,15 @@
-import { levelPresets, QuestConfig } from './configs/level-presets.config';
 import * as fromErrors from './errors';
-
-export interface LevelPresetSerialized {
-  goodCount: number;
-  evilCount: number;
-}
+import { QuestConfig } from './types/quest-config';
+import { levelPresets } from './configs/level-presets.config';
+import { LevelPresetSerialized } from './types/level-preset-serialized';
+import { LevelPresetId } from './types/level-preset-id';
 
 export class LevelPreset {
   private goodCount: number;
   private evilCount: number;
   private quests: QuestConfig[];
 
-  constructor(playerCount: number) {
+  constructor(playerCount: LevelPresetId) {
     const levelPreset = levelPresets[playerCount];
     if (!levelPreset) {
       throw new fromErrors.PlayersAmountIncorrectError();

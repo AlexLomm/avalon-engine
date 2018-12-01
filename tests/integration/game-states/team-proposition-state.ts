@@ -1,7 +1,7 @@
 import { Game } from '../../../src/game';
-import { GameEvent } from '../../../src/game-states/game-state-machine';
 import { PlayersManager } from '../../../src/players-manager';
 import { TeamPropositionState } from '../../../src/game-states/team-proposition-state';
+import { GameEvent } from '../../../src/enums/game-event';
 
 jest.mock('../../../src/players-manager');
 

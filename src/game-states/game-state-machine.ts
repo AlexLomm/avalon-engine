@@ -6,32 +6,15 @@ import { QuestVotingState } from './quest-voting-state';
 import { FrozenState } from './frozen-state';
 import { TypeState } from 'typestate';
 import { AssassinationState } from './assassination-state';
-import { GameStatus } from '../game-meta-data';
 import { BaseState } from './base-state';
 import { FinishState } from './finish-state';
+import { GameStatus } from '../enums/game-status';
+import { GameState } from '../enums/game-state';
+import { GameStateTransitionWaitTimes } from '../types/game-state-transition-wait-times';
+import { GameEvent } from '../enums/game-event';
+import { IEventListener } from '../interfaces/event-listener';
 
-export enum GameState {
-  Preparation           = 'Preparation',
-  TeamProposition       = 'TeamProposition',
-  TeamVoting            = 'TeamVoting',
-  TeamVotingPreApproved = 'TeamVotingPreApproved',
-  QuestVoting           = 'QuestVoting',
-  Assassination         = 'Assassination',
-  GameLost              = 'GameLost',
-  GameWon               = 'GameWon',
-}
-
-export enum GameEvent {
-  StateChange = 'stateChange',
-}
-
-export interface GameStateTransitionWaitTimes {
-  afterTeamProposition: number,
-  afterTeamVoting: number,
-  afterQuestVoting: number,
-}
-
-export class GameStateMachine {
+export class GameStateMachine implements IEventListener {
   private isInit: boolean;
   private fsm: TypeState.FiniteStateMachine<GameState>;
   private game: Game;

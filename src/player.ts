@@ -1,11 +1,7 @@
-import { Role, RoleSerialized } from './role';
+import { Role } from './role';
 import { Vote } from './vote';
-import { RoleId } from './configs/roles.config';
-
-export interface PlayerSerialized {
-  username: string;
-  role: RoleSerialized;
-}
+import { PlayerSerialized } from './types/player-serialized';
+import { RoleId } from './enums/role-id';
 
 export class Player {
   private username: string;

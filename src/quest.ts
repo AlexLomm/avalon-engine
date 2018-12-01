@@ -1,18 +1,7 @@
-import { Vote, VoteSerialized } from './vote';
-
-export interface QuestSerialized {
-  status: string;
-  failsNeededCount: number;
-  votesNeededCount: number;
-  teamVotes: VoteSerialized[];
-  questVotes: VoteSerialized[];
-}
-
-export enum QuestStatus {
-  Unresolved = 'Unresolved',
-  Lost       = 'Lost',
-  Won        = 'Won',
-}
+import { Vote } from './vote';
+import { QuestSerialized } from './types/quest-serialized';
+import { QuestStatus } from './enums/quest-status';
+import { VoteSerialized } from './types/vote-serialized';
 
 // TODO: convert to using states
 export class Quest {

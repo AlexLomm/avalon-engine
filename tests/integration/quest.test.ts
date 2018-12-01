@@ -1,7 +1,8 @@
 import * as _ from 'lodash';
-import * as fromErrors from '../../src/errors';
-import { Quest, QuestStatus, QuestSerialized } from '../../src/quest';
+import { Quest } from '../../src/quest';
 import { Vote } from '../../src/vote';
+import { QuestStatus } from '../../src/enums/quest-status';
+import { QuestSerialized } from '../../src/types/quest-serialized';
 
 test('should return number of players needed', () => {
   const quest = new Quest({votesNeededCount: 3, failsNeededCount: 1, totalPlayers: 2});

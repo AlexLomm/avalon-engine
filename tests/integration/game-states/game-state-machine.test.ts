@@ -1,10 +1,8 @@
-import {
-  GameStateMachine,
-  GameState,
-  GameEvent,
-  GameStateTransitionWaitTimes,
-} from '../../../src/game-states/game-state-machine';
+import { GameStateMachine } from '../../../src/game-states/game-state-machine';
 import { Game } from '../../../src/game';
+import { GameState } from '../../../src/enums/game-state';
+import { GameEvent } from '../../../src/enums/game-event';
+import { GameStateTransitionWaitTimes } from '../../../src/types/game-state-transition-wait-times';
 
 describe('initialization', () => {
   test('should throw an error upon transition the machine is not initialized', () => {

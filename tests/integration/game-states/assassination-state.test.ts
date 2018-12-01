@@ -1,6 +1,6 @@
 import { Game } from '../../../src/game';
 import { AssassinationState } from '../../../src/game-states/assassination-state';
-import { GameEvent } from '../../../src/game-states/game-state-machine';
+import { GameEvent } from '../../../src/enums/game-event';
 
 jest.mock('../../../src/players-manager');
 

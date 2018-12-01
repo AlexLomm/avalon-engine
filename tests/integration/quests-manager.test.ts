@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 import { Vote } from '../../src/vote';
-import { QuestsManager, QuestsManagerSerialized } from '../../src/quests-manager';
+import { QuestsManager } from '../../src/quests-manager';
 import { Quest } from '../../src/quest';
 import { LevelPreset } from '../../src/level-preset';
+import { QuestsManagerSerialized } from '../../src/types/quests-manager-serialized';
 
 function resolveQuestsTimes(manager: QuestsManager, voteValue: boolean, times: number) {
   _.times(times, () => {
