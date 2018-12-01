@@ -1,17 +1,10 @@
 import * as _ from 'lodash';
 import * as fromErrors from './errors';
-import { Player, PlayerSerialized } from './player';
+import { Player } from './player';
 import { LevelPreset } from './level-preset';
 import { RolesAssigner } from './roles-assigner';
-import { RoleId } from './configs/roles.config';
-
-export interface PlayersManagerSerialized {
-  collection: PlayerSerialized[];
-  proposedPlayerUsernames: string[];
-  leader: string;
-  isSubmitted: boolean;
-  victim: string;
-}
+import { PlayersManagerSerialized } from './types/players-manager-serialized';
+import { RoleId } from './enums/role-id';
 
 export class PlayersManager {
   private players: Player[]         = [];

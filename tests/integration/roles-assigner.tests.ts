@@ -1,12 +1,14 @@
 import * as _ from 'lodash';
 import { RolesAssigner } from '../../src/roles-assigner';
-import { Player } from '../../src/player';
-import { Loyalty, RoleId } from '../../src/configs/roles.config';
 import { LevelPreset } from '../../src/level-preset';
+import { Player } from '../../src/player';
+import { Loyalty } from '../../src/enums/loyalty';
+import { RoleId } from '../../src/enums/role-id';
+import { LevelPresetId } from '../../src/types/level-preset-id';
 
-const generateRolesAssigner = (playerCount: number): RolesAssigner => {
-  const players     = generatePlayers(playerCount);
-  const levelPreset = new LevelPreset(players.length);
+const generateRolesAssigner = (levelPresetId: LevelPresetId): RolesAssigner => {
+  const players     = generatePlayers(levelPresetId);
+  const levelPreset = new LevelPreset(players.length as LevelPresetId);
 
   return new RolesAssigner(players, levelPreset);
 };
@@ -21,7 +23,7 @@ const generatePlayers = (count: number): Player[] => {
 
 test('should have a correct number of good and evil players', () => {
   for (let j = 5; j < 10; j++) {
-    const assigner = generateRolesAssigner(5);
+    const assigner = generateRolesAssigner(j as LevelPresetId);
 
     let goodCount = 0;
     let evilCount = 0;
@@ -31,8 +33,8 @@ test('should have a correct number of good and evil players', () => {
       loyalty === Loyalty.Good ? goodCount++ : evilCount++;
     });
 
-    expect(new LevelPreset(j).getGoodCount()).toEqual(goodCount);
-    expect(new LevelPreset(j).getEvilCount()).toEqual(evilCount);
+    expect(new LevelPreset(j as LevelPresetId).getGoodCount()).toEqual(goodCount);
+    expect(new LevelPreset(j as LevelPresetId).getEvilCount()).toEqual(evilCount);
   }
 });
 
@@ -48,10 +50,9 @@ test('should assign every player a role', () => {
 test('should always assign default roles to players', () => {
   const assigner = generateRolesAssigner(5);
 
-  const players = assigner.assignRoles({
-    MERLIN: false,
-    ASSASSIN: false,
-  });
+  const players = assigner.assignRoles([
+    RoleId.Minion_1,
+  ]);
 
   expect(players.find((p: Player) => p.getRole().getId() === RoleId.Merlin)).toBeTruthy();
   expect(players.find((p: Player) => p.getRole().getId() === RoleId.Assassin)).toBeTruthy();

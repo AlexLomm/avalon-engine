@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
-import { PlayersManager } from '../../../src/players-manager';
-import { Player } from '../../../src/player';
-import { LevelPreset } from '../../../src/level-preset';
-import { RoleId } from '../../../src/configs/roles.config';
+import { PlayersManager } from '../../src/players-manager';
+import { Player } from '../../src/player';
+import { LevelPreset } from '../../src/level-preset';
+import { RoleId } from '../../src/enums/role-id';
+import { LevelPresetId } from '../../src/types/level-preset-id';
 
 export class PlayersManagerHelper {
   static addPlayersAndAssignRoles(manager: PlayersManager, number: number) {
@@ -15,7 +16,7 @@ export class PlayersManagerHelper {
   }
 
   static assignRoles(manager: PlayersManager) {
-    manager.assignRoles(new LevelPreset(manager.getAll().length));
+    manager.assignRoles(new LevelPreset(manager.getAll().length as LevelPresetId));
   }
 
   static getAssassin(manager: PlayersManager) {

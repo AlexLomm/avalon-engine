@@ -1,7 +1,8 @@
 import * as fromErrors from '../errors';
 import { BaseState } from './base-state';
 import { Game } from '../game';
-import { GameState, GameEvent } from './game-state-machine';
+import { GameState } from '../enums/game-state';
+import { GameEvent } from '../enums/game-event';
 
 export class TeamVotingState extends BaseState {
   protected resultsConcealed = true;

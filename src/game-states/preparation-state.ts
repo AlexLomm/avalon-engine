@@ -1,8 +1,10 @@
 import { Game } from '../game';
 import { Player } from '../player';
-import { RoleId } from '../configs/roles.config';
 import { BaseState } from './base-state';
-import { GameState, GameEvent } from './game-state-machine';
+import { LevelPresetId } from '../types/level-preset-id';
+import { RoleId } from '../enums/role-id';
+import { GameEvent } from '../enums/game-event';
+import { GameState } from '../enums/game-state';
 
 export class PreparationState extends BaseState {
   protected resultsConcealed = true;
@@ -16,7 +18,7 @@ export class PreparationState extends BaseState {
   }
 
   start(game: Game, roleIds: RoleId[]) {
-    const playerCount = game.getPlayersManager().getAll().length;
+    const playerCount = game.getPlayersManager().getAll().length as LevelPresetId;
     const levelPreset = game.getMetaData().init(playerCount);
 
     game.getPlayersManager().assignRoles(levelPreset, roleIds);

@@ -1,13 +1,9 @@
+import { RoleSerialized } from './types/role-serialized';
+import { RoleId } from './enums/role-id';
+import { Loyalty } from './enums/loyalty';
+import { rolesConfig } from './configs/roles.config';
+
 // TODO: cache roles
-import { Loyalty, rolesConfig, RoleId } from './configs/roles.config';
-
-export interface RoleSerialized {
-  id: string;
-  name: string;
-  description: string;
-  loyalty: string;
-}
-
 export class Role {
   id: RoleId;
   name: string;

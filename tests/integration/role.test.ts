@@ -1,5 +1,6 @@
 import { Role } from '../../src/role';
-import { RoleId, rolesConfig } from '../../src/configs/roles.config';
+import { rolesConfig } from '../../src/configs/roles.config';
+import { RoleId } from '../../src/enums/role-id';
 
 test('should get id', () => {
   const role = new Role(RoleId.Merlin);

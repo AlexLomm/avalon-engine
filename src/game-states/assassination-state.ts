@@ -1,6 +1,7 @@
 import { Game } from '../game';
 import { BaseState } from './base-state';
-import { GameState, GameEvent } from './game-state-machine';
+import { GameEvent } from '../enums/game-event';
+import { GameState } from '../enums/game-state';
 
 export class AssassinationState extends BaseState {
   protected resultsConcealed = true;

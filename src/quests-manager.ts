@@ -1,11 +1,8 @@
 import { LevelPreset } from './level-preset';
-import { Quest, QuestStatus, QuestSerialized } from './quest';
+import { Quest } from './quest';
 import { Vote } from './vote';
-
-export interface QuestsManagerSerialized {
-  collection: QuestSerialized[];
-  teamVotingRoundIndex: number;
-}
+import { QuestsManagerSerialized } from './types/quests-manager-serialized';
+import { QuestStatus } from './enums/quest-status';
 
 export class QuestsManager {
   private levelPreset: LevelPreset  = null;

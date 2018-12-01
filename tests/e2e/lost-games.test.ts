@@ -1,6 +1,6 @@
 import { Game } from '../../src/game';
-import { GameHelper } from '../integration/helpers/game.helper';
-import { RoleId } from '../../src/configs/roles.config';
+import { GameHelper } from '../helpers/game.helper';
+import { RoleId } from '../../src/enums/role-id';
 
 test('should serialize correctly', () => {
   jest.useFakeTimers();
@@ -93,6 +93,4 @@ test('should serialize correctly', () => {
   // every player should be revealed
   const unknownPlayers = serialized.players.collection.filter(p => p.role.id === RoleId.Unknown);
   expect(unknownPlayers.length).toStrictEqual(0);
-
-  console.log(JSON.stringify(game.serialize('user-1'), null, 2));
 });

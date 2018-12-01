@@ -1,4 +1,5 @@
-import { Vote, VoteSerialized } from '../../src/vote';
+import { Vote } from '../../src/vote';
+import { VoteSerialized } from '../../src/types/vote-serialized';
 
 test('should get vote', () => {
   const vote = new Vote('user-1', true);

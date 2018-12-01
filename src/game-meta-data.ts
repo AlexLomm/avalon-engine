@@ -1,24 +1,12 @@
 import * as crypto from 'crypto';
-import { LevelPreset, LevelPresetSerialized } from './level-preset';
+import { LevelPreset } from './level-preset';
 import { Player } from './player';
+import { GameMetaDataSerialized } from './types/game-meta-data-serialized';
+import { GameStatus } from './enums/game-status';
+import { LevelPresetId } from './types/level-preset-id';
+import { IIdentifiable } from './interfaces/identifiable';
 
-export interface GameMetaDataSerialized {
-  id: string;
-  createdAt: string;
-  startedAt: string;
-  finishedAt: string;
-  levelPreset: LevelPresetSerialized;
-  gameStatus: string;
-  gameCreator: string;
-}
-
-export enum GameStatus {
-  Unfinished = 'Unfinished',
-  Won        = 'Won',
-  Lost       = 'Lost',
-}
-
-export class GameMetaData {
+export class GameMetaData implements IIdentifiable {
   private id: string               = crypto.randomBytes(20).toString('hex');
   private createdAt: Date          = new Date();
   private startedAt: Date          = null;
@@ -27,6 +15,10 @@ export class GameMetaData {
   // TODO: rethink the simultaneous use of `finishedAt` and `gameStatus`
   private gameStatus: GameStatus   = GameStatus.Unfinished;
   private gameCreator: Player      = null;
+
+  getId(): string {
+    return this.id;
+  }
 
   getGameStatus() {
     return this.gameStatus;
@@ -38,9 +30,9 @@ export class GameMetaData {
     this.gameCreator = gameCreator;
   }
 
-  init(playerCount: number): LevelPreset {
+  init(levelPresetId: LevelPresetId): LevelPreset {
     this.startedAt   = new Date();
-    this.levelPreset = new LevelPreset(playerCount);
+    this.levelPreset = new LevelPreset(levelPresetId);
 
     return this.levelPreset;
   }

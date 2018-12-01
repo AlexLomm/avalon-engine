@@ -1,8 +1,9 @@
 import * as _ from 'lodash';
 import { Player } from './player';
 import { LevelPreset } from './level-preset';
-import { Loyalty, RoleId } from './configs/roles.config';
 import { Role } from './role';
+import { RoleId } from './enums/role-id';
+import { Loyalty } from './enums/loyalty';
 
 // TODO: promote to a service
 export class RolesAssigner {

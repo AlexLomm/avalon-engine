@@ -1,24 +1,17 @@
 import EventEmitter from 'events';
-import { PlayersManager, PlayersManagerSerialized } from './players-manager';
-import { QuestsManager, QuestsManagerSerialized } from './quests-manager';
+import { PlayersManager } from './players-manager';
+import { QuestsManager } from './quests-manager';
 import { PreparationState } from './game-states/preparation-state';
-import { RoleId } from './configs/roles.config';
 import { BaseState } from './game-states/base-state';
 import { Player } from './player';
-import { GameMetaData, GameMetaDataSerialized } from './game-meta-data';
-import { GameStateMachine, GameEvent, GameStateTransitionWaitTimes } from './game-states/game-state-machine';
+import { GameMetaData } from './game-meta-data';
+import { GameSerialized } from './types/game-serialized';
+import { RoleId } from './enums/role-id';
+import { GameEvent } from './enums/game-event';
+import { IGameClientApi } from './interfaces/game-client-api';
+import { GameStateMachine } from './game-states/game-state-machine';
 
-export interface GameSerialized {
-  meta: GameMetaDataSerialized;
-  players: PlayersManagerSerialized;
-  quests: QuestsManagerSerialized;
-}
-
-export interface GameConfig {
-  stateTransitionWaitTimes: GameStateTransitionWaitTimes
-}
-
-export class Game {
+export class Game implements IGameClientApi {
   constructor(
     private playersManager             = new PlayersManager(),
     private questsManager              = new QuestsManager(),
@@ -34,18 +27,6 @@ export class Game {
     });
   }
 
-  static create(config: GameConfig): Game {
-    return new Game(
-      new PlayersManager(),
-      new QuestsManager(),
-      new GameMetaData(),
-      new GameStateMachine(config.stateTransitionWaitTimes),
-      new PreparationState(),
-      new EventEmitter(),
-    );
-  }
-
-  // TODO: hide
   emit(event: GameEvent) {
     this.eventEmitter.emit(event);
   }
@@ -63,22 +44,18 @@ export class Game {
     this.state = state;
   }
 
-  // TODO: hide
   getPlayersManager(): PlayersManager {
     return this.playersManager;
   }
 
-  // TODO: hide
   getQuestsManager(): QuestsManager {
     return this.questsManager;
   }
 
-  // TODO: hide
   getMetaData(): GameMetaData {
     return this.metaData;
   }
 
-  // TODO: hide
   getFsm(): GameStateMachine {
     return this.fsm;
   }

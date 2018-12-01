@@ -1,8 +1,8 @@
 import { Game } from '../../../src/game';
-import { GameEvent } from '../../../src/game-states/game-state-machine';
 import { QuestVotingState } from '../../../src/game-states/quest-voting-state';
 import { PlayersManager } from '../../../src/players-manager';
 import { QuestsManager } from '../../../src/quests-manager';
+import { GameEvent } from '../../../src/enums/game-event';
 
 jest.mock('../../../src/players-manager');
 jest.mock('../../../src/quests-manager');
