@@ -11,6 +11,7 @@ import { GameConfig } from './types/game-config';
 import { GameSerialized } from './types/game-serialized';
 import { RoleId } from './enums/role-id';
 import { GameEvent } from './enums/game-event';
+import { IIdentifiable } from './interfaces/identifiable';
 
 const defaultConfig: GameConfig = {
   stateTransitionWaitTimes: {
@@ -20,7 +21,7 @@ const defaultConfig: GameConfig = {
   },
 };
 
-export class GameClient implements IGameClientApi {
+export class GameClient implements IGameClientApi, IIdentifiable {
   private game: Game;
 
   constructor(config: GameConfig = defaultConfig) {
@@ -32,6 +33,10 @@ export class GameClient implements IGameClientApi {
       new PreparationState(),
       new EventEmitter(),
     );
+  }
+
+  getId() {
+    return this.game.getMetaData().getId();
   }
 
   on(event: GameEvent, cb: () => void) {
