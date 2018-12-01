@@ -1,7 +1,7 @@
-import * as fromErrors from '../src/errors';
-import { PlayersManager } from '../src/players-manager';
-import { Player } from '../src/player';
-import { RoleId } from '../src/configs/roles.config';
+import * as fromErrors from '../../src/errors';
+import { PlayersManager } from '../../src/players-manager';
+import { Player } from '../../src/player';
+import { RoleId } from '../../src/configs/roles.config';
 import { PlayersManagerHelper } from './helpers/players-manager.helper';
 
 let manager: PlayersManager;

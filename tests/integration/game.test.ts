@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
-import * as fromErrors from '../src/errors';
-import { Game } from '../src/game';
-import { PlayersManager } from '../src/players-manager';
-import { QuestsManager } from '../src/quests-manager';
-import { Player } from '../src/player';
-import { PreparationState } from '../src/game-states/preparation-state';
-import { GameMetaData, GameStatus } from '../src/game-meta-data';
-import { GameStateMachine, GameState, GameEvent } from '../src/game-states/game-state-machine';
+import * as fromErrors from '../../src/errors';
+import { Game } from '../../src/game';
+import { PlayersManager } from '../../src/players-manager';
+import { QuestsManager } from '../../src/quests-manager';
+import { Player } from '../../src/player';
+import { PreparationState } from '../../src/game-states/preparation-state';
+import { GameMetaData, GameStatus } from '../../src/game-meta-data';
+import { GameStateMachine, GameState, GameEvent } from '../../src/game-states/game-state-machine';
 import { GameHelper } from './helpers/game.helper';
 import { PlayersManagerHelper } from './helpers/players-manager.helper';
 
@@ -88,13 +88,13 @@ describe('post "reveal roles" phase', () => {
     game           = new Game(
       playersManager,
       questsManager,
-      new PreparationState(),
       new GameMetaData(),
       new GameStateMachine({
         afterTeamProposition: 0,
         afterTeamVoting: 0,
         afterQuestVoting: 0,
       }),
+      new PreparationState(),
     );
 
     GameHelper.fillPlayers(game, 5);
@@ -491,13 +491,13 @@ describe('serialization', () => {
     game           = new Game(
       playersManager,
       questsManager,
-      new PreparationState(),
       new GameMetaData(),
       new GameStateMachine({
         afterTeamProposition: 0,
         afterTeamVoting: 0,
         afterQuestVoting: 0,
       }),
+      new PreparationState(),
     );
   });
 
@@ -507,7 +507,7 @@ describe('serialization', () => {
     const expected = {
       meta: game.getMetaData().serialize(),
       quests: questsManager.serialize(false),
-      players: playersManager.serialize('user-1'),
+      players: playersManager.serialize('user-1', false),
     };
 
     const actual = game.serialize('user-1');
@@ -536,13 +536,13 @@ describe('event emission', () => {
     game           = new Game(
       playersManager,
       questsManager,
-      new PreparationState(),
       new GameMetaData(),
       new GameStateMachine({
         afterTeamProposition: 0,
         afterTeamVoting: 0,
         afterQuestVoting: 0,
       }),
+      new PreparationState(),
     );
   });
 

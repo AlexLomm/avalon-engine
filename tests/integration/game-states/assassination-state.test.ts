@@ -1,8 +1,8 @@
-import { Game } from '../../src/game';
-import { AssassinationState } from '../../src/game-states/assassination-state';
-import { GameEvent } from '../../src/game-states/game-state-machine';
+import { Game } from '../../../src/game';
+import { AssassinationState } from '../../../src/game-states/assassination-state';
+import { GameEvent } from '../../../src/game-states/game-state-machine';
 
-jest.mock('../../src/players-manager');
+jest.mock('../../../src/players-manager');
 
 test('should emit an event upon assassination', () => {
   const game = new Game();

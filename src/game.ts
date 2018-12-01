@@ -6,7 +6,7 @@ import { RoleId } from './configs/roles.config';
 import { BaseState } from './game-states/base-state';
 import { Player } from './player';
 import { GameMetaData, GameMetaDataSerialized } from './game-meta-data';
-import { GameStateMachine, GameEvent } from './game-states/game-state-machine';
+import { GameStateMachine, GameEvent, GameStateTransitionWaitTimes } from './game-states/game-state-machine';
 
 export interface GameSerialized {
   meta: GameMetaDataSerialized;
@@ -14,13 +14,17 @@ export interface GameSerialized {
   quests: QuestsManagerSerialized;
 }
 
+export interface GameConfig {
+  stateTransitionWaitTimes: GameStateTransitionWaitTimes
+}
+
 export class Game {
   constructor(
     private playersManager             = new PlayersManager(),
     private questsManager              = new QuestsManager(),
-    private state: BaseState           = new PreparationState(),
     private metaData: GameMetaData     = new GameMetaData(),
     private fsm: GameStateMachine      = new GameStateMachine(),
+    private state: BaseState           = new PreparationState(),
     private eventEmitter: EventEmitter = new EventEmitter(),
   ) {
     this.fsm.init(this);
@@ -30,6 +34,18 @@ export class Game {
     });
   }
 
+  static create(config: GameConfig): Game {
+    return new Game(
+      new PlayersManager(),
+      new QuestsManager(),
+      new GameMetaData(),
+      new GameStateMachine(config.stateTransitionWaitTimes),
+      new PreparationState(),
+      new EventEmitter(),
+    );
+  }
+
+  // TODO: hide
   emit(event: GameEvent) {
     this.eventEmitter.emit(event);
   }
@@ -42,22 +58,27 @@ export class Game {
     this.eventEmitter.off(event, cb);
   }
 
+  // TODO: cache states
   setState(state: BaseState) {
     this.state = state;
   }
 
+  // TODO: hide
   getPlayersManager(): PlayersManager {
     return this.playersManager;
   }
 
+  // TODO: hide
   getQuestsManager(): QuestsManager {
     return this.questsManager;
   }
 
+  // TODO: hide
   getMetaData(): GameMetaData {
     return this.metaData;
   }
 
+  // TODO: hide
   getFsm(): GameStateMachine {
     return this.fsm;
   }
