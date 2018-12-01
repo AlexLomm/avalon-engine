@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
-import { RolesAssigner } from '../src/roles-assigner';
-import { Player } from '../src/player';
-import { Loyalty, RoleId } from '../src/configs/roles.config';
-import { LevelPreset } from '../src/level-preset';
+import { RolesAssigner } from '../../src/roles-assigner';
+import { Player } from '../../src/player';
+import { Loyalty, RoleId } from '../../src/configs/roles.config';
+import { LevelPreset } from '../../src/level-preset';
 
 const generateRolesAssigner = (playerCount: number): RolesAssigner => {
   const players     = generatePlayers(playerCount);

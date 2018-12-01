@@ -1,11 +1,11 @@
-import { Game } from '../../src/game';
-import { GameEvent } from '../../src/game-states/game-state-machine';
-import { PlayersManager } from '../../src/players-manager';
-import { TeamVotingState } from '../../src/game-states/team-voting-state';
-import { QuestsManager } from '../../src/quests-manager';
+import { Game } from '../../../src/game';
+import { GameEvent } from '../../../src/game-states/game-state-machine';
+import { PlayersManager } from '../../../src/players-manager';
+import { TeamVotingState } from '../../../src/game-states/team-voting-state';
+import { QuestsManager } from '../../../src/quests-manager';
 
-jest.mock('../../src/players-manager');
-jest.mock('../../src/quests-manager');
+jest.mock('../../../src/players-manager');
+jest.mock('../../../src/quests-manager');
 
 test('should emit an event upon team proposition', () => {
   const playersManager                = new PlayersManager();

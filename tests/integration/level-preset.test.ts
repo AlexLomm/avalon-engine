@@ -1,5 +1,5 @@
-import * as fromErrors from '../src/errors';
-import { LevelPreset } from '../src/level-preset';
+import * as fromErrors from '../../src/errors';
+import { LevelPreset } from '../../src/level-preset';
 
 test('should throw if the specified number of players is incorrect', () => {
   expect(() => new LevelPreset(100))

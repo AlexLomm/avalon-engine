@@ -1,6 +1,6 @@
-import { GameMetaData, GameStatus } from '../src/game-meta-data';
-import { LevelPreset } from '../src/level-preset';
-import { Player } from '../src/player';
+import { GameMetaData, GameStatus } from '../../src/game-meta-data';
+import { LevelPreset } from '../../src/level-preset';
+import { Player } from '../../src/player';
 
 test('should have an id and creation date set upon initialization', () => {
   const gameMeta = new GameMetaData();

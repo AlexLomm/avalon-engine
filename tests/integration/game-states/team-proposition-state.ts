@@ -1,9 +1,9 @@
-import { Game } from '../../src/game';
-import { GameEvent } from '../../src/game-states/game-state-machine';
-import { PlayersManager } from '../../src/players-manager';
-import { TeamPropositionState } from '../../src/game-states/team-proposition-state';
+import { Game } from '../../../src/game';
+import { GameEvent } from '../../../src/game-states/game-state-machine';
+import { PlayersManager } from '../../../src/players-manager';
+import { TeamPropositionState } from '../../../src/game-states/team-proposition-state';
 
-jest.mock('../../src/players-manager');
+jest.mock('../../../src/players-manager');
 
 test('should emit an event upon team proposition', () => {
   const playersManager                       = new PlayersManager();

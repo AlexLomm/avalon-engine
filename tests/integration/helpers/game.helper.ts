@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import { Game } from '../../src/game';
-import { Player } from '../../src/player';
+import { Game } from '../../../src/game';
+import { Player } from '../../../src/player';
 import { PlayersManagerHelper } from './players-manager.helper';
 
 export class GameHelper {

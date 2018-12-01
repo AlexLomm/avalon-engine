@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
-import * as fromErrors from '../src/errors';
-import { Game } from '../src/game';
-import { PlayersManager } from '../src/players-manager';
-import { QuestsManager } from '../src/quests-manager';
-import { Player } from '../src/player';
-import { PreparationState } from '../src/game-states/preparation-state';
-import { GameMetaData, GameStatus } from '../src/game-meta-data';
-import { GameStateMachine, GameState, GameEvent } from '../src/game-states/game-state-machine';
+import * as fromErrors from '../../src/errors';
+import { Game } from '../../src/game';
+import { PlayersManager } from '../../src/players-manager';
+import { QuestsManager } from '../../src/quests-manager';
+import { Player } from '../../src/player';
+import { PreparationState } from '../../src/game-states/preparation-state';
+import { GameMetaData, GameStatus } from '../../src/game-meta-data';
+import { GameStateMachine, GameState, GameEvent } from '../../src/game-states/game-state-machine';
 import { GameHelper } from './helpers/game.helper';
 import { PlayersManagerHelper } from './helpers/players-manager.helper';
 

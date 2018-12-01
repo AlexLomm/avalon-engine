@@ -1,7 +1,7 @@
-import { Player } from '../src/player';
-import { RoleId } from '../src/configs/roles.config';
-import { Role } from '../src/role';
-import { Vote } from '../src/vote';
+import { Player } from '../../src/player';
+import { RoleId } from '../../src/configs/roles.config';
+import { Role } from '../../src/role';
+import { Vote } from '../../src/vote';
 
 let player: Player;
 beforeEach(() => {

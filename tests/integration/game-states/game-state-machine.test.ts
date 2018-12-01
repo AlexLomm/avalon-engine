@@ -3,8 +3,8 @@ import {
   GameState,
   GameEvent,
   GameStateTransitionWaitTimes,
-} from '../../src/game-states/game-state-machine';
-import { Game } from '../../src/game';
+} from '../../../src/game-states/game-state-machine';
+import { Game } from '../../../src/game';
 
 describe('initialization', () => {
   test('should throw an error upon transition the machine is not initialized', () => {

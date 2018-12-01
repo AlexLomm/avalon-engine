@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
-import { PlayersManager } from '../../src/players-manager';
-import { Player } from '../../src/player';
-import { LevelPreset } from '../../src/level-preset';
-import { RoleId } from '../../src/configs/roles.config';
+import { PlayersManager } from '../../../src/players-manager';
+import { Player } from '../../../src/player';
+import { LevelPreset } from '../../../src/level-preset';
+import { RoleId } from '../../../src/configs/roles.config';
 
 export class PlayersManagerHelper {
   static addPlayersAndAssignRoles(manager: PlayersManager, number: number) {
@@ -31,7 +31,7 @@ export class PlayersManagerHelper {
   static getProposedPlayers(manager: PlayersManager) {
     const username = manager.getAll()[0].getUsername();
 
-    return manager.serialize(username)
+    return manager.serialize(username, false)
       .proposedPlayerUsernames
       .map(username => manager.getAll().find(p => p.getUsername() === username));
   }
