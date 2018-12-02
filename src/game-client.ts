@@ -5,7 +5,6 @@ import { PlayersManager } from './players-manager';
 import { QuestsManager } from './quests-manager';
 import { GameMetaData } from './game-meta-data';
 import { PreparationState } from './game-states/preparation-state';
-import { Player } from './player';
 import { IGameClientApi } from './interfaces/game-client-api';
 import { GameConfig } from './types/game-config';
 import { GameSerialized } from './types/game-serialized';
@@ -47,8 +46,8 @@ export class GameClient implements IGameClientApi, IIdentifiable {
     this.game.off(event, cb);
   }
 
-  addPlayer(player: Player) {
-    this.game.addPlayer(player);
+  addPlayer(username: string) {
+    this.game.addPlayer(username);
   }
 
   start(roleIds: RoleId[] = []) {

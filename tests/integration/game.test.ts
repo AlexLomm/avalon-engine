@@ -27,7 +27,7 @@ describe('game start', () => {
 
     jest.spyOn(game.getMetaData(), 'setCreatorOnce');
 
-    game.addPlayer(new Player('user-1'));
+    game.addPlayer('user-1');
 
     expect(game.getMetaData().setCreatorOnce).toBeCalled();
   });
@@ -35,18 +35,18 @@ describe('game start', () => {
   test('should not add a player when the game is started', () => {
     const game = new Game();
 
-    _.times(5, (i) => game.addPlayer(new Player(`user-${i}`)));
+    _.times(5, (i) => game.addPlayer(`user-${i}`));
 
     game.start();
 
-    expect(() => game.addPlayer(new Player('user-6')))
+    expect(() => game.addPlayer('user-6'))
       .toThrow(fromErrors.AlreadyStartedGameError);
   });
 
   test('should not start the game if the player count is not enough', () => {
     const game = new Game();
 
-    _.times(4, (i) => game.addPlayer(new Player(`user-${i}`)));
+    _.times(4, (i) => game.addPlayer(`user-${i}`));
 
     expect(() => game.start()).toThrow(fromErrors.PlayersAmountIncorrectError);
   });
@@ -56,7 +56,7 @@ describe('game start', () => {
     const game           = new Game(playersManager);
     jest.spyOn(playersManager, 'assignRoles');
 
-    _.times(5, (i) => game.addPlayer(new Player(`user-${i}`)));
+    _.times(5, (i) => game.addPlayer(`user-${i}`));
 
     expect(playersManager.assignRoles).toBeCalledTimes(0);
 
@@ -70,7 +70,7 @@ describe('game start', () => {
     const game          = new Game(new PlayersManager(), questsManager);
     jest.spyOn(questsManager, 'init');
 
-    _.times(5, (i) => game.addPlayer(new Player(`user-${i}`)));
+    _.times(5, (i) => game.addPlayer(`user-${i}`));
 
     expect(questsManager.init).toBeCalledTimes(0);
 
@@ -505,7 +505,7 @@ describe('serialization', () => {
   });
 
   test('should correctly serialize the game in it\'s initial state', () => {
-    game.addPlayer(new Player('user-1'));
+    game.addPlayer('user-1');
 
     const expected = {
       meta: game.getMetaData().serialize(),
@@ -521,7 +521,7 @@ describe('serialization', () => {
   test('should serialize the quests with the appropriate flag set', () => {
     jest.spyOn(game.getQuestsManager(), 'serialize');
 
-    game.addPlayer(new Player('user-1'));
+    game.addPlayer('user-1');
 
     game.serialize('user-1');
 
@@ -554,7 +554,7 @@ describe('event emission', () => {
 
     game.on(GameEvent.StateChange, () => i++);
 
-    game.addPlayer(new Player('user-1'));
+    game.addPlayer('user-1');
 
     expect(i).toStrictEqual(1);
   });
@@ -566,7 +566,7 @@ describe('event emission', () => {
     game.on(GameEvent.StateChange, listener);
     game.off(GameEvent.StateChange, listener);
 
-    game.addPlayer(new Player('user-1'));
+    game.addPlayer('user-1');
 
     expect(i).toStrictEqual(0);
   });

@@ -3,7 +3,6 @@ import { PlayersManager } from './players-manager';
 import { QuestsManager } from './quests-manager';
 import { PreparationState } from './game-states/preparation-state';
 import { BaseState } from './game-states/base-state';
-import { Player } from './player';
 import { GameMetaData } from './game-meta-data';
 import { GameSerialized } from './types/game-serialized';
 import { RoleId } from './enums/role-id';
@@ -60,8 +59,8 @@ export class Game implements IGameClientApi {
     return this.fsm;
   }
 
-  addPlayer(player: Player) {
-    this.state.addPlayer(this, player);
+  addPlayer(username: string) {
+    this.state.addPlayer(this, username);
   }
 
   start(roleIds: RoleId[] = []) {

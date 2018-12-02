@@ -1,6 +1,5 @@
 import * as fromErrors from '../errors';
 import { Game } from '../game';
-import { Player } from '../player';
 import { RoleId } from '../enums/role-id';
 import { GameSerialized } from '../types/game-serialized';
 
@@ -8,7 +7,7 @@ export abstract class BaseState {
   protected abstract resultsConcealed: boolean = true;
   protected abstract rolesConcealed: boolean   = true;
 
-  addPlayer(game: Game, player: Player): void {
+  addPlayer(game: Game, username: string): void {
     throw new fromErrors.AlreadyStartedGameError();
   }
 
