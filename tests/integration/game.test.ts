@@ -3,7 +3,6 @@ import * as fromErrors from '../../src/errors';
 import { Game } from '../../src/game';
 import { PlayersManager } from '../../src/players-manager';
 import { QuestsManager } from '../../src/quests-manager';
-import { Player } from '../../src/player';
 import { PreparationState } from '../../src/game-states/preparation-state';
 import { GameMetaData } from '../../src/game-meta-data';
 import { GameStateMachine } from '../../src/game-states/game-state-machine';

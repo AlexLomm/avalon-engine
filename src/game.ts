@@ -9,8 +9,9 @@ import { RoleId } from './enums/role-id';
 import { GameEvent } from './enums/game-event';
 import { IGameClientApi } from './interfaces/game-client-api';
 import { GameStateMachine } from './game-states/game-state-machine';
+import { IEventEmitter } from './interfaces/event-emitter';
 
-export class Game implements IGameClientApi {
+export class Game implements IGameClientApi, IEventEmitter {
   constructor(
     private playersManager             = new PlayersManager(),
     private questsManager              = new QuestsManager(),

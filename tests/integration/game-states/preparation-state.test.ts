@@ -1,6 +1,5 @@
 import { Game } from '../../../src/game';
 import { PreparationState } from '../../../src/game-states/preparation-state';
-import { Player } from '../../../src/player';
 import { GameEvent } from '../../../src/enums/game-event';
 
 jest.mock('../../../src/players-manager');
@@ -13,7 +12,7 @@ test('should emit an event upon adding a player', () => {
 
   jest.spyOn(game, 'emit');
 
-  state.addPlayer(game, new Player('user-1'));
+  state.addPlayer(game, 'user-1');
 
   expect(game.emit).toBeCalledTimes(1);
   expect(game.emit).toBeCalledWith(GameEvent.StateChange);
