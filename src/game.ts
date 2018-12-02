@@ -32,11 +32,11 @@ export class Game implements IGameClientApi {
   }
 
   on(event: GameEvent, cb: () => void) {
-    this.eventEmitter.on(event, cb);
+    this.eventEmitter.addListener(event, cb);
   }
 
   off(event: GameEvent, cb: () => void) {
-    this.eventEmitter.off(event, cb);
+    this.eventEmitter.removeListener(event, cb);
   }
 
   // TODO: cache states

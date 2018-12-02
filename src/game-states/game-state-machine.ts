@@ -210,10 +210,10 @@ export class GameStateMachine implements IEventListener {
   }
 
   on(gameEvent: GameEvent, cb: () => void) {
-    this.eventEmitter.on(gameEvent, cb);
+    this.eventEmitter.addListener(gameEvent, cb);
   }
 
   off(gameEvent: GameEvent, cb: () => void) {
-    this.eventEmitter.off(gameEvent, cb);
+    this.eventEmitter.removeListener(gameEvent, cb);
   }
 }
