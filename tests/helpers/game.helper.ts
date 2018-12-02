@@ -51,6 +51,6 @@ export class GameHelper {
   }
 
   static fillPlayers(game: Game, count: number) {
-    _.times(count, (i) => game.addPlayer(new Player(`user-${i}`)));
+    _.times(count, (i) => game.addPlayer(`user-${i}`));
   }
 }

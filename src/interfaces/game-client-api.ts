@@ -1,11 +1,10 @@
-import { Player } from '../player';
 import { GameSerialized } from '../types/game-serialized';
 import { IEventListener } from './event-listener';
 import { RoleId } from '../enums/role-id';
 
 // TODO: split into state-specific interfaces
 export interface IGameClientApi extends IEventListener {
-  addPlayer(player: Player): void;
+  addPlayer(username: string): void;
 
   start(roleIds: RoleId[]): void;
 
