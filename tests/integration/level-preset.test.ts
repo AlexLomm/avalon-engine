@@ -39,9 +39,9 @@ test('should be serialized', () => {
 });
 
 test('should return a null object if called with -1 parameter', () => {
-  let levelPreset: LevelPreset;
+  expect(() => new LevelPreset(-1)).not.toThrow();
 
-  expect(() => levelPreset = new LevelPreset(-1)).not.toThrow();
+  const levelPreset = new LevelPreset(-1);
 
   expect(levelPreset.getGoodCount()).toStrictEqual(null);
   expect(levelPreset.getEvilCount()).toStrictEqual(null);
