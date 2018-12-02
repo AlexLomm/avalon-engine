@@ -368,7 +368,7 @@ describe('assassination', () => {
     expect(wasMerlin).toBeTruthy();
   });
 
-  test('should return false if the assassination was unsucsessful', () => {
+  test('should return false if the assassination was unsuccessful', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
     const assassin  = PlayersManagerHelper.getAssassin(manager);

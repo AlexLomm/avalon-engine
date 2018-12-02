@@ -1,6 +1,6 @@
 {
   "name": "avalon-engine",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "This is an engine for playing the popular \"The Resistance: Avalon\" game.",
   "files": [
     "dist/**/*"
@@ -10,6 +10,7 @@
   "scripts": {
     "test": "npx jest",
     "build": "tsc",
+    "docs": "typedoc --out ./docs/ ./src/ --name \"Avalon Engine\" --target ES5 --theme minimal; cp jekyll.config.yml ./docs/_config.yml; touch ./docs/.nojekyll",
     "prepare": "npm run build",
     "prepublishOnly": "npm test"
   },
