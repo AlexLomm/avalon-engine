@@ -1,15 +1,23 @@
 {
   "name": "avalon-engine",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "This is an engine for playing the popular \"The Resistance: Avalon\" game.",
-  "main": "index.js",
+  "files": [
+    "dist/**/*"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "npx jest"
+    "test": "npx jest",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test"
   },
-  "author": "Alex Lomia",
+  "author": "Alex Lomia <alexlom95@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "typestate": "^1.0.6"
   },
   "repository": {
     "type": "git",
@@ -24,6 +32,11 @@
     "resistance avalon"
   ],
   "devDependencies": {
-    "jest": "^23.6.0"
+    "@types/jest": "^23.3.9",
+    "@types/lodash": "^4.14.118",
+    "@types/node": "^10.12.9",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.4",
+    "typescript": "^3.1.6"
   }
 }
