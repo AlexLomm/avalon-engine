@@ -18,12 +18,12 @@ test('should have an id and creation date set upon initialization', () => {
 test('should set a creator once', () => {
   const gameMeta = new GameMetaData();
 
-  expect(gameMeta.serialize().gameCreator).toBeFalsy();
+  expect(gameMeta.serialize().gameCreatorId).toBeFalsy();
 
   gameMeta.setCreatorOnce(new Player('user-1'));
   gameMeta.setCreatorOnce(new Player('user-2'));
 
-  expect(gameMeta.serialize().gameCreator).toStrictEqual('user-1');
+  expect(gameMeta.serialize().gameCreatorId).toStrictEqual('user-1');
 });
 
 test('should set an appropriate level preset', () => {
@@ -66,7 +66,7 @@ test('should contain the expected keys', () => {
     'createdAt',
     'levelPreset',
     'gameStatus',
-    'gameCreator',
+    'gameCreatorId',
     'startedAt',
     'finishedAt',
   ].sort();

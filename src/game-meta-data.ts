@@ -51,7 +51,7 @@ export class GameMetaData implements IIdentifiable {
       finishedAt: this.finishedAt ? this.finishedAt.toString() : null,
       levelPreset: this.levelPreset.serialize(),
       gameStatus: this.gameStatus,
-      gameCreator: this.gameCreator ? this.gameCreator.getId() : null,
+      gameCreatorId: this.gameCreator ? this.gameCreator.getId() : null,
     };
   }
 }

@@ -93,11 +93,11 @@ export class Quest {
   private majorityApproved() {
     const currentRound = this.getCurrentTeamVotingRound();
 
-    const failsCount = currentRound.reduce(
+    const rejectsCount = currentRound.reduce(
       (acc, vote) => vote.getValue() ? acc : acc + 1, 0,
     );
 
-    return failsCount < Math.ceil(currentRound.length / 2);
+    return rejectsCount < Math.ceil(currentRound.length / 2);
   }
 
   teamVotingAllowed() {
