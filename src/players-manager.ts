@@ -189,9 +189,9 @@ export class PlayersManager {
     return {
       collection: this.serializePlayers(forPlayer, rolesConcealed),
       proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
-      leader: PlayersManager.getUsernameOrNull(this.getLeader()),
+      leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
-      victim: PlayersManager.getUsernameOrNull(this.victim),
+      victimUsername: PlayersManager.getUsernameOrNull(this.victim),
     };
   }
 

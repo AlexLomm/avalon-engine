@@ -3,7 +3,7 @@ import { PlayerSerialized } from './player-serialized';
 export type PlayersManagerSerialized = {
   collection: PlayerSerialized[];
   proposedPlayerUsernames: string[];
-  leader: string;
+  leaderUsername: string;
   isSubmitted: boolean;
-  victim: string;
+  victimUsername: string;
 }
