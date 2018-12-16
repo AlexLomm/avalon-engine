@@ -8,12 +8,12 @@ export class TeamVotingState extends BaseState {
   protected resultsConcealed = true;
   protected rolesConcealed   = true;
 
-  voteForTeam(game: Game, username: string, voteValue: boolean) {
-    if (!game.getPlayersManager().teamVotingAllowedFor(username)) {
+  voteForTeam(game: Game, id: string, voteValue: boolean) {
+    if (!game.getPlayersManager().teamVotingAllowedFor(id)) {
       throw new fromErrors.DeniedTeamVotingError();
     }
 
-    this.vote(game, username, voteValue);
+    this.vote(game, id, voteValue);
 
     if (game.getQuestsManager().teamVotingSucceeded()) {
       game.getFsm().transitionTo(GameState.QuestVoting);
@@ -31,8 +31,8 @@ export class TeamVotingState extends BaseState {
   }
 
   // TODO: dry up
-  private vote(game: Game, username: string, voteValue: boolean) {
-    const vote = game.getPlayersManager().generateVote(username, voteValue);
+  private vote(game: Game, id: string, voteValue: boolean) {
+    const vote = game.getPlayersManager().generateVote(id, voteValue);
 
     game.getQuestsManager().addVote(vote);
   }

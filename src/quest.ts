@@ -150,7 +150,7 @@ export class Quest {
     const votes = this.getCurrentTeamVotingRound();
 
     return resultsConcealed
-      ? votes.map(v => new Vote(v.getUsername(), null).serialize())
+      ? votes.map(v => new Vote(v.getId(), null).serialize())
       : votes.map(v => v.serialize());
   }
 
@@ -158,7 +158,7 @@ export class Quest {
     if (votesOmitted) return [];
 
     if (resultsConcealed) {
-      return this.questVotes.map((v) => new Vote(v.getUsername(), null).serialize());
+      return this.questVotes.map((v) => new Vote(v.getId(), null).serialize());
     }
 
     const votes = this.questVotes.map(v => new Vote(null, v.getValue()));

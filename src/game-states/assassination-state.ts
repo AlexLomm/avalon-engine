@@ -7,17 +7,17 @@ export class AssassinationState extends BaseState {
   protected resultsConcealed = true;
   protected rolesConcealed   = true;
 
-  toggleVictimProposition(game: Game, assassinsUsername: string, victimsUsername: string) {
+  toggleVictimProposition(game: Game, assassinsId: string, victimsId: string) {
     game.getPlayersManager().toggleVictimProposition(
-      assassinsUsername,
-      victimsUsername,
+      assassinsId,
+      victimsId,
     );
 
     game.emit(GameEvent.StateChange);
   }
 
-  assassinate(game: Game, assassinsUsername: string) {
-    const state = game.getPlayersManager().assassinate(assassinsUsername)
+  assassinate(game: Game, assassinsId: string) {
+    const state = game.getPlayersManager().assassinate(assassinsId)
       ? GameState.GameLost
       : GameState.GameWon;
 

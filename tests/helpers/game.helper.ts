@@ -5,14 +5,14 @@ import { PlayersManagerHelper } from './players-manager.helper';
 export class GameHelper {
   static passQuestsWithResults(game: Game, results: boolean[] = []) {
     results.forEach((result: boolean) => {
-      const usernames: string[] = [];
+      const ids: string[] = [];
 
       _.times(
         game.getQuestsManager().getCurrentQuest().getVotesNeededCount(),
-        (i) => usernames.push(`user-${i}`),
+        (i) => ids.push(`user-${i}`),
       );
 
-      GameHelper.proposeAndSubmitTeam(game, usernames);
+      GameHelper.proposeAndSubmitTeam(game, ids);
 
       GameHelper.voteAllForTeam(game, true);
 
@@ -20,33 +20,33 @@ export class GameHelper {
     });
   }
 
-  static proposeAndSubmitTeam(game: Game, usernames: string[] = []) {
-    const leaderUsername = game.getPlayersManager().getLeader().getUsername();
+  static proposeAndSubmitTeam(game: Game, ids: string[] = []) {
+    const leaderId = game.getPlayersManager().getLeader().getId();
 
-    GameHelper.proposePlayers(game, usernames);
+    GameHelper.proposePlayers(game, ids);
 
-    game.submitTeam(leaderUsername);
+    game.submitTeam(leaderId);
   }
 
-  static proposePlayers(game: Game, usernames: string[] = []) {
-    const leaderUsername = game.getPlayersManager().getLeader().getUsername();
+  static proposePlayers(game: Game, ids: string[] = []) {
+    const leaderId = game.getPlayersManager().getLeader().getId();
 
-    usernames.forEach((username) => {
-      game.toggleTeammateProposition(leaderUsername, username);
+    ids.forEach((id) => {
+      game.toggleTeammateProposition(leaderId, id);
     });
   }
 
   static voteAllForTeam(game: Game, voteValue: boolean) {
     game.getPlayersManager()
       .getAll()
-      .forEach(p => game.voteForTeam(p.getUsername(), voteValue));
+      .forEach(p => game.voteForTeam(p.getId(), voteValue));
   }
 
   static voteAllForQuest(game: Game, voteValue: boolean) {
     const manager = game.getPlayersManager();
 
     PlayersManagerHelper.getProposedPlayers(manager)
-      .forEach(p => game.voteForQuest(p.getUsername(), voteValue));
+      .forEach(p => game.voteForQuest(p.getId(), voteValue));
   }
 
   static fillPlayers(game: Game, count: number) {

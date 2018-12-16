@@ -48,9 +48,9 @@ game.getId();
 Add players to the game:
 
 ```javascript
-// Adds the player with the `username-1` to the game. Adding players
+// Adds the player with the `id-1` to the game. Adding players
 // to the game is only allowed before the game is started.
-game.addPlayer('username-1');
+game.addPlayer('id-1');
 ```
 
 Start the game:
@@ -67,20 +67,20 @@ Propose a player for the team:
 
 ```javascript
 // Only the leader is allowed to propose a player.
-const leaderUsername = 'username-1';
+const leaderId = 'id-1';
 
 // Any player can be proposed for the team.
-const anyPlayerUsername = 'username-5';
+const anyPlayerId = 'id-5';
 
 // Proposes a player to be included in the team. 
-game.toggleTeammateProposition(leaderUsername, anyPlayerUsername);
+game.toggleTeammateProposition(leaderId, anyPlayerId);
 ```
 
 Finalize the proposed players as a team:
 
 ```javascript
 // Only the leader is allowed to submit the team.
-const leaderUsername = 'username-1';
+const leaderId = 'id-1';
 
 // Finalizes the team members. The game then: 
 //   - transitions to the "Frozen State" (Read-only mode)
@@ -89,21 +89,21 @@ const leaderUsername = 'username-1';
 //     - transitions to the team voting phase, or
 //     - bypasses the team voting phase, transitioning straight to the
 //     quest voting phase.
-game.submitTeam(leaderUsername);
+game.submitTeam(leaderId);
 ```
 
 Vote for the proposed team:
 
 ```javascript
 // Any player can either approve or reject the proposed team.
-const anyPlayerUsername = 'username-3';
+const anyPlayerId = 'id-3';
 
 // After the voting concludes, the game will:
 //   - transition to the "Frozen State"
 //   - after the timeout (specified above), depending on the 
 //   results, the game will transition to either the quest voting 
 //   or the team proposition state. 
-game.voteForTeam(anyPlayerUsername, true);
+game.voteForTeam(anyPlayerId, true);
 ```
 
 Vote for the current quest:
@@ -111,7 +111,7 @@ Vote for the current quest:
 ```javascript
 // Only the *proposed players* are allowed to cast either a positive
 // or a negative vote.
-const proposedPlayerUsername = 'username-3';
+const proposedPlayerId = 'id-3';
 
 // Can only be called during the "quest voting" phase. If there are
 // enough `fail` votes - the quest fails, otherwise - it succeeds. 
@@ -121,44 +121,44 @@ const proposedPlayerUsername = 'username-3';
 //   - the game transitions into the "Frozen State":
 //     - after the timeout it returns to the team proposition state.
 //     - after the timeout it proceeds to the assassination phase.
-game.voteForQuest(proposedPlayerUsername, true);
+game.voteForQuest(proposedPlayerId, true);
 ```
 
 Toggle victim proposition:
 
 ```javascript
 // Only the assassin is allowed to propose a victim.
-const assassinUsername = 'username-2';
+const assassinId = 'id-2';
 
 // Anyone other than the Assassin can be proposed as a victim.
-const victimUsername   = 'username-4';
+const victimId   = 'id-4';
 
-// Toggles whether the player under `victimUsername` is proposed
+// Toggles whether the player under `victimId` is proposed
 // for assassination.
-game.toggleVictimProposition(assassinUsername, victimUsername);
+game.toggleVictimProposition(assassinId, victimId);
 ```
 
 Assassinate the victim:
 
 ```javascript
 // Only the assassin is allowed to assassinate the victim.
-const assassinUsername = 'username-2';
+const assassinId = 'id-2';
 
 // Finalizes the choice and assassinates the victim. If the victim
 // turns out to be Merlin - the bad guys win, however, if the
 // Assassin fails to guess who the Merlin is - the good guys win.
-game.assassinate(assassinUsername);
+game.assassinate(assassinId);
 ```
 
 Game serialization:
 
 ```javascript
-const playerUsername = 'username-1';
+const playerId = 'id-1';
 
 // Serializes the game state from the perspective of a given player.
 // E.g reveals bad guys to other bad guys, but hides them from the good
 // guys, etc..
-game.serialize(playerUsername);
+game.serialize(playerId);
 ```
 
 ---

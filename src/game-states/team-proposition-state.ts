@@ -8,18 +8,18 @@ export class TeamPropositionState extends BaseState {
   protected resultsConcealed = true;
   protected rolesConcealed   = true;
 
-  toggleTeammateProposition(game: Game, leaderUsername: string, username: string) {
-    if (!game.getPlayersManager().playerPropositionAllowedFor(leaderUsername)) {
+  toggleTeammateProposition(game: Game, leaderId: string, id: string) {
+    if (!game.getPlayersManager().playerPropositionAllowedFor(leaderId)) {
       throw new fromErrors.DeniedTeammatePropositionError();
     }
 
-    game.getPlayersManager().togglePlayerProposition(username);
+    game.getPlayersManager().togglePlayerProposition(id);
 
     game.emit(GameEvent.StateChange);
   }
 
-  submitTeam(game: Game, leaderUsername: string) {
-    if (!game.getPlayersManager().playerPropositionAllowedFor(leaderUsername)) {
+  submitTeam(game: Game, leaderId: string) {
+    if (!game.getPlayersManager().playerPropositionAllowedFor(leaderId)) {
       throw new fromErrors.DeniedTeamSubmissionError();
     }
 

@@ -4,18 +4,18 @@ import { PlayerSerialized } from './types/player-serialized';
 import { RoleId } from './enums/role-id';
 
 export class Player {
-  private username: string;
+  private id: string;
   private role: Role;
   // TODO: remove
   private vote: Vote;
 
-  constructor(username: string, initialRole = Role.null()) {
-    this.username = username;
+  constructor(id: string, initialRole = Role.null()) {
+    this.id = id;
     this.role     = initialRole;
   }
 
-  getUsername() {
-    return this.username;
+  getId() {
+    return this.id;
   }
 
   setRole(role: Role) {
@@ -28,7 +28,7 @@ export class Player {
 
   generateVote(value: boolean) {
     // TODO: remove
-    this.vote = new Vote(this.username, value);
+    this.vote = new Vote(this.id, value);
 
     return this.vote;
   }
@@ -60,7 +60,7 @@ export class Player {
       : this.role.serialize();
 
     return {
-      username: this.username,
+      id: this.id,
       role: serializedRole,
     };
   }

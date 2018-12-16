@@ -17,8 +17,8 @@ export class PlayersManager {
   constructor() {
   }
 
-  assassinate(assassinsUsername: string) {
-    if (!this.assassin || this.assassin.getUsername() !== assassinsUsername) {
+  assassinate(assassinsId: string) {
+    if (!this.assassin || this.assassin.getId() !== assassinsId) {
       throw new fromErrors.DeniedAssassinationError();
     }
 
@@ -46,7 +46,7 @@ export class PlayersManager {
   add(player: Player) {
     if (!player) return;
 
-    if (this.findPlayer(player.getUsername())) {
+    if (this.findPlayer(player.getId())) {
       throw new fromErrors.AlreadyExistsPlayerError();
     }
 
@@ -58,39 +58,39 @@ export class PlayersManager {
     this.players.push(player);
   }
 
-  remove(username: string) {
-    const index = this.players.findIndex(p => p.getUsername() === username);
+  remove(id: string) {
+    const index = this.players.findIndex(p => p.getId() === id);
 
     if (index === -1) return;
 
     this.players.splice(index, 1);
   }
 
-  private findPlayer(username: string): Player {
-    return this.players.find((p) => p.getUsername() === username);
+  private findPlayer(id: string): Player {
+    return this.players.find((p) => p.getId() === id);
   }
 
   toggleVictimProposition(
-    assassinsUsername: string,
-    victimUsername: string,
+    assassinsId: string,
+    victimId: string,
   ) {
-    if (this.assassin.getUsername() !== assassinsUsername) {
+    if (this.assassin.getId() !== assassinsId) {
       throw new fromErrors.DeniedVictimPropositionError();
     }
 
-    if (this.assassin.getUsername() === victimUsername) {
+    if (this.assassin.getId() === victimId) {
       throw new fromErrors.DeniedSelfSacrificeError();
     }
 
-    const player = this.findPlayer(victimUsername);
+    const player = this.findPlayer(victimId);
 
     this.victim = this.victim === player
       ? null
       : player;
   }
 
-  togglePlayerProposition(username: string) {
-    const player = this.findPlayer(username);
+  togglePlayerProposition(id: string) {
+    const player = this.findPlayer(id);
 
     if (!player) return;
 
@@ -138,8 +138,8 @@ export class PlayersManager {
     this.leaderIndex = (this.leaderIndex + 1) % this.players.length;
   }
 
-  questVotingAllowedFor(username: string) {
-    const player = this.findPlayer(username);
+  questVotingAllowedFor(id: string) {
+    const player = this.findPlayer(id);
 
     return player && this.isProposed(player) && !player.getVote();
   }
@@ -148,20 +148,20 @@ export class PlayersManager {
     return !!this.proposedPlayers.find((p) => p === player);
   }
 
-  teamVotingAllowedFor(username: string) {
-    const player = this.findPlayer(username);
+  teamVotingAllowedFor(id: string) {
+    const player = this.findPlayer(id);
 
     return player && !player.getVote();
   }
 
-  playerPropositionAllowedFor(username: string) {
+  playerPropositionAllowedFor(id: string) {
     const leader = this.getLeader();
 
-    return leader && leader.getUsername() === username;
+    return leader && leader.getId() === id;
   }
 
-  generateVote(username: string, voteValue: boolean) {
-    const player = this.findPlayer(username);
+  generateVote(id: string, voteValue: boolean) {
+    const player = this.findPlayer(id);
 
     if (!player) {
       throw new fromErrors.PlayerMissingError();
@@ -188,18 +188,18 @@ export class PlayersManager {
     this.proposedPlayers = [];
   }
 
-  serialize(forPlayerUsername: string, rolesConcealed: boolean): PlayersManagerSerialized {
-    const forPlayer = this.findPlayer(forPlayerUsername);
+  serialize(forPlayerId: string, rolesConcealed: boolean): PlayersManagerSerialized {
+    const forPlayer = this.findPlayer(forPlayerId);
     if (!forPlayer) {
       throw new fromErrors.PlayerMissingError();
     }
 
     return {
       collection: this.serializePlayers(forPlayer, rolesConcealed),
-      proposedPlayerUsernames: this.proposedPlayers.map(p => p.getUsername()),
-      leaderUsername: PlayersManager.getUsernameOrNull(this.getLeader()),
+      proposedPlayerIds: this.proposedPlayers.map(p => p.getId()),
+      leaderId: PlayersManager.getIdOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
-      victimUsername: PlayersManager.getUsernameOrNull(this.victim),
+      victimId: PlayersManager.getIdOrNull(this.victim),
     };
   }
 
@@ -211,7 +211,7 @@ export class PlayersManager {
     });
   }
 
-  static getUsernameOrNull(player: Player) {
-    return player ? player.getUsername() : null;
+  static getIdOrNull(player: Player) {
+    return player ? player.getId() : null;
   }
 }

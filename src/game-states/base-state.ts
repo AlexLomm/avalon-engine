@@ -7,11 +7,11 @@ export abstract class BaseState {
   protected abstract resultsConcealed: boolean = true;
   protected abstract rolesConcealed: boolean   = true;
 
-  addPlayer(game: Game, username: string): void {
+  addPlayer(game: Game, id: string): void {
     throw new fromErrors.AlreadyStartedGameError();
   }
 
-  removePlayer(game: Game, username: string): void {
+  removePlayer(game: Game, id: string): void {
     throw new fromErrors.AlreadyStartedGameError();
   }
 
@@ -19,35 +19,35 @@ export abstract class BaseState {
     throw new fromErrors.AlreadyStartedGameError();
   }
 
-  toggleTeammateProposition(game: Game, leaderUsername: string, username: string): void {
+  toggleTeammateProposition(game: Game, leaderId: string, id: string): void {
     throw new fromErrors.NoTimeForTeammatePropositionError();
   }
 
-  submitTeam(game: Game, leaderUsername: string): void {
+  submitTeam(game: Game, leaderId: string): void {
     throw new fromErrors.NoTimeForTeamSubmissionError();
   }
 
-  voteForTeam(game: Game, username: string, voteValue: boolean): void {
+  voteForTeam(game: Game, id: string, voteValue: boolean): void {
     throw new fromErrors.NoTimeForTeamVotingError();
   }
 
-  voteForQuest(game: Game, username: string, voteValue: boolean): void {
+  voteForQuest(game: Game, id: string, voteValue: boolean): void {
     throw new fromErrors.NoTimeForQuestVotingError();
   }
 
-  toggleVictimProposition(game: Game, assassinsUsername: string, victimsUsername: string): void {
+  toggleVictimProposition(game: Game, assassinsId: string, victimsId: string): void {
     throw new fromErrors.NoTimeVictimPropositionError();
   }
 
-  assassinate(game: Game, assassinsUsername: string): void {
+  assassinate(game: Game, assassinsId: string): void {
     throw new fromErrors.NoTimeForAssassinationError();
   }
 
-  serialize(game: Game, forUsername: string): GameSerialized {
+  serialize(game: Game, forId: string): GameSerialized {
     return {
       meta: game.getMetaData().serialize(),
       quests: game.getQuestsManager().serialize(this.resultsConcealed),
-      players: game.getPlayersManager().serialize(forUsername, this.rolesConcealed),
+      players: game.getPlayersManager().serialize(forId, this.rolesConcealed),
     };
   }
 }

@@ -8,12 +8,12 @@ export class QuestVotingState extends BaseState {
   protected resultsConcealed = true;
   protected rolesConcealed   = true;
 
-  voteForQuest(game: Game, username: string, voteValue: boolean) {
-    if (!game.getPlayersManager().questVotingAllowedFor(username)) {
+  voteForQuest(game: Game, id: string, voteValue: boolean) {
+    if (!game.getPlayersManager().questVotingAllowedFor(id)) {
       throw new fromErrors.DeniedQuestVotingError();
     }
 
-    this.vote(game, username, voteValue);
+    this.vote(game, id, voteValue);
 
     if (!this.questVotingIsOn(game)) {
       const manager = game.getQuestsManager();
@@ -39,8 +39,8 @@ export class QuestVotingState extends BaseState {
   }
 
   // TODO: dry up
-  private vote(game: Game, username: string, voteValue: boolean) {
-    const vote = game.getPlayersManager().generateVote(username, voteValue);
+  private vote(game: Game, id: string, voteValue: boolean) {
+    const vote = game.getPlayersManager().generateVote(id, voteValue);
 
     game.getQuestsManager().addVote(vote);
   }

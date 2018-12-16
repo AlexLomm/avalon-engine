@@ -107,15 +107,15 @@ describe('post "reveal roles" phase', () => {
   describe('team proposition', () => {
     test('should disallow anybody other then the party leader to propose a player', () => {
       const leader = playersManager.getLeader();
-      expect(() => game.toggleTeammateProposition(leader.getUsername(), 'user-3'))
+      expect(() => game.toggleTeammateProposition(leader.getId(), 'user-3'))
         .not
         .toThrow();
 
       const nonLeader = playersManager.getAll()
-        .find(player => player.getUsername() !== leader.getUsername());
+        .find(player => player.getId() !== leader.getId());
 
       expect(() => {
-        game.toggleTeammateProposition(nonLeader.getUsername(), 'user-3');
+        game.toggleTeammateProposition(nonLeader.getId(), 'user-3');
       }).toThrow(fromErrors.DeniedTeammatePropositionError);
     });
 
@@ -124,7 +124,7 @@ describe('post "reveal roles" phase', () => {
 
       jest.spyOn(playersManager, 'togglePlayerProposition');
 
-      game.toggleTeammateProposition(leader.getUsername(), 'user-3');
+      game.toggleTeammateProposition(leader.getId(), 'user-3');
 
       expect(playersManager.togglePlayerProposition).toBeCalledTimes(1);
     });
@@ -133,7 +133,7 @@ describe('post "reveal roles" phase', () => {
       GameHelper.proposeAndSubmitTeam(game, ['user-1', 'user-2']);
 
       expect(() => game.toggleTeammateProposition(
-        playersManager.getLeader().getUsername(),
+        playersManager.getLeader().getId(),
         'user-2',
       )).toThrow(fromErrors.NoTimeForTeammatePropositionError);
     });
@@ -143,26 +143,26 @@ describe('post "reveal roles" phase', () => {
     test('should disallow team submission by a non-leader player', () => {
       const leader    = playersManager.getLeader();
       const nonLeader = playersManager.getAll()
-        .find(p => p.getUsername() !== leader.getUsername());
+        .find(p => p.getId() !== leader.getId());
 
-      expect(() => game.submitTeam(nonLeader.getUsername()))
+      expect(() => game.submitTeam(nonLeader.getId()))
         .toThrow(fromErrors.DeniedTeamSubmissionError);
     });
 
     test('should disallow submission if not enough players are proposed', () => {
-      const leaderUsername = playersManager.getLeader().getUsername();
+      const leaderId = playersManager.getLeader().getId();
 
-      expect(() => game.submitTeam(leaderUsername))
+      expect(() => game.submitTeam(leaderId))
         .toThrow(fromErrors.RequiredCorrectTeammatesAmountError);
 
-      game.toggleTeammateProposition(leaderUsername, 'user-1');
+      game.toggleTeammateProposition(leaderId, 'user-1');
 
-      expect(() => game.submitTeam(leaderUsername))
+      expect(() => game.submitTeam(leaderId))
         .toThrow(fromErrors.RequiredCorrectTeammatesAmountError);
 
-      game.toggleTeammateProposition(leaderUsername, 'user-2');
+      game.toggleTeammateProposition(leaderId, 'user-2');
 
-      expect(game.submitTeam(leaderUsername));
+      expect(game.submitTeam(leaderId));
     });
 
     test('should submit proposed players', () => {
@@ -170,7 +170,7 @@ describe('post "reveal roles" phase', () => {
 
       expect(playersManager.getIsSubmitted()).toBeFalsy();
 
-      game.submitTeam(playersManager.getLeader().getUsername());
+      game.submitTeam(playersManager.getLeader().getId());
 
       expect(playersManager.getIsSubmitted()).toBeTruthy();
     });
@@ -183,7 +183,7 @@ describe('post "reveal roles" phase', () => {
       expect(() => game.voteForTeam('user-1', true))
         .toThrow(fromErrors.NoTimeForTeamVotingError);
 
-      game.submitTeam(playersManager.getLeader().getUsername());
+      game.submitTeam(playersManager.getLeader().getId());
 
       expect(() => game.voteForTeam('user-1', false)).not.toThrow();
     });
@@ -395,16 +395,16 @@ describe('post "reveal roles" phase', () => {
       const victim   = PlayersManagerHelper.getNonAssassin(playersManager);
 
       expect(() => game.toggleVictimProposition(
-        assassin.getUsername(),
-        victim.getUsername()),
+        assassin.getId(),
+        victim.getId()),
       ).toThrow(fromErrors.NoTimeVictimPropositionError);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
 
       expect(() => {
         game.toggleVictimProposition(
-          assassin.getUsername(),
-          victim.getUsername(),
+          assassin.getId(),
+          victim.getId(),
         );
       }).not
         .toThrow(fromErrors.NoTimeVictimPropositionError);
@@ -419,24 +419,24 @@ describe('post "reveal roles" phase', () => {
       jest.spyOn(playersManager, 'toggleVictimProposition');
 
       game.toggleVictimProposition(
-        assassin.getUsername(),
-        victim.getUsername(),
+        assassin.getId(),
+        victim.getId(),
       );
 
       expect(playersManager.toggleVictimProposition).toBeCalledTimes(1);
       expect(playersManager.toggleVictimProposition)
-        .toBeCalledWith(assassin.getUsername(), victim.getUsername());
+        .toBeCalledWith(assassin.getId(), victim.getId());
     });
 
     test('should throw if it is not an appropriate time for assassination', () => {
       const assassin = PlayersManagerHelper.getAssassin(playersManager);
 
-      expect(() => game.assassinate(assassin.getUsername()))
+      expect(() => game.assassinate(assassin.getId()))
         .toThrow(fromErrors.NoTimeForAssassinationError);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
 
-      expect(() => game.assassinate(assassin.getUsername()))
+      expect(() => game.assassinate(assassin.getId()))
         .not
         .toThrow(fromErrors.NoTimeForAssassinationError);
     });
@@ -450,8 +450,8 @@ describe('post "reveal roles" phase', () => {
       jest.spyOn(playersManager, 'assassinate');
       jest.spyOn(game.getMetaData(), 'finish');
 
-      game.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
-      game.assassinate(assassin.getUsername());
+      game.toggleVictimProposition(assassin.getId(), victim.getId());
+      game.assassinate(assassin.getId());
 
       expect(playersManager.assassinate).toBeCalledTimes(1);
       expect(game.getMetaData().finish).toBeCalledTimes(1);
@@ -463,8 +463,8 @@ describe('post "reveal roles" phase', () => {
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
 
-      game.toggleVictimProposition(assassin.getUsername(), merlin.getUsername());
-      game.assassinate(assassin.getUsername());
+      game.toggleVictimProposition(assassin.getId(), merlin.getId());
+      game.assassinate(assassin.getId());
 
       expect(game.getMetaData().getGameStatus()).toEqual(GameStatus.Lost);
     });
@@ -475,8 +475,8 @@ describe('post "reveal roles" phase', () => {
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
 
-      game.toggleVictimProposition(assassin.getUsername(), nonMerlin.getUsername());
-      game.assassinate(assassin.getUsername());
+      game.toggleVictimProposition(assassin.getId(), nonMerlin.getId());
+      game.assassinate(assassin.getId());
 
       expect(game.getMetaData().getGameStatus()).toStrictEqual(GameStatus.Won);
     });

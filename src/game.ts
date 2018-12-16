@@ -60,43 +60,43 @@ export class Game implements IGameClientApi, IEventEmitter {
     return this.fsm;
   }
 
-  addPlayer(username: string) {
-    this.state.addPlayer(this, username);
+  addPlayer(id: string) {
+    this.state.addPlayer(this, id);
   }
 
-  removePlayer(username: string) {
-    this.state.removePlayer(this, username);
+  removePlayer(id: string) {
+    this.state.removePlayer(this, id);
   }
 
   start(roleIds: RoleId[] = []) {
     this.state.start(this, roleIds);
   }
 
-  submitTeam(leaderUsername: string) {
-    this.state.submitTeam(this, leaderUsername);
+  submitTeam(leaderId: string) {
+    this.state.submitTeam(this, leaderId);
   }
 
-  voteForQuest(username: string, voteValue: boolean) {
-    this.state.voteForQuest(this, username, voteValue);
+  voteForQuest(id: string, voteValue: boolean) {
+    this.state.voteForQuest(this, id, voteValue);
   }
 
-  voteForTeam(username: string, voteValue: boolean) {
-    this.state.voteForTeam(this, username, voteValue);
+  voteForTeam(id: string, voteValue: boolean) {
+    this.state.voteForTeam(this, id, voteValue);
   }
 
-  toggleTeammateProposition(leaderUsername: string, username: string) {
-    this.state.toggleTeammateProposition(this, leaderUsername, username);
+  toggleTeammateProposition(leaderId: string, id: string) {
+    this.state.toggleTeammateProposition(this, leaderId, id);
   }
 
-  toggleVictimProposition(assassinsUsername: string, victimsUsername: string) {
-    this.state.toggleVictimProposition(this, assassinsUsername, victimsUsername);
+  toggleVictimProposition(assassinsId: string, victimsId: string) {
+    this.state.toggleVictimProposition(this, assassinsId, victimsId);
   }
 
-  assassinate(assassinsUsername: string) {
-    this.state.assassinate(this, assassinsUsername);
+  assassinate(assassinsId: string) {
+    this.state.assassinate(this, assassinsId);
   }
 
-  serialize(forUsername: string): GameSerialized {
-    return this.state.serialize(this, forUsername);
+  serialize(forId: string): GameSerialized {
+    return this.state.serialize(this, forId);
   }
 }
