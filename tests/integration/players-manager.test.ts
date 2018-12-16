@@ -18,6 +18,16 @@ describe('adding players', () => {
     expect(manager.getAll().length).toBeTruthy();
   });
 
+  test('should remove a player', () => {
+    manager.add(new Player('user-1'));
+    manager.add(new Player('user-2'));
+    manager.add(new Player('user-3'));
+
+    manager.remove('user-2');
+
+    expect(manager.getAll().map(p => p.getUsername())).toEqual(['user-1', 'user-3']);
+  });
+
   test('should get players', () => {
     manager.add(new Player('user-1'));
     manager.add(new Player('user-2'));

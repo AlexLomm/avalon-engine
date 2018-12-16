@@ -11,6 +11,10 @@ export abstract class BaseState {
     throw new fromErrors.AlreadyStartedGameError();
   }
 
+  removePlayer(game: Game, username: string): void {
+    throw new fromErrors.AlreadyStartedGameError();
+  }
+
   start(game: Game, roleIds: RoleId[]): void {
     throw new fromErrors.AlreadyStartedGameError();
   }

@@ -58,6 +58,14 @@ export class PlayersManager {
     this.players.push(player);
   }
 
+  remove(username: string) {
+    const index = this.players.findIndex(p => p.getUsername() === username);
+
+    if (index === -1) return;
+
+    this.players.splice(index, 1);
+  }
+
   private findPlayer(username: string): Player {
     return this.players.find((p) => p.getUsername() === username);
   }

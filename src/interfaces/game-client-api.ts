@@ -6,6 +6,8 @@ import { RoleId } from '../enums/role-id';
 export interface IGameClientApi extends IEventListener {
   addPlayer(username: string): void;
 
+  removePlayer(username: string): void;
+
   start(roleIds: RoleId[]): void;
 
   submitTeam(leaderUsername: string): void;

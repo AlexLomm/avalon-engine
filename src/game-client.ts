@@ -69,6 +69,17 @@ export class GameClient implements IGameClientApi, IIdentifiable {
   }
 
   /**
+   * Removes a player from the game.
+   *
+   * This is only allowed before the game is started.
+   *
+   * @throws AlreadyStartedGameError
+   */
+  removePlayer(username: string) {
+    this.game.removePlayer(username);
+  }
+
+  /**
    * Starts a game.
    *
    * There should be enough players.

@@ -64,6 +64,10 @@ export class Game implements IGameClientApi, IEventEmitter {
     this.state.addPlayer(this, username);
   }
 
+  removePlayer(username: string) {
+    this.state.removePlayer(this, username);
+  }
+
   start(roleIds: RoleId[] = []) {
     this.state.start(this, roleIds);
   }

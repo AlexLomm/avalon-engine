@@ -19,6 +19,12 @@ export class PreparationState extends BaseState {
     game.emit(GameEvent.StateChange);
   }
 
+  removePlayer(game: Game, username: string) {
+    game.getPlayersManager().remove(username);
+
+    game.emit(GameEvent.StateChange);
+  }
+
   start(game: Game, roleIds: RoleId[]) {
     const playerCount = game.getPlayersManager().getAll().length as LevelPresetId;
     const levelPreset = game.getMetaData().init(playerCount);
