@@ -87,8 +87,8 @@ test('should serialize correctly', () => {
   expect(serialized.meta.createdAt).toBeTruthy();
   expect(serialized.meta.startedAt).toBeTruthy();
   expect(serialized.meta.finishedAt).toBeTruthy();
-  expect(serialized.meta.gameCreatorId).toEqual('user-0');
-  expect(serialized.meta.gameStatus).toEqual('Lost');
+  expect(serialized.meta.creatorId).toEqual('user-0');
+  expect(serialized.meta.status).toEqual('Lost');
 
   // every player should be revealed
   const unknownPlayers = serialized.players.collection.filter(p => p.role.id === RoleId.Unknown);
