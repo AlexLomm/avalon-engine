@@ -101,6 +101,10 @@ export class PlayersManager {
       : this.proposedPlayers.push(player);
   }
 
+  resetProposedTeammates() {
+    this.proposedPlayers = [];
+  }
+
   setIsSubmitted(isSubmitted: boolean) {
     this.isSubmitted = isSubmitted;
   }

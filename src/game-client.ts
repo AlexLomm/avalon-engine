@@ -143,6 +143,16 @@ export class GameClient implements IGameClientApi, IIdentifiable {
   }
 
   /**
+   * Allows a current team leader to un-propose every player
+   *
+   * @throws NoTimeForTeammatePropositionError
+   * @throws DeniedTeammatePropositionError
+   */
+  resetProposedTeammates(leaderId: string) {
+    this.game.resetProposedTeammates(leaderId);
+  }
+
+  /**
    * Allows the Assassin to choose a possible victim during the assassination phase.
    *
    * @throws NoTimeVictimPropositionError

@@ -23,6 +23,10 @@ export abstract class BaseState {
     throw new fromErrors.NoTimeForTeammatePropositionError();
   }
 
+  resetProposedTeammates(game: Game, leaderId: string) {
+    throw new fromErrors.NoTimeForTeammatePropositionError();
+  }
+
   submitTeam(game: Game, leaderId: string): void {
     throw new fromErrors.NoTimeForTeamSubmissionError();
   }

@@ -88,6 +88,10 @@ export class Game implements IGameClientApi, IEventEmitter {
     this.state.toggleTeammateProposition(this, leaderId, id);
   }
 
+  resetProposedTeammates(leaderId: string) {
+    this.state.resetProposedTeammates(this, leaderId);
+  }
+
   toggleVictimProposition(assassinsId: string, victimsId: string) {
     this.state.toggleVictimProposition(this, assassinsId, victimsId);
   }

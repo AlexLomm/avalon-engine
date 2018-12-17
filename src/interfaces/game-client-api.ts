@@ -18,6 +18,8 @@ export interface IGameClientApi extends IEventListener {
 
   toggleTeammateProposition(leaderId: string, id: string): void;
 
+  resetProposedTeammates(leaderId: string): void;
+
   toggleVictimProposition(assassinsId: string, victimsId: string): void;
 
   assassinate(assassinsId: string): void;

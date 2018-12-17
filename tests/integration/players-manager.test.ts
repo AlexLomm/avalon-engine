@@ -141,6 +141,18 @@ describe('team proposition and submission', () => {
     expect(manager.getProposedPlayersCount()).toStrictEqual(0);
   });
 
+  test('should reset all the proposed players', () => {
+    manager.add(new Player('user-1'));
+    manager.add(new Player('user-2'));
+
+    manager.togglePlayerProposition('user-1');
+    manager.togglePlayerProposition('user-2');
+
+    manager.resetProposedTeammates();
+
+    expect(manager.getProposedPlayersCount()).toStrictEqual(0);
+  });
+
   test('should return if a player has right to submit a team', () => {
     PlayersManagerHelper.fillPlayers(manager, 7);
 

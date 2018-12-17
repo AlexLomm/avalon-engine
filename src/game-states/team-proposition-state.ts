@@ -18,6 +18,16 @@ export class TeamPropositionState extends BaseState {
     game.emit(GameEvent.StateChange);
   }
 
+  resetProposedTeammates(game: Game, leaderId: string) {
+    if (!game.getPlayersManager().playerPropositionAllowedFor(leaderId)) {
+      throw new fromErrors.DeniedTeammatePropositionError();
+    }
+
+    game.getPlayersManager().resetProposedTeammates();
+
+    game.emit(GameEvent.StateChange);
+  }
+
   submitTeam(game: Game, leaderId: string) {
     if (!game.getPlayersManager().playerPropositionAllowedFor(leaderId)) {
       throw new fromErrors.DeniedTeamSubmissionError();
