@@ -53,6 +53,14 @@ Add players to the game:
 game.addPlayer('id-1');
 ```
 
+Remove players from the game:
+
+```javascript
+// Removes the player with the `id-1` from the game. Player 
+// removal is only allowed before the game is started.
+game.removePlayer('id-1');
+```
+
 Start the game:
 
 ```javascript
@@ -74,6 +82,16 @@ const anyPlayerId = 'id-5';
 
 // Proposes a player to be included in the team. 
 game.toggleTeammateProposition(leaderId, anyPlayerId);
+```
+
+Reset proposed teammates:
+
+```javascript
+// Only the leader is allowed to reset the propositions.
+const leaderId = 'id-1';
+
+// "Un-proposes" every player
+game.resetProposedTeammates(leaderId);
 ```
 
 Finalize the proposed players as a team:
