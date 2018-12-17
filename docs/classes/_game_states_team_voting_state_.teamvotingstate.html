@@ -925,6 +925,12 @@ img { max-width: 100%; }
 					<a href="_game_states_team_voting_state_.teamvotingstate.html#assassinate" class="tsd-kind-icon">assassinate</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a href="_game_states_team_voting_state_.teamvotingstate.html#removeplayer" class="tsd-kind-icon">remove<wbr>Player</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a href="_game_states_team_voting_state_.teamvotingstate.html#resetproposedteammates" class="tsd-kind-icon">reset<wbr>Proposed<wbr>Teammates</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
 					<a href="_game_states_team_voting_state_.teamvotingstate.html#serialize" class="tsd-kind-icon">serialize</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
@@ -983,6 +989,8 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_game_states_team_voting_state_.teamvotingstate.html#addplayer" class="tsd-kind-icon">add<wbr>Player</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_game_states_team_voting_state_.teamvotingstate.html#assassinate" class="tsd-kind-icon">assassinate</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_game_states_team_voting_state_.teamvotingstate.html#removeplayer" class="tsd-kind-icon">remove<wbr>Player</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_game_states_team_voting_state_.teamvotingstate.html#resetproposedteammates" class="tsd-kind-icon">reset<wbr>Proposed<wbr>Teammates</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_game_states_team_voting_state_.teamvotingstate.html#serialize" class="tsd-kind-icon">serialize</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_game_states_team_voting_state_.teamvotingstate.html#start" class="tsd-kind-icon">start</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_game_states_team_voting_state_.teamvotingstate.html#submitteam" class="tsd-kind-icon">submit<wbr>Team</a></li>
@@ -1005,7 +1013,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Overrides <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#resultsconcealed">resultsConcealed</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/team-voting-state.ts#L8">game-states/team-voting-state.ts:8</a></li>
+						<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/team-voting-state.ts#L8">game-states/team-voting-state.ts:8</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1016,7 +1024,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Overrides <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#rolesconcealed">rolesConcealed</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/team-voting-state.ts#L9">game-states/team-voting-state.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/team-voting-state.ts#L9">game-states/team-voting-state.ts:9</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1027,14 +1035,14 @@ img { max-width: 100%; }
 				<a name="addplayer" class="tsd-anchor"></a>
 				<h3>add<wbr>Player</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">add<wbr>Player<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">add<wbr>Player<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#addplayer">addPlayer</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/base-state.ts#L10">game-states/base-state.ts:10</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L10">game-states/base-state.ts:10</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1043,7 +1051,7 @@ img { max-width: 100%; }
 								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
 							</li>
 							<li>
-								<h5>username: <span class="tsd-signature-type">string</span></h5>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1054,14 +1062,14 @@ img { max-width: 100%; }
 				<a name="assassinate" class="tsd-anchor"></a>
 				<h3>assassinate</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">assassinate<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, assassinsUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">assassinate<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, assassinsId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#assassinate">assassinate</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/base-state.ts#L38">game-states/base-state.ts:38</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L46">game-states/base-state.ts:46</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1070,7 +1078,61 @@ img { max-width: 100%; }
 								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
 							</li>
 							<li>
-								<h5>assassinsUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>assassinsId: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<a name="removeplayer" class="tsd-anchor"></a>
+				<h3>remove<wbr>Player</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<li class="tsd-signature tsd-kind-icon">remove<wbr>Player<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#removeplayer">removePlayer</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L14">game-states/base-state.ts:14</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
+							</li>
+							<li>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+				<a name="resetproposedteammates" class="tsd-anchor"></a>
+				<h3>reset<wbr>Proposed<wbr>Teammates</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<li class="tsd-signature tsd-kind-icon">reset<wbr>Proposed<wbr>Teammates<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, leaderId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#resetproposedteammates">resetProposedTeammates</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L26">game-states/base-state.ts:26</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
+							</li>
+							<li>
+								<h5>leaderId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1081,14 +1143,14 @@ img { max-width: 100%; }
 				<a name="serialize" class="tsd-anchor"></a>
 				<h3>serialize</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">serialize<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, forUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/_types_game_serialized_.html#gameserialized" class="tsd-signature-type">GameSerialized</a></li>
+					<li class="tsd-signature tsd-kind-icon">serialize<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, forId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/_types_game_serialized_.html#gameserialized" class="tsd-signature-type">GameSerialized</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#serialize">serialize</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/base-state.ts#L42">game-states/base-state.ts:42</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L50">game-states/base-state.ts:50</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1097,7 +1159,7 @@ img { max-width: 100%; }
 								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
 							</li>
 							<li>
-								<h5>forUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>forId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="../modules/_types_game_serialized_.html#gameserialized" class="tsd-signature-type">GameSerialized</a></h4>
@@ -1115,7 +1177,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#start">start</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/base-state.ts#L14">game-states/base-state.ts:14</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L18">game-states/base-state.ts:18</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1135,14 +1197,14 @@ img { max-width: 100%; }
 				<a name="submitteam" class="tsd-anchor"></a>
 				<h3>submit<wbr>Team</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">submit<wbr>Team<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, leaderUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">submit<wbr>Team<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, leaderId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#submitteam">submitTeam</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/base-state.ts#L22">game-states/base-state.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L30">game-states/base-state.ts:30</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1151,7 +1213,7 @@ img { max-width: 100%; }
 								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
 							</li>
 							<li>
-								<h5>leaderUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>leaderId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1162,14 +1224,14 @@ img { max-width: 100%; }
 				<a name="toggleteammateproposition" class="tsd-anchor"></a>
 				<h3>toggle<wbr>Teammate<wbr>Proposition</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">toggle<wbr>Teammate<wbr>Proposition<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, leaderUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">toggle<wbr>Teammate<wbr>Proposition<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, leaderId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#toggleteammateproposition">toggleTeammateProposition</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/base-state.ts#L18">game-states/base-state.ts:18</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L22">game-states/base-state.ts:22</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1178,10 +1240,10 @@ img { max-width: 100%; }
 								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
 							</li>
 							<li>
-								<h5>leaderUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>leaderId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>username: <span class="tsd-signature-type">string</span></h5>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1192,14 +1254,14 @@ img { max-width: 100%; }
 				<a name="togglevictimproposition" class="tsd-anchor"></a>
 				<h3>toggle<wbr>Victim<wbr>Proposition</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">toggle<wbr>Victim<wbr>Proposition<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, assassinsUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, victimsUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">toggle<wbr>Victim<wbr>Proposition<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, assassinsId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, victimsId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#togglevictimproposition">toggleVictimProposition</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/base-state.ts#L34">game-states/base-state.ts:34</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L42">game-states/base-state.ts:42</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1208,10 +1270,10 @@ img { max-width: 100%; }
 								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
 							</li>
 							<li>
-								<h5>assassinsUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>assassinsId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>victimsUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>victimsId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1222,13 +1284,13 @@ img { max-width: 100%; }
 				<a name="vote" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagPrivate">Private</span> vote</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
-					<li class="tsd-signature tsd-kind-icon">vote<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">vote<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/team-voting-state.ts#L34">game-states/team-voting-state.ts:34</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/team-voting-state.ts#L34">game-states/team-voting-state.ts:34</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1237,7 +1299,7 @@ img { max-width: 100%; }
 								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
 							</li>
 							<li>
-								<h5>username: <span class="tsd-signature-type">string</span></h5>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
 								<h5>voteValue: <span class="tsd-signature-type">boolean</span></h5>
@@ -1251,14 +1313,14 @@ img { max-width: 100%; }
 				<a name="voteforquest" class="tsd-anchor"></a>
 				<h3>vote<wbr>For<wbr>Quest</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-					<li class="tsd-signature tsd-kind-icon">vote<wbr>For<wbr>Quest<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">vote<wbr>For<wbr>Quest<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Inherited from <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#voteforquest">voteForQuest</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/base-state.ts#L30">game-states/base-state.ts:30</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/base-state.ts#L38">game-states/base-state.ts:38</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1267,7 +1329,7 @@ img { max-width: 100%; }
 								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
 							</li>
 							<li>
-								<h5>username: <span class="tsd-signature-type">string</span></h5>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
 								<h5>voteValue: <span class="tsd-signature-type">boolean</span></h5>
@@ -1281,14 +1343,14 @@ img { max-width: 100%; }
 				<a name="voteforteam" class="tsd-anchor"></a>
 				<h3>vote<wbr>For<wbr>Team</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-					<li class="tsd-signature tsd-kind-icon">vote<wbr>For<wbr>Team<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">vote<wbr>For<wbr>Team<span class="tsd-signature-symbol">(</span>game<span class="tsd-signature-symbol">: </span><a href="_game_.game.html" class="tsd-signature-type">Game</a>, id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Overrides <a href="_game_states_base_state_.basestate.html">BaseState</a>.<a href="_game_states_base_state_.basestate.html#voteforteam">voteForTeam</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-states/team-voting-state.ts#L11">game-states/team-voting-state.ts:11</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-states/team-voting-state.ts#L11">game-states/team-voting-state.ts:11</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1297,7 +1359,7 @@ img { max-width: 100%; }
 								<h5>game: <a href="_game_.game.html" class="tsd-signature-type">Game</a></h5>
 							</li>
 							<li>
-								<h5>username: <span class="tsd-signature-type">string</span></h5>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
 								<h5>voteValue: <span class="tsd-signature-type">boolean</span></h5>

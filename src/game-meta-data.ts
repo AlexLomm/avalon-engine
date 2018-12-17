@@ -13,7 +13,7 @@ export class GameMetaData implements IIdentifiable {
   private finishedAt: Date         = null;
   private levelPreset: LevelPreset = LevelPreset.null();
   // TODO: rethink the simultaneous use of `finishedAt` and `status`
-  private status: GameStatus   = GameStatus.Unfinished;
+  private status: GameStatus       = GameStatus.Unfinished;
   private gameCreator: Player      = null;
 
   getId(): string {

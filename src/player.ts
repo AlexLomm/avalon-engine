@@ -10,8 +10,8 @@ export class Player {
   private vote: Vote;
 
   constructor(id: string, initialRole = Role.null()) {
-    this.id = id;
-    this.role     = initialRole;
+    this.id   = id;
+    this.role = initialRole;
   }
 
   getId() {
