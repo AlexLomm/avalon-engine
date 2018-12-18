@@ -1,6 +1,6 @@
 {
   "name": "avalon-engine",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "This is an engine for playing the popular \"The Resistance: Avalon\" game.",
   "files": [
     "dist/**/*"
