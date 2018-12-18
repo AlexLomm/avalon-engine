@@ -10,11 +10,17 @@ export class PreparationState extends BaseState {
   protected resultsConcealed = true;
   protected rolesConcealed   = true;
 
-  addPlayer(game: Game, username: string) {
-    const player = new Player(username);
+  addPlayer(game: Game, id: string) {
+    const player = new Player(id);
 
     game.getPlayersManager().add(player);
     game.getMetaData().setCreatorOnce(player);
+
+    game.emit(GameEvent.StateChange);
+  }
+
+  removePlayer(game: Game, id: string) {
+    game.getPlayersManager().remove(id);
 
     game.emit(GameEvent.StateChange);
   }

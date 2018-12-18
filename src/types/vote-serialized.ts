@@ -1,4 +1,4 @@
 export type VoteSerialized = {
-  username: string;
+  id: string;
   value: boolean;
 }

@@ -6,6 +6,6 @@ export type GameMetaDataSerialized = {
   startedAt: string;
   finishedAt: string;
   levelPreset: LevelPresetSerialized;
-  gameStatus: string;
-  gameCreator: string;
+  status: string;
+  creatorId: string;
 }

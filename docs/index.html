@@ -914,9 +914,123 @@ img { max-width: 100%; }
 <div class="container container-main">
 	<div class="content-wrap">
 		<div class="tsd-panel tsd-typography">
-			<h3 id="about">About</h3>
-			<p>This is an engine for playing the popular &quot;The Resistance: Avalon&quot; game.</p>
-			<p>The library can be interacted with via the main class  <a href="https://alexlomm.github.io/avalon-engine/classes/_game_client_.gameclient.html">GameClient</a>.</p>
+			<h1 id="avalon-engine">Avalon Engine</h1>
+			<p>This is an engine for playing the popular board game - &quot;The Resistance: Avalon&quot;.</p>
+			<p>The library can be interacted with via the <a href="https://alexlomm.github.io/avalon-engine/classes/_game_client_.gameclient.html">GameClient</a> class.</p>
+			<p>Please see the instructions below.</p>
+			<h3 id="installation">Installation</h3>
+			<pre><code class="language-sh">npm i avalon-engine</code></pre>
+			<h3 id="usage">Usage</h3>
+			<p>Initialize the game:</p>
+			<pre><code class="language-javascript"><span class="hljs-keyword">const</span> { GameClient, GameEvent, RoleId } = <span class="hljs-built_in">require</span>(<span class="hljs-string">'avalon-engine'</span>);
+
+<span class="hljs-comment">// Instantiate a new game object with an optional config.</span>
+<span class="hljs-keyword">const</span> game = <span class="hljs-keyword">new</span> GameClient({
+  <span class="hljs-attr">afterTeamProposition</span>: <span class="hljs-number">5000</span>,
+  <span class="hljs-attr">afterTeamVoting</span>: <span class="hljs-number">7500</span>,
+  <span class="hljs-attr">afterQuestVoting</span>: <span class="hljs-number">7500</span>,
+});</code></pre>
+			<p>Add / remove event listeners:</p>
+			<pre><code class="language-javascript"><span class="hljs-keyword">const</span> onGameStateChange = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'State Changed!'</span>);
+
+<span class="hljs-comment">// Registers an event listener.</span>
+game.on(GameEvent.StateChange, onGameStateChange);
+
+<span class="hljs-comment">// Removes an event listener.</span>
+game.off(GameEvent.StateChange, onGameStateChange)</code></pre>
+			<p>Get the game ID:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Returns a unique id for the game.</span>
+game.getId();</code></pre>
+			<p>Add players to the game:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Adds the player with the `id-1` to the game. Adding players</span>
+<span class="hljs-comment">// to the game is only allowed before the game is started.</span>
+game.addPlayer(<span class="hljs-string">'id-1'</span>);</code></pre>
+			<p>Remove players from the game:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Removes the player with the `id-1` from the game. Player </span>
+<span class="hljs-comment">// removal is only allowed before the game is started.</span>
+game.removePlayer(<span class="hljs-string">'id-1'</span>);</code></pre>
+			<p>Start the game:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Requires minim 5 and maximum 10 players to start the game. </span>
+<span class="hljs-comment">// Optionally, desired roles can be passed to the `start` </span>
+<span class="hljs-comment">// method (Assassin and Merlin will always be present even</span>
+<span class="hljs-comment">// if not passed in explicitly).</span>
+game.start([RoleId.Morgana, RoleId.Percival]);</code></pre>
+			<p>Propose a player for the team:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Only the leader is allowed to propose a player.</span>
+<span class="hljs-keyword">const</span> leaderId = <span class="hljs-string">'id-1'</span>;
+
+<span class="hljs-comment">// Any player can be proposed for the team.</span>
+<span class="hljs-keyword">const</span> anyPlayerId = <span class="hljs-string">'id-5'</span>;
+
+<span class="hljs-comment">// Proposes a player to be included in the team. </span>
+game.toggleTeammateProposition(leaderId, anyPlayerId);</code></pre>
+			<p>Reset proposed teammates:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Only the leader is allowed to reset the propositions.</span>
+<span class="hljs-keyword">const</span> leaderId = <span class="hljs-string">'id-1'</span>;
+
+<span class="hljs-comment">// "Un-proposes" every player</span>
+game.resetProposedTeammates(leaderId);</code></pre>
+			<p>Finalize the proposed players as a team:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Only the leader is allowed to submit the team.</span>
+<span class="hljs-keyword">const</span> leaderId = <span class="hljs-string">'id-1'</span>;
+
+<span class="hljs-comment">// Finalizes the team members. The game then: </span>
+<span class="hljs-comment">//   - transitions to the "Frozen State" (Read-only mode)</span>
+<span class="hljs-comment">//   - after the timeout (specified above), depending on whether the past 4 </span>
+<span class="hljs-comment">//   team propositions have been rejected or not:</span>
+<span class="hljs-comment">//     - transitions to the team voting phase, or</span>
+<span class="hljs-comment">//     - bypasses the team voting phase, transitioning straight to the</span>
+<span class="hljs-comment">//     quest voting phase.</span>
+game.submitTeam(leaderId);</code></pre>
+			<p>Vote for the proposed team:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Any player can either approve or reject the proposed team.</span>
+<span class="hljs-keyword">const</span> anyPlayerId = <span class="hljs-string">'id-3'</span>;
+
+<span class="hljs-comment">// After the voting concludes, the game will:</span>
+<span class="hljs-comment">//   - transition to the "Frozen State"</span>
+<span class="hljs-comment">//   - after the timeout (specified above), depending on the </span>
+<span class="hljs-comment">//   results, the game will transition to either the quest voting </span>
+<span class="hljs-comment">//   or the team proposition state. </span>
+game.voteForTeam(anyPlayerId, <span class="hljs-literal">true</span>);</code></pre>
+			<p>Vote for the current quest:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Only the *proposed players* are allowed to cast either a positive</span>
+<span class="hljs-comment">// or a negative vote.</span>
+<span class="hljs-keyword">const</span> proposedPlayerId = <span class="hljs-string">'id-3'</span>;
+
+<span class="hljs-comment">// Can only be called during the "quest voting" phase. If there are</span>
+<span class="hljs-comment">// enough `fail` votes - the quest fails, otherwise - it succeeds. </span>
+<span class="hljs-comment">// Depending on the circumstances, from this point the game continues </span>
+<span class="hljs-comment">// following one of these scenarios:</span>
+<span class="hljs-comment">//   - the game is over, bad guys win.</span>
+<span class="hljs-comment">//   - the game transitions into the "Frozen State":</span>
+<span class="hljs-comment">//     - after the timeout it returns to the team proposition state.</span>
+<span class="hljs-comment">//     - after the timeout it proceeds to the assassination phase.</span>
+game.voteForQuest(proposedPlayerId, <span class="hljs-literal">true</span>);</code></pre>
+			<p>Toggle victim proposition:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Only the assassin is allowed to propose a victim.</span>
+<span class="hljs-keyword">const</span> assassinId = <span class="hljs-string">'id-2'</span>;
+
+<span class="hljs-comment">// Anyone other than the Assassin can be proposed as a victim.</span>
+<span class="hljs-keyword">const</span> victimId   = <span class="hljs-string">'id-4'</span>;
+
+<span class="hljs-comment">// Toggles whether the player under `victimId` is proposed</span>
+<span class="hljs-comment">// for assassination.</span>
+game.toggleVictimProposition(assassinId, victimId);</code></pre>
+			<p>Assassinate the victim:</p>
+			<pre><code class="language-javascript"><span class="hljs-comment">// Only the assassin is allowed to assassinate the victim.</span>
+<span class="hljs-keyword">const</span> assassinId = <span class="hljs-string">'id-2'</span>;
+
+<span class="hljs-comment">// Finalizes the choice and assassinates the victim. If the victim</span>
+<span class="hljs-comment">// turns out to be Merlin - the bad guys win, however, if the</span>
+<span class="hljs-comment">// Assassin fails to guess who the Merlin is - the good guys win.</span>
+game.assassinate(assassinId);</code></pre>
+			<p>Game serialization:</p>
+			<pre><code class="language-javascript"><span class="hljs-keyword">const</span> playerId = <span class="hljs-string">'id-1'</span>;
+
+<span class="hljs-comment">// Serializes the game state from the perspective of a given player.</span>
+<span class="hljs-comment">// E.g reveals bad guys to other bad guys, but hides them from the good</span>
+<span class="hljs-comment">// guys, etc..</span>
+game.serialize(playerId);</code></pre>
 			<hr>
 			<p>The entire documentation can be viewed <a href="https://alexlomm.github.io/avalon-engine/">here</a>.</p>
 		</div>

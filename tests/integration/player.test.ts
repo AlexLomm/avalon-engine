@@ -8,8 +8,8 @@ beforeEach(() => {
   player = new Player('user-1');
 });
 
-test('should return a username', () => {
-  expect(player.getUsername()).toEqual('user-1');
+test('should return a id', () => {
+  expect(player.getId()).toEqual('user-1');
 });
 
 test('should start with an `Unknown` role', () => {
@@ -59,7 +59,7 @@ test('should return if is merlin', () => {
 describe('voting', () => {
   test('should return a vote', () => {
     expect(player.generateVote(false))
-      .toEqual(new Vote(player.getUsername(), false));
+      .toEqual(new Vote(player.getId(), false));
   });
 
   test('should remember the vote', () => {
@@ -81,7 +81,7 @@ describe('voting', () => {
 
 describe('serialization', () => {
   test('should return necessary values', () => {
-    const expected = ['username', 'role'].sort();
+    const expected = ['id', 'role'].sort();
     const actual   = Object.keys(player.serialize(false)).sort();
 
     expect(expected).toEqual(actual);

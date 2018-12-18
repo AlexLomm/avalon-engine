@@ -18,6 +18,16 @@ describe('adding players', () => {
     expect(manager.getAll().length).toBeTruthy();
   });
 
+  test('should remove a player', () => {
+    manager.add(new Player('user-1'));
+    manager.add(new Player('user-2'));
+    manager.add(new Player('user-3'));
+
+    manager.remove('user-2');
+
+    expect(manager.getAll().map(p => p.getId())).toEqual(['user-1', 'user-3']);
+  });
+
   test('should get players', () => {
     manager.add(new Player('user-1'));
     manager.add(new Player('user-2'));
@@ -33,11 +43,11 @@ describe('adding players', () => {
     expect(manager.getAll().length).toStrictEqual(initialPlayersCount);
   });
 
-  test('should prevent adding a new player with the same username', () => {
-    manager.add(new Player('some-username'));
+  test('should prevent adding a new player with the same id', () => {
+    manager.add(new Player('some-id'));
 
     expect(() => {
-      manager.add(new Player('some-username'));
+      manager.add(new Player('some-id'));
     }).toThrow(fromErrors.AlreadyExistsPlayerError);
   });
 
@@ -106,7 +116,7 @@ describe('team proposition and submission', () => {
     manager.nextLeader();
     const leader = manager.getLeader();
 
-    expect(manager.playerPropositionAllowedFor(leader.getUsername())).toBeTruthy();
+    expect(manager.playerPropositionAllowedFor(leader.getId())).toBeTruthy();
   });
 
   test('should set and get proposed players', () => {
@@ -131,6 +141,18 @@ describe('team proposition and submission', () => {
     expect(manager.getProposedPlayersCount()).toStrictEqual(0);
   });
 
+  test('should reset all the proposed players', () => {
+    manager.add(new Player('user-1'));
+    manager.add(new Player('user-2'));
+
+    manager.togglePlayerProposition('user-1');
+    manager.togglePlayerProposition('user-2');
+
+    manager.resetProposedTeammates();
+
+    expect(manager.getProposedPlayersCount()).toStrictEqual(0);
+  });
+
   test('should return if a player has right to submit a team', () => {
     PlayersManagerHelper.fillPlayers(manager, 7);
 
@@ -139,7 +161,7 @@ describe('team proposition and submission', () => {
     manager.nextLeader();
     const leader = manager.getLeader();
 
-    expect(manager.playerPropositionAllowedFor(leader.getUsername())).toBeTruthy();
+    expect(manager.playerPropositionAllowedFor(leader.getId())).toBeTruthy();
   });
 
   test('should mark players as submitted', () => {
@@ -186,7 +208,7 @@ describe('team proposition and submission', () => {
 
     manager.setIsSubmitted(true);
     manager.generateVote('user-1', true);
-    manager.togglePlayerProposition(manager.getAll()[0].getUsername());
+    manager.togglePlayerProposition(manager.getAll()[0].getId());
 
     manager.reset();
 
@@ -213,7 +235,7 @@ describe('voting', () => {
     manager.generateVote('user-3', false);
 
     expect(
-      manager.getAll().find(p => !!p.getVote()).getUsername(),
+      manager.getAll().find(p => !!p.getVote()).getId(),
     ).toStrictEqual('user-3');
   });
 
@@ -260,8 +282,8 @@ describe('assassination', () => {
 
     expect(() => {
       manager.toggleVictimProposition(
-        nonAssassins[0].getUsername(),
-        nonAssassins[1].getUsername(),
+        nonAssassins[0].getId(),
+        nonAssassins[1].getId(),
       );
     }).toThrow(fromErrors.DeniedVictimPropositionError);
   });
@@ -271,8 +293,8 @@ describe('assassination', () => {
 
     expect(() => {
       manager.toggleVictimProposition(
-        PlayersManagerHelper.getAssassin(manager).getUsername(),
-        PlayersManagerHelper.getAssassin(manager).getUsername(),
+        PlayersManagerHelper.getAssassin(manager).getId(),
+        PlayersManagerHelper.getAssassin(manager).getId(),
       );
     }).toThrow(fromErrors.DeniedSelfSacrificeError);
   });
@@ -280,22 +302,22 @@ describe('assassination', () => {
   test('should toggle victim proposition', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    expect(manager.serialize('user-1', true).victim).toBeFalsy();
+    expect(manager.serialize('user-1', true).victimId).toBeFalsy();
 
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
-      PlayersManagerHelper.getAssassin(manager).getUsername(),
-      nonAssassin.getUsername(),
+      PlayersManagerHelper.getAssassin(manager).getId(),
+      nonAssassin.getId(),
     );
 
-    expect(manager.serialize('user-1', true).victim).toEqual(nonAssassin.getUsername());
+    expect(manager.serialize('user-1', true).victimId).toEqual(nonAssassin.getId());
 
     manager.toggleVictimProposition(
-      PlayersManagerHelper.getAssassin(manager).getUsername(),
-      nonAssassin.getUsername(),
+      PlayersManagerHelper.getAssassin(manager).getId(),
+      nonAssassin.getId(),
     );
 
-    expect(manager.serialize('user-1', true).victim).toBeFalsy();
+    expect(manager.serialize('user-1', true).victimId).toBeFalsy();
   });
 
   test('should reveal every role', () => {
@@ -310,7 +332,7 @@ describe('assassination', () => {
   test('should throw for assassination attempt, when no victim is proposed', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    expect(() => manager.assassinate(PlayersManagerHelper.getAssassin(manager).getUsername()))
+    expect(() => manager.assassinate(PlayersManagerHelper.getAssassin(manager).getId()))
       .toThrow(fromErrors.RequiredVictimError);
   });
 
@@ -321,11 +343,11 @@ describe('assassination', () => {
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
 
     manager.toggleVictimProposition(
-      assassin.getUsername(),
-      nonAssassin.getUsername(),
+      assassin.getId(),
+      nonAssassin.getId(),
     );
 
-    expect(() => manager.assassinate(nonAssassin.getUsername()))
+    expect(() => manager.assassinate(nonAssassin.getId()))
       .toThrow(fromErrors.DeniedAssassinationError);
   });
 
@@ -335,9 +357,9 @@ describe('assassination', () => {
     const assassin = PlayersManagerHelper.getAssassin(manager);
     const victim   = manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
 
-    manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
+    manager.toggleVictimProposition(assassin.getId(), victim.getId());
 
-    const isSuccessful = manager.assassinate(assassin.getUsername());
+    const isSuccessful = manager.assassinate(assassin.getId());
 
     expect(isSuccessful).toBeTruthy();
   });
@@ -348,9 +370,9 @@ describe('assassination', () => {
     const assassin = PlayersManagerHelper.getAssassin(manager);
     const victim   = PlayersManagerHelper.getNonAssassinNonMerlin(manager);
 
-    manager.toggleVictimProposition(assassin.getUsername(), victim.getUsername());
+    manager.toggleVictimProposition(assassin.getId(), victim.getId());
 
-    const isSuccessful = manager.assassinate(assassin.getUsername());
+    const isSuccessful = manager.assassinate(assassin.getId());
 
     expect(isSuccessful).toBeFalsy();
   });
@@ -361,9 +383,9 @@ describe('assassination', () => {
     const assassin = PlayersManagerHelper.getAssassin(manager);
     const merlin   = manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
 
-    manager.toggleVictimProposition(assassin.getUsername(), merlin.getUsername());
+    manager.toggleVictimProposition(assassin.getId(), merlin.getId());
 
-    const wasMerlin = manager.assassinate(assassin.getUsername());
+    const wasMerlin = manager.assassinate(assassin.getId());
 
     expect(wasMerlin).toBeTruthy();
   });
@@ -377,9 +399,9 @@ describe('assassination', () => {
         && !p.isAssassin();
     });
 
-    manager.toggleVictimProposition(assassin.getUsername(), nonMerlin.getUsername());
+    manager.toggleVictimProposition(assassin.getId(), nonMerlin.getId());
 
-    const wasMerlin = manager.assassinate(assassin.getUsername());
+    const wasMerlin = manager.assassinate(assassin.getId());
 
     expect(wasMerlin).toBeFalsy();
   });
@@ -396,10 +418,10 @@ describe('serialization', () => {
 
     const expected = [
       'collection',
-      'proposedPlayerUsernames',
-      'leader',
+      'proposedPlayerIds',
+      'leaderId',
       'isSubmitted',
-      'victim',
+      'victimId',
     ].sort();
 
     const actual = Object.keys(manager.serialize('user-1', true)).sort();
@@ -417,7 +439,7 @@ describe('serialization', () => {
     manager.getAll().forEach((p) => expect(p.serialize).toBeCalledTimes(1));
   });
 
-  test('should contain proposed player usernames', () => {
+  test('should contain proposed player ids', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
     manager.togglePlayerProposition('user-1');
@@ -425,16 +447,16 @@ describe('serialization', () => {
 
     const serialized = manager.serialize('user-3', true);
 
-    expect(serialized.proposedPlayerUsernames)
+    expect(serialized.proposedPlayerIds)
       .toEqual(['user-1', 'user-2']);
   });
 
-  test('should contain a game leader username', () => {
+  test('should contain a game leader id', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
-    const expected = manager.getLeader().getUsername();
+    const expected = manager.getLeader().getId();
     const actual   = manager.serialize('user-1', true)
-      .leader;
+      .leaderId;
 
     expect(expected).toEqual(actual);
   });
@@ -448,17 +470,17 @@ describe('serialization', () => {
       .toStrictEqual(true);
   });
 
-  test('should contain the victim\'s username', () => {
+  test('should contain the victim\'s id', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
-      PlayersManagerHelper.getAssassin(manager).getUsername(),
-      nonAssassin.getUsername(),
+      PlayersManagerHelper.getAssassin(manager).getId(),
+      nonAssassin.getId(),
     );
 
-    const victimUsername = manager.serialize('user-1', true).victim;
+    const victimId = manager.serialize('user-1', true).victimId;
 
-    expect(nonAssassin.getUsername()).toStrictEqual(victimUsername);
+    expect(nonAssassin.getId()).toStrictEqual(victimId);
   });
 });

@@ -934,6 +934,12 @@ img { max-width: 100%; }
 					<a href="_game_client_.gameclient.html#on" class="tsd-kind-icon">on</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="_game_client_.gameclient.html#removeplayer" class="tsd-kind-icon">remove<wbr>Player</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="_game_client_.gameclient.html#resetproposedteammates" class="tsd-kind-icon">reset<wbr>Proposed<wbr>Teammates</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="_game_client_.gameclient.html#serialize" class="tsd-kind-icon">serialize</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -1002,6 +1008,8 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_game_client_.gameclient.html#getid" class="tsd-kind-icon">get<wbr>Id</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_game_client_.gameclient.html#off" class="tsd-kind-icon">off</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_game_client_.gameclient.html#on" class="tsd-kind-icon">on</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_game_client_.gameclient.html#removeplayer" class="tsd-kind-icon">remove<wbr>Player</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_game_client_.gameclient.html#resetproposedteammates" class="tsd-kind-icon">reset<wbr>Proposed<wbr>Teammates</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_game_client_.gameclient.html#serialize" class="tsd-kind-icon">serialize</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_game_client_.gameclient.html#start" class="tsd-kind-icon">start</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="_game_client_.gameclient.html#submitteam" class="tsd-kind-icon">submit<wbr>Team</a></li>
@@ -1026,7 +1034,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L24">game-client.ts:24</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L24">game-client.ts:24</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1048,7 +1056,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">game<span class="tsd-signature-symbol">:</span> <a href="_game_.game.html" class="tsd-signature-type">Game</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L24">game-client.ts:24</a></li>
+						<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L24">game-client.ts:24</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1059,14 +1067,14 @@ img { max-width: 100%; }
 				<a name="addplayer" class="tsd-anchor"></a>
 				<h3>add<wbr>Player</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">add<wbr>Player<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">add<wbr>Player<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#addplayer">addPlayer</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L67">game-client.ts:67</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L67">game-client.ts:67</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1089,7 +1097,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>username: <span class="tsd-signature-type">string</span></h5>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1100,14 +1108,14 @@ img { max-width: 100%; }
 				<a name="assassinate" class="tsd-anchor"></a>
 				<h3>assassinate</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">assassinate<span class="tsd-signature-symbol">(</span>assassinsUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">assassinate<span class="tsd-signature-symbol">(</span>assassinsId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#assassinate">assassinate</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L152">game-client.ts:152</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L173">game-client.ts:173</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1129,7 +1137,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>assassinsUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>assassinsId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1147,7 +1155,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_identifiable_.iidentifiable.html">IIdentifiable</a>.<a href="../interfaces/_interfaces_identifiable_.iidentifiable.html#getid">getId</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L40">game-client.ts:40</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L40">game-client.ts:40</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1169,7 +1177,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L54">game-client.ts:54</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L54">game-client.ts:54</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1212,7 +1220,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L47">game-client.ts:47</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L47">game-client.ts:47</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1246,17 +1254,89 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="removeplayer" class="tsd-anchor"></a>
+				<h3>remove<wbr>Player</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">remove<wbr>Player<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#removeplayer">removePlayer</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L78">game-client.ts:78</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Removes a player from the game.</p>
+							</div>
+							<p>This is only allowed before the game is started.</p>
+							<dl class="tsd-comment-tags">
+								<dt>throws</dt>
+								<dd><p>AlreadyStartedGameError</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="resetproposedteammates" class="tsd-anchor"></a>
+				<h3>reset<wbr>Proposed<wbr>Teammates</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">reset<wbr>Proposed<wbr>Teammates<span class="tsd-signature-symbol">(</span>leaderId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#resetproposedteammates">resetProposedTeammates</a></p>
+							<ul>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L151">game-client.ts:151</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Allows a current team leader to un-propose every player</p>
+							</div>
+							<dl class="tsd-comment-tags">
+								<dt>throws</dt>
+								<dd><p>NoTimeForTeammatePropositionError</p>
+								</dd>
+								<dt>throws</dt>
+								<dd><p>DeniedTeammatePropositionError</p>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>leaderId: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="serialize" class="tsd-anchor"></a>
 				<h3>serialize</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">serialize<span class="tsd-signature-symbol">(</span>forUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/_types_game_serialized_.html#gameserialized" class="tsd-signature-type">GameSerialized</a></li>
+					<li class="tsd-signature tsd-kind-icon">serialize<span class="tsd-signature-symbol">(</span>forId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/_types_game_serialized_.html#gameserialized" class="tsd-signature-type">GameSerialized</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#serialize">serialize</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L159">game-client.ts:159</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L180">game-client.ts:180</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1267,7 +1347,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>forUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>forId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <a href="../modules/_types_game_serialized_.html#gameserialized" class="tsd-signature-type">GameSerialized</a></h4>
@@ -1285,7 +1365,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#start">start</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L79">game-client.ts:79</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L90">game-client.ts:90</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1316,14 +1396,14 @@ img { max-width: 100%; }
 				<a name="submitteam" class="tsd-anchor"></a>
 				<h3>submit<wbr>Team</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">submit<wbr>Team<span class="tsd-signature-symbol">(</span>leaderUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">submit<wbr>Team<span class="tsd-signature-symbol">(</span>leaderId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#submitteam">submitTeam</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L93">game-client.ts:93</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L104">game-client.ts:104</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1350,7 +1430,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>leaderUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>leaderId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1361,14 +1441,14 @@ img { max-width: 100%; }
 				<a name="toggleteammateproposition" class="tsd-anchor"></a>
 				<h3>toggle<wbr>Teammate<wbr>Proposition</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">toggle<wbr>Teammate<wbr>Proposition<span class="tsd-signature-symbol">(</span>leaderUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">toggle<wbr>Teammate<wbr>Proposition<span class="tsd-signature-symbol">(</span>leaderId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#toggleteammateproposition">toggleTeammateProposition</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L130">game-client.ts:130</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L141">game-client.ts:141</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1388,10 +1468,10 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>leaderUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>leaderId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>username: <span class="tsd-signature-type">string</span></h5>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1402,14 +1482,14 @@ img { max-width: 100%; }
 				<a name="togglevictimproposition" class="tsd-anchor"></a>
 				<h3>toggle<wbr>Victim<wbr>Proposition</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">toggle<wbr>Victim<wbr>Proposition<span class="tsd-signature-symbol">(</span>assassinsUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, victimsUsername<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">toggle<wbr>Victim<wbr>Proposition<span class="tsd-signature-symbol">(</span>assassinsId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, victimsId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#togglevictimproposition">toggleVictimProposition</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L141">game-client.ts:141</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L162">game-client.ts:162</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1431,10 +1511,10 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>assassinsUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>assassinsId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>victimsUsername: <span class="tsd-signature-type">string</span></h5>
+								<h5>victimsId: <span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -1445,14 +1525,14 @@ img { max-width: 100%; }
 				<a name="voteforquest" class="tsd-anchor"></a>
 				<h3>vote<wbr>For<wbr>Quest</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">vote<wbr>For<wbr>Quest<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">vote<wbr>For<wbr>Quest<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#voteforquest">voteForQuest</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L106">game-client.ts:106</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L117">game-client.ts:117</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1478,7 +1558,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>username: <span class="tsd-signature-type">string</span></h5>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
 								<h5>voteValue: <span class="tsd-signature-type">boolean</span></h5>
@@ -1492,14 +1572,14 @@ img { max-width: 100%; }
 				<a name="voteforteam" class="tsd-anchor"></a>
 				<h3>vote<wbr>For<wbr>Team</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">vote<wbr>For<wbr>Team<span class="tsd-signature-symbol">(</span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">vote<wbr>For<wbr>Team<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, voteValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<p>Implementation of <a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html">IGameClientApi</a>.<a href="../interfaces/_interfaces_game_client_api_.igameclientapi.html#voteforteam">voteForTeam</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/8901e06/src/game-client.ts#L119">game-client.ts:119</a></li>
+								<li>Defined in <a href="https://github.com/AlexLomm/avalon-engine/blob/a82964c/src/game-client.ts#L130">game-client.ts:130</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1525,7 +1605,7 @@ img { max-width: 100%; }
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>username: <span class="tsd-signature-type">string</span></h5>
+								<h5>id: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
 								<h5>voteValue: <span class="tsd-signature-type">boolean</span></h5>

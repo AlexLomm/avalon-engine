@@ -17,3 +17,18 @@ test('should emit an event upon adding a player', () => {
   expect(game.emit).toBeCalledTimes(1);
   expect(game.emit).toBeCalledWith(GameEvent.StateChange);
 });
+
+test('should emit an event upon removing a player', () => {
+  const game = new Game();
+
+  const state = new PreparationState();
+
+  state.addPlayer(game, 'user-1');
+
+  jest.spyOn(game, 'emit');
+
+  state.removePlayer(game, 'user-1');
+
+  expect(game.emit).toBeCalledTimes(1);
+  expect(game.emit).toBeCalledWith(GameEvent.StateChange);
+});

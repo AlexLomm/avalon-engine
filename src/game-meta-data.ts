@@ -12,8 +12,8 @@ export class GameMetaData implements IIdentifiable {
   private startedAt: Date          = null;
   private finishedAt: Date         = null;
   private levelPreset: LevelPreset = LevelPreset.null();
-  // TODO: rethink the simultaneous use of `finishedAt` and `gameStatus`
-  private gameStatus: GameStatus   = GameStatus.Unfinished;
+  // TODO: rethink the simultaneous use of `finishedAt` and `status`
+  private status: GameStatus       = GameStatus.Unfinished;
   private gameCreator: Player      = null;
 
   getId(): string {
@@ -21,7 +21,7 @@ export class GameMetaData implements IIdentifiable {
   }
 
   getGameStatus() {
-    return this.gameStatus;
+    return this.status;
   }
 
   setCreatorOnce(gameCreator: Player) {
@@ -37,8 +37,8 @@ export class GameMetaData implements IIdentifiable {
     return this.levelPreset;
   }
 
-  finish(gameStatus: GameStatus) {
-    this.gameStatus = gameStatus;
+  finish(status: GameStatus) {
+    this.status = status;
 
     this.finishedAt = new Date();
   }
@@ -50,8 +50,8 @@ export class GameMetaData implements IIdentifiable {
       startedAt: this.startedAt ? this.startedAt.toString() : null,
       finishedAt: this.finishedAt ? this.finishedAt.toString() : null,
       levelPreset: this.levelPreset.serialize(),
-      gameStatus: this.gameStatus,
-      gameCreator: this.gameCreator ? this.gameCreator.getUsername() : null,
+      status: this.status,
+      creatorId: this.gameCreator ? this.gameCreator.getId() : null,
     };
   }
 }

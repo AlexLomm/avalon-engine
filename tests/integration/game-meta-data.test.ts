@@ -18,12 +18,12 @@ test('should have an id and creation date set upon initialization', () => {
 test('should set a creator once', () => {
   const gameMeta = new GameMetaData();
 
-  expect(gameMeta.serialize().gameCreator).toBeFalsy();
+  expect(gameMeta.serialize().creatorId).toBeFalsy();
 
   gameMeta.setCreatorOnce(new Player('user-1'));
   gameMeta.setCreatorOnce(new Player('user-2'));
 
-  expect(gameMeta.serialize().gameCreator).toStrictEqual('user-1');
+  expect(gameMeta.serialize().creatorId).toStrictEqual('user-1');
 });
 
 test('should set an appropriate level preset', () => {
@@ -65,8 +65,8 @@ test('should contain the expected keys', () => {
     'id',
     'createdAt',
     'levelPreset',
-    'gameStatus',
-    'gameCreator',
+    'status',
+    'creatorId',
     'startedAt',
     'finishedAt',
   ].sort();
@@ -79,7 +79,7 @@ test('should contain the expected keys', () => {
 test('should have the game status set as "Unfinished" by default', () => {
   const gameMeta = new GameMetaData();
 
-  expect(gameMeta.serialize().gameStatus).toEqual('Unfinished');
+  expect(gameMeta.serialize().status).toEqual('Unfinished');
 });
 
 test('should set the game status to "Won"', () => {

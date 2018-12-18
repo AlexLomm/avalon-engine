@@ -201,7 +201,7 @@ export class GameStateMachine implements IEventListener {
     game.getPlayersManager()
       .getAll()
       .forEach((player) => {
-        game.voteForTeam(player.getUsername(), true);
+        game.voteForTeam(player.getId(), true);
       });
   }
 

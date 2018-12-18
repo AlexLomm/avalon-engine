@@ -81,6 +81,7 @@ export class QuestsManager {
   serialize(resultsConcealed: boolean): QuestsManagerSerialized {
     return {
       collection: this.getSerializedQuests(resultsConcealed),
+      currentQuestIndex: this.currentQuestIndex,
       teamVotingRoundIndex: this.getCurrentQuest()
         ? this.getCurrentQuest().getTeamVotingRoundIndex()
         : 0,

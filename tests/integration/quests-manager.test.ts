@@ -137,6 +137,7 @@ describe('serialization', () => {
 
     const expected: QuestsManagerSerialized = {
       collection: [],
+      currentQuestIndex: 0,
       teamVotingRoundIndex: 0,
     };
 
@@ -149,7 +150,7 @@ describe('serialization', () => {
     const manager = new QuestsManager();
     manager.init(new LevelPreset(5));
 
-    const serializedQuest = manager.getAll()[0].serialize(false,false);
+    const serializedQuest = manager.getAll()[0].serialize(false, false);
 
     expect(manager.serialize(false).collection[0]).toEqual(serializedQuest);
   });
