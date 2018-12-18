@@ -30,25 +30,25 @@ export class PlayersManagerHelper {
   }
 
   static getProposedPlayers(manager: PlayersManager) {
-    const username = manager.getAll()[0].getUsername();
+    const id = manager.getAll()[0].getId();
 
-    return manager.serialize(username, false)
-      .proposedPlayerUsernames
-      .map(username => manager.getAll().find(p => p.getUsername() === username));
+    return manager.serialize(id, false)
+      .proposedPlayerIds
+      .map(id => manager.getAll().find(p => p.getId() === id));
   }
 
   static getNonAssassin(manager: PlayersManager) {
-    const assassinsUsername = PlayersManagerHelper.getAssassin(manager).getUsername();
+    const assassinsId = PlayersManagerHelper.getAssassin(manager).getId();
 
-    return manager.getAll().find((p) => p.getUsername() !== assassinsUsername);
+    return manager.getAll().find((p) => p.getId() !== assassinsId);
   }
 
   static getNonAssassinNonMerlin(manager: PlayersManager) {
-    const assassinsUsername = PlayersManagerHelper.getAssassin(manager).getUsername();
+    const assassinsId = PlayersManagerHelper.getAssassin(manager).getId();
 
     return manager.getAll()
       .find(p => {
-        return p.getUsername() !== assassinsUsername
+        return p.getId() !== assassinsId
           && p.getRole().getId() !== RoleId.Merlin;
       });
   }

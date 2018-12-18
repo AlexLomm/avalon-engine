@@ -1,6 +1,6 @@
 import { RoleSerialized } from './role-serialized';
 
 export type PlayerSerialized = {
-  username: string;
+  id: string;
   role: RoleSerialized;
 }

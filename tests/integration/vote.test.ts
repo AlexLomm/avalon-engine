@@ -4,10 +4,10 @@ import { VoteSerialized } from '../../src/types/vote-serialized';
 test('should get vote', () => {
   const vote = new Vote('user-1', true);
 
-  expect(vote.getUsername()).toEqual('user-1');
+  expect(vote.getId()).toEqual('user-1');
 });
 
-test('should get username', () => {
+test('should get id', () => {
   const vote = new Vote('user-1', true);
 
   expect(vote.getValue()).toStrictEqual(true);
@@ -19,7 +19,7 @@ test('should serialize', () => {
   const actual = vote.serialize();
 
   const expected: VoteSerialized = {
-    username: 'some-user',
+    id: 'some-user',
     value: false,
   };
 

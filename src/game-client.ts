@@ -64,8 +64,19 @@ export class GameClient implements IGameClientApi, IIdentifiable {
    * @throws AlreadyExistsPlayerError
    * @throws PlayersMaximumReachedError
    */
-  addPlayer(username: string) {
-    this.game.addPlayer(username);
+  addPlayer(id: string) {
+    this.game.addPlayer(id);
+  }
+
+  /**
+   * Removes a player from the game.
+   *
+   * This is only allowed before the game is started.
+   *
+   * @throws AlreadyStartedGameError
+   */
+  removePlayer(id: string) {
+    this.game.removePlayer(id);
   }
 
   /**
@@ -90,8 +101,8 @@ export class GameClient implements IGameClientApi, IIdentifiable {
    * @throws DeniedTeamSubmissionError
    * @throws RequiredCorrectTeammatesAmountError
    */
-  submitTeam(leaderUsername: string) {
-    this.game.submitTeam(leaderUsername);
+  submitTeam(leaderId: string) {
+    this.game.submitTeam(leaderId);
   }
 
   /**
@@ -103,8 +114,8 @@ export class GameClient implements IGameClientApi, IIdentifiable {
    * @throws PlayerMissingError
    * @throws AlreadyVotedError
    */
-  voteForQuest(username: string, voteValue: boolean) {
-    this.game.voteForQuest(username, voteValue);
+  voteForQuest(id: string, voteValue: boolean) {
+    this.game.voteForQuest(id, voteValue);
   }
 
   /**
@@ -116,8 +127,8 @@ export class GameClient implements IGameClientApi, IIdentifiable {
    * @throws PlayerMissingError
    * @throws AlreadyVotedError
    */
-  voteForTeam(username: string, voteValue: boolean) {
-    this.game.voteForTeam(username, voteValue);
+  voteForTeam(id: string, voteValue: boolean) {
+    this.game.voteForTeam(id, voteValue);
   }
 
   /**
@@ -127,8 +138,18 @@ export class GameClient implements IGameClientApi, IIdentifiable {
    * @throws NoTimeForTeammatePropositionError
    * @throws DeniedTeammatePropositionError
    */
-  toggleTeammateProposition(leaderUsername: string, username: string) {
-    this.game.toggleTeammateProposition(leaderUsername, username);
+  toggleTeammateProposition(leaderId: string, id: string) {
+    this.game.toggleTeammateProposition(leaderId, id);
+  }
+
+  /**
+   * Allows a current team leader to un-propose every player
+   *
+   * @throws NoTimeForTeammatePropositionError
+   * @throws DeniedTeammatePropositionError
+   */
+  resetProposedTeammates(leaderId: string) {
+    this.game.resetProposedTeammates(leaderId);
   }
 
   /**
@@ -138,8 +159,8 @@ export class GameClient implements IGameClientApi, IIdentifiable {
    * @throws DeniedVictimPropositionError
    * @throws DeniedSelfSacrificeError
    */
-  toggleVictimProposition(assassinsUsername: string, victimsUsername: string) {
-    this.game.toggleVictimProposition(assassinsUsername, victimsUsername);
+  toggleVictimProposition(assassinsId: string, victimsId: string) {
+    this.game.toggleVictimProposition(assassinsId, victimsId);
   }
 
   /**
@@ -149,14 +170,14 @@ export class GameClient implements IGameClientApi, IIdentifiable {
    * @throws DeniedAssassinationError
    * @throws RequiredVictimError
    */
-  assassinate(assassinsUsername: string) {
-    this.game.assassinate(assassinsUsername);
+  assassinate(assassinsId: string) {
+    this.game.assassinate(assassinsId);
   }
 
   /**
    * Serializes the game state.
    */
-  serialize(forUsername: string): GameSerialized {
-    return this.game.serialize(forUsername);
+  serialize(forId: string): GameSerialized {
+    return this.game.serialize(forId);
   }
 }

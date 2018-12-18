@@ -1,16 +1,16 @@
 import { VoteSerialized } from './types/vote-serialized';
 
 export class Vote {
-  private username: string;
+  private id: string;
   private value: boolean;
 
-  constructor(username: string, value: boolean) {
-    this.username = username;
-    this.value    = value;
+  constructor(id: string, value: boolean) {
+    this.id    = id;
+    this.value = value;
   }
 
-  getUsername() {
-    return this.username;
+  getId() {
+    return this.id;
   }
 
   getValue() {
@@ -19,7 +19,7 @@ export class Vote {
 
   serialize(): VoteSerialized {
     return {
-      username: this.username,
+      id: this.id,
       value: this.value,
     };
   }

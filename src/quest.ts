@@ -93,11 +93,11 @@ export class Quest {
   private majorityApproved() {
     const currentRound = this.getCurrentTeamVotingRound();
 
-    const failsCount = currentRound.reduce(
+    const rejectsCount = currentRound.reduce(
       (acc, vote) => vote.getValue() ? acc : acc + 1, 0,
     );
 
-    return failsCount < Math.ceil(currentRound.length / 2);
+    return rejectsCount < Math.ceil(currentRound.length / 2);
   }
 
   teamVotingAllowed() {
@@ -150,7 +150,7 @@ export class Quest {
     const votes = this.getCurrentTeamVotingRound();
 
     return resultsConcealed
-      ? votes.map(v => new Vote(v.getUsername(), null).serialize())
+      ? votes.map(v => new Vote(v.getId(), null).serialize())
       : votes.map(v => v.serialize());
   }
 
@@ -158,7 +158,7 @@ export class Quest {
     if (votesOmitted) return [];
 
     if (resultsConcealed) {
-      return this.questVotes.map((v) => new Vote(v.getUsername(), null).serialize());
+      return this.questVotes.map((v) => new Vote(v.getId(), null).serialize());
     }
 
     const votes = this.questVotes.map(v => new Vote(null, v.getValue()));

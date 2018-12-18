@@ -1,6 +1,6 @@
 {
   "name": "avalon-engine",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "This is an engine for playing the popular \"The Resistance: Avalon\" game.",
   "files": [
     "dist/**/*"
@@ -17,8 +17,7 @@
   "author": "Alex Lomia <alexlom95@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.11",
-    "typestate": "^1.0.6"
+    "lodash": "^4.17.11"
   },
   "repository": {
     "type": "git",
@@ -38,6 +37,7 @@
     "@types/node": "^10.12.9",
     "jest": "^23.6.0",
     "ts-jest": "^23.10.4",
-    "typescript": "^3.1.6"
+    "typescript": "^3.1.6",
+    "typestate": "^1.0.6"
   }
 }
