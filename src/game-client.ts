@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import { GameStateMachine } from './game-states/game-state-machine';
 import { Game } from './game';
 import { PlayersManager } from './players-manager';

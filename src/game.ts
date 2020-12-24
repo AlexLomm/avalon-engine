@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import { PlayersManager } from './players-manager';
 import { QuestsManager } from './quests-manager';
 import { PreparationState } from './game-states/preparation-state';

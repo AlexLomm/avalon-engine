@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import { Game } from '../game';
 import { TeamPropositionState } from './team-proposition-state';
 import { TeamVotingState } from './team-voting-state';
