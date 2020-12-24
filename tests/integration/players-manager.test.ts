@@ -25,7 +25,10 @@ describe('adding players', () => {
 
     manager.remove('user-2');
 
-    expect(manager.getAll().map(p => p.getId())).toEqual(['user-1', 'user-3']);
+    expect(manager.getAll().map((p) => p.getId())).toEqual([
+      'user-1',
+      'user-3',
+    ]);
   });
 
   test('should get players', () => {
@@ -54,8 +57,9 @@ describe('adding players', () => {
   test('should prevent adding more than 10 players', () => {
     PlayersManagerHelper.fillPlayers(manager, 10);
 
-    expect(() => manager.add(new Player('user-11')))
-      .toThrow(fromErrors.PlayersMaximumReachedError);
+    expect(() => manager.add(new Player('user-11'))).toThrow(
+      fromErrors.PlayersMaximumReachedError
+    );
   });
 });
 
@@ -96,14 +100,18 @@ describe('leader', () => {
     PlayersManagerHelper.fillPlayers(manager, 7);
 
     manager.nextLeader();
-    const oldLeaderIndex = manager.getAll()
-      .findIndex(p => p === manager.getLeader());
+    const oldLeaderIndex = manager
+      .getAll()
+      .findIndex((p) => p === manager.getLeader());
 
     manager.nextLeader();
-    const newLeaderIndex = manager.getAll()
-      .findIndex(p => p === manager.getLeader());
+    const newLeaderIndex = manager
+      .getAll()
+      .findIndex((p) => p === manager.getLeader());
 
-    expect(newLeaderIndex).toEqual((oldLeaderIndex + 1) % manager.getAll().length);
+    expect(newLeaderIndex).toEqual(
+      (oldLeaderIndex + 1) % manager.getAll().length
+    );
   });
 });
 
@@ -186,8 +194,8 @@ describe('team proposition and submission', () => {
 
     manager.resetVotes();
 
-    const playersVotedCount = manager.getAll()
-      .filter(p => p.getVote()).length;
+    const playersVotedCount = manager.getAll().filter((p) => p.getVote())
+      .length;
 
     expect(playersVotedCount).toStrictEqual(0);
   });
@@ -235,7 +243,10 @@ describe('voting', () => {
     manager.generateVote('user-3', false);
 
     expect(
-      manager.getAll().find(p => !!p.getVote()).getId(),
+      manager
+        .getAll()
+        .find((p) => !!p.getVote())
+        .getId()
     ).toStrictEqual('user-3');
   });
 
@@ -283,7 +294,7 @@ describe('assassination', () => {
     expect(() => {
       manager.toggleVictimProposition(
         nonAssassins[0].getId(),
-        nonAssassins[1].getId(),
+        nonAssassins[1].getId()
       );
     }).toThrow(fromErrors.DeniedVictimPropositionError);
   });
@@ -294,7 +305,7 @@ describe('assassination', () => {
     expect(() => {
       manager.toggleVictimProposition(
         PlayersManagerHelper.getAssassin(manager).getId(),
-        PlayersManagerHelper.getAssassin(manager).getId(),
+        PlayersManagerHelper.getAssassin(manager).getId()
       );
     }).toThrow(fromErrors.DeniedSelfSacrificeError);
   });
@@ -307,14 +318,16 @@ describe('assassination', () => {
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
       PlayersManagerHelper.getAssassin(manager).getId(),
-      nonAssassin.getId(),
+      nonAssassin.getId()
     );
 
-    expect(manager.serialize('user-1', true).victimId).toEqual(nonAssassin.getId());
+    expect(manager.serialize('user-1', true).victimId).toEqual(
+      nonAssassin.getId()
+    );
 
     manager.toggleVictimProposition(
       PlayersManagerHelper.getAssassin(manager).getId(),
-      nonAssassin.getId(),
+      nonAssassin.getId()
     );
 
     expect(manager.serialize('user-1', true).victimId).toBeFalsy();
@@ -323,8 +336,10 @@ describe('assassination', () => {
   test('should reveal every role', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    const serialized       = manager.serialize('user-1', false);
-    const concealedPlayers = serialized.collection.filter(p => p.role.id === RoleId.Unknown);
+    const serialized = manager.serialize('user-1', false);
+    const concealedPlayers = serialized.collection.filter(
+      (p) => p.role.id === RoleId.Unknown
+    );
 
     expect(concealedPlayers.length).toStrictEqual(0);
   });
@@ -332,30 +347,31 @@ describe('assassination', () => {
   test('should throw for assassination attempt, when no victim is proposed', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    expect(() => manager.assassinate(PlayersManagerHelper.getAssassin(manager).getId()))
-      .toThrow(fromErrors.RequiredVictimError);
+    expect(() =>
+      manager.assassinate(PlayersManagerHelper.getAssassin(manager).getId())
+    ).toThrow(fromErrors.RequiredVictimError);
   });
 
   test('should throw if a non-assassin tries to assassinate', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
-    const assassin    = PlayersManagerHelper.getAssassin(manager);
+    const assassin = PlayersManagerHelper.getAssassin(manager);
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
 
-    manager.toggleVictimProposition(
-      assassin.getId(),
-      nonAssassin.getId(),
-    );
+    manager.toggleVictimProposition(assassin.getId(), nonAssassin.getId());
 
-    expect(() => manager.assassinate(nonAssassin.getId()))
-      .toThrow(fromErrors.DeniedAssassinationError);
+    expect(() => manager.assassinate(nonAssassin.getId())).toThrow(
+      fromErrors.DeniedAssassinationError
+    );
   });
 
   test('should return whether that the assassination was successful', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
     const assassin = PlayersManagerHelper.getAssassin(manager);
-    const victim   = manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
+    const victim = manager
+      .getAll()
+      .find((p) => p.getRole().getId() === RoleId.Merlin);
 
     manager.toggleVictimProposition(assassin.getId(), victim.getId());
 
@@ -368,7 +384,7 @@ describe('assassination', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 7);
 
     const assassin = PlayersManagerHelper.getAssassin(manager);
-    const victim   = PlayersManagerHelper.getNonAssassinNonMerlin(manager);
+    const victim = PlayersManagerHelper.getNonAssassinNonMerlin(manager);
 
     manager.toggleVictimProposition(assassin.getId(), victim.getId());
 
@@ -381,7 +397,9 @@ describe('assassination', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
     const assassin = PlayersManagerHelper.getAssassin(manager);
-    const merlin   = manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
+    const merlin = manager
+      .getAll()
+      .find((p) => p.getRole().getId() === RoleId.Merlin);
 
     manager.toggleVictimProposition(assassin.getId(), merlin.getId());
 
@@ -393,10 +411,9 @@ describe('assassination', () => {
   test('should return false if the assassination was unsuccessful', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
-    const assassin  = PlayersManagerHelper.getAssassin(manager);
+    const assassin = PlayersManagerHelper.getAssassin(manager);
     const nonMerlin = manager.getAll().find((p) => {
-      return p.getRole().getId() !== RoleId.Merlin
-        && !p.isAssassin();
+      return p.getRole().getId() !== RoleId.Merlin && !p.isAssassin();
     });
 
     manager.toggleVictimProposition(assassin.getId(), nonMerlin.getId());
@@ -409,8 +426,9 @@ describe('assassination', () => {
 
 describe('serialization', () => {
   test('should throw if no such player exists', () => {
-    expect(() => manager.serialize('nonexistent', true))
-      .toThrow(fromErrors.PlayerMissingError);
+    expect(() => manager.serialize('nonexistent', true)).toThrow(
+      fromErrors.PlayerMissingError
+    );
   });
 
   test('should return necessary values', () => {
@@ -447,16 +465,14 @@ describe('serialization', () => {
 
     const serialized = manager.serialize('user-3', true);
 
-    expect(serialized.proposedPlayerIds)
-      .toEqual(['user-1', 'user-2']);
+    expect(serialized.proposedPlayerIds).toEqual(['user-1', 'user-2']);
   });
 
   test('should contain a game leader id', () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
     const expected = manager.getLeader().getId();
-    const actual   = manager.serialize('user-1', true)
-      .leaderId;
+    const actual = manager.serialize('user-1', true).leaderId;
 
     expect(expected).toEqual(actual);
   });
@@ -466,17 +482,16 @@ describe('serialization', () => {
 
     manager.setIsSubmitted(true);
 
-    expect(manager.serialize('user-1', true).isSubmitted)
-      .toStrictEqual(true);
+    expect(manager.serialize('user-1', true).isSubmitted).toStrictEqual(true);
   });
 
-  test('should contain the victim\'s id', () => {
+  test("should contain the victim's id", () => {
     PlayersManagerHelper.addPlayersAndAssignRoles(manager, 5);
 
     const nonAssassin = manager.getAll().find((p) => !p.isAssassin());
     manager.toggleVictimProposition(
       PlayersManagerHelper.getAssassin(manager).getId(),
-      nonAssassin.getId(),
+      nonAssassin.getId()
     );
 
     const victimId = manager.serialize('user-1', true).victimId;

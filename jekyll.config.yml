@@ -1,5 +1,5 @@
 # Meant to be copied into the docs/ folder
 # to disable Jekyll on Github pages
 include:
-  - "_*_.html"
-  - "_*_.*.html"
+  - '_*_.html'
+  - '_*_.*.html'

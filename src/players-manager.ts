@@ -7,15 +7,12 @@ import { PlayersManagerSerialized } from './types/players-manager-serialized';
 import { RoleId } from './enums/role-id';
 
 export class PlayersManager {
-  private players: Player[]         = [];
-  private isSubmitted: boolean      = false;
+  private players: Player[] = [];
+  private isSubmitted: boolean = false;
   private proposedPlayers: Player[] = [];
-  private leaderIndex: number       = -1;
+  private leaderIndex: number = -1;
   private victim: Player;
   private assassin: Player;
-
-  constructor() {
-  }
 
   assassinate(assassinsId: string) {
     if (!this.assassin || this.assassin.getId() !== assassinsId) {
@@ -59,7 +56,7 @@ export class PlayersManager {
   }
 
   remove(id: string) {
-    const index = this.players.findIndex(p => p.getId() === id);
+    const index = this.players.findIndex((p) => p.getId() === id);
 
     if (index === -1) return;
 
@@ -70,10 +67,7 @@ export class PlayersManager {
     return this.players.find((p) => p.getId() === id);
   }
 
-  toggleVictimProposition(
-    assassinsId: string,
-    victimId: string,
-  ) {
+  toggleVictimProposition(assassinsId: string, victimId: string) {
     if (this.assassin.getId() !== assassinsId) {
       throw new fromErrors.DeniedVictimPropositionError();
     }
@@ -84,9 +78,7 @@ export class PlayersManager {
 
     const player = this.findPlayer(victimId);
 
-    this.victim = this.victim === player
-      ? null
-      : player;
+    this.victim = this.victim === player ? null : player;
   }
 
   togglePlayerProposition(id: string) {
@@ -114,12 +106,11 @@ export class PlayersManager {
   }
 
   assignRoles(levelPreset: LevelPreset, roleIds: RoleId[] = []) {
-    this.players = new RolesAssigner(
-      this.players,
-      levelPreset,
-    ).assignRoles(roleIds);
+    this.players = new RolesAssigner(this.players, levelPreset).assignRoles(
+      roleIds
+    );
 
-    this.assassin = this.players.find(p => p.isAssassin());
+    this.assassin = this.players.find((p) => p.isAssassin());
 
     this.nextLeader();
   }
@@ -192,7 +183,10 @@ export class PlayersManager {
     this.proposedPlayers = [];
   }
 
-  serialize(forPlayerId: string, rolesConcealed: boolean): PlayersManagerSerialized {
+  serialize(
+    forPlayerId: string,
+    rolesConcealed: boolean
+  ): PlayersManagerSerialized {
     const forPlayer = this.findPlayer(forPlayerId);
     if (!forPlayer) {
       throw new fromErrors.PlayerMissingError();
@@ -200,7 +194,7 @@ export class PlayersManager {
 
     return {
       collection: this.serializePlayers(forPlayer, rolesConcealed),
-      proposedPlayerIds: this.proposedPlayers.map(p => p.getId()),
+      proposedPlayerIds: this.proposedPlayers.map((p) => p.getId()),
       leaderId: PlayersManager.getIdOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
       victimId: PlayersManager.getIdOrNull(this.victim),

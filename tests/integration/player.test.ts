@@ -58,8 +58,7 @@ test('should return if is merlin', () => {
 
 describe('voting', () => {
   test('should return a vote', () => {
-    expect(player.generateVote(false))
-      .toEqual(new Vote(player.getId(), false));
+    expect(player.generateVote(false)).toEqual(new Vote(player.getId(), false));
   });
 
   test('should remember the vote', () => {
@@ -82,14 +81,14 @@ describe('voting', () => {
 describe('serialization', () => {
   test('should return necessary values', () => {
     const expected = ['id', 'role'].sort();
-    const actual   = Object.keys(player.serialize(false)).sort();
+    const actual = Object.keys(player.serialize(false)).sort();
 
     expect(expected).toEqual(actual);
   });
 
   test('should contain a hidden role when no role is assigned', () => {
     const expected = Role.null().serialize();
-    const actual   = player.serialize(true).role;
+    const actual = player.serialize(true).role;
 
     expect(expected).toEqual(actual);
   });
@@ -98,7 +97,7 @@ describe('serialization', () => {
     player.setRole(new Role(RoleId.Merlin));
 
     const expected = Role.null().serialize();
-    const actual   = player.serialize(false).role;
+    const actual = player.serialize(false).role;
 
     expect(expected).toEqual(actual);
   });
@@ -108,7 +107,7 @@ describe('serialization', () => {
     player.setRole(role);
 
     const expected = role.serialize();
-    const actual   = player.serialize(true).role;
+    const actual = player.serialize(true).role;
 
     expect(actual).toEqual(expected);
   });

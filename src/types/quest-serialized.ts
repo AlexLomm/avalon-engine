@@ -6,4 +6,4 @@ export type QuestSerialized = {
   votesNeededCount: number;
   teamVotes: VoteSerialized[];
   questVotes: VoteSerialized[];
-}
+};

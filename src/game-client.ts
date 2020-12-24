@@ -30,7 +30,7 @@ export class GameClient implements IGameClientApi, IIdentifiable {
       new GameMetaData(),
       new GameStateMachine(config.stateTransitionWaitTimes),
       new PreparationState(),
-      new EventEmitter(),
+      new EventEmitter()
     );
   }
 

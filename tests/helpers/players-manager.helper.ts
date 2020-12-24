@@ -16,25 +16,27 @@ export class PlayersManagerHelper {
   }
 
   static assignRoles(manager: PlayersManager) {
-    manager.assignRoles(new LevelPreset(manager.getAll().length as LevelPresetId));
+    manager.assignRoles(
+      new LevelPreset(manager.getAll().length as LevelPresetId)
+    );
   }
 
   static getAssassin(manager: PlayersManager) {
-    return manager.getAll().find(p => p.isAssassin());
+    return manager.getAll().find((p) => p.isAssassin());
   }
 
   static getMerlin(manager: PlayersManager) {
-    return manager.getAll().find(
-      (p) => p.getRole().getId() === RoleId.Merlin,
-    );
+    return manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
   }
 
   static getProposedPlayers(manager: PlayersManager) {
     const id = manager.getAll()[0].getId();
 
-    return manager.serialize(id, false)
-      .proposedPlayerIds
-      .map(id => manager.getAll().find(p => p.getId() === id));
+    return manager
+      .serialize(id, false)
+      .proposedPlayerIds.map((id) =>
+        manager.getAll().find((p) => p.getId() === id)
+      );
   }
 
   static getNonAssassin(manager: PlayersManager) {
@@ -46,10 +48,8 @@ export class PlayersManagerHelper {
   static getNonAssassinNonMerlin(manager: PlayersManager) {
     const assassinsId = PlayersManagerHelper.getAssassin(manager).getId();
 
-    return manager.getAll()
-      .find(p => {
-        return p.getId() !== assassinsId
-          && p.getRole().getId() !== RoleId.Merlin;
-      });
+    return manager.getAll().find((p) => {
+      return p.getId() !== assassinsId && p.getRole().getId() !== RoleId.Merlin;
+    });
   }
 }

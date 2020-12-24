@@ -7,14 +7,14 @@ import { LevelPresetId } from './types/level-preset-id';
 import { IIdentifiable } from './interfaces/identifiable';
 
 export class GameMetaData implements IIdentifiable {
-  private id: string               = crypto.randomBytes(20).toString('hex');
-  private createdAt: Date          = new Date();
-  private startedAt: Date          = null;
-  private finishedAt: Date         = null;
+  private id: string = crypto.randomBytes(20).toString('hex');
+  private createdAt: Date = new Date();
+  private startedAt: Date = null;
+  private finishedAt: Date = null;
   private levelPreset: LevelPreset = LevelPreset.null();
   // TODO: rethink the simultaneous use of `finishedAt` and `status`
-  private status: GameStatus       = GameStatus.Unfinished;
-  private gameCreator: Player      = null;
+  private status: GameStatus = GameStatus.Unfinished;
+  private gameCreator: Player = null;
 
   getId(): string {
     return this.id;
@@ -31,7 +31,7 @@ export class GameMetaData implements IIdentifiable {
   }
 
   init(levelPresetId: LevelPresetId): LevelPreset {
-    this.startedAt   = new Date();
+    this.startedAt = new Date();
     this.levelPreset = new LevelPreset(levelPresetId);
 
     return this.levelPreset;

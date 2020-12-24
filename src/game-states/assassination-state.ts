@@ -5,13 +5,10 @@ import { GameState } from '../enums/game-state';
 
 export class AssassinationState extends BaseState {
   protected resultsConcealed = true;
-  protected rolesConcealed   = true;
+  protected rolesConcealed = true;
 
   toggleVictimProposition(game: Game, assassinsId: string, victimsId: string) {
-    game.getPlayersManager().toggleVictimProposition(
-      assassinsId,
-      victimsId,
-    );
+    game.getPlayersManager().toggleVictimProposition(assassinsId, victimsId);
 
     game.emit(GameEvent.StateChange);
   }

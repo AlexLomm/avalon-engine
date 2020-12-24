@@ -8,14 +8,17 @@ jest.mock('../../../src/players-manager');
 jest.mock('../../../src/quests-manager');
 
 test('should emit an event upon adding a player', () => {
-  const playersManager                 = new PlayersManager();
-  playersManager.questVotingAllowedFor = jest.fn().mockImplementation(() => true);
-  playersManager.getIsSubmitted        = jest.fn().mockImplementation(() => true);
+  const playersManager = new PlayersManager();
+  playersManager.questVotingAllowedFor = jest
+    .fn()
+    .mockImplementation(() => true);
 
-  const questsManager              = new QuestsManager();
+  playersManager.getIsSubmitted = jest.fn().mockImplementation(() => true);
+
+  const questsManager = new QuestsManager();
   questsManager.questVotingAllowed = jest.fn().mockImplementation(() => true);
 
-  const game  = new Game(playersManager, questsManager);
+  const game = new Game(playersManager, questsManager);
   const state = new QuestVotingState();
 
   jest.spyOn(game, 'emit');

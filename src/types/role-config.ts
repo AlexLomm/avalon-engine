@@ -7,4 +7,4 @@ export type RoleConfig = {
   description: string;
   loyalty: Loyalty;
   visibleRoleIds: RoleId[];
-}
+};

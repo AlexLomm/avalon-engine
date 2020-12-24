@@ -1,5 +1,5 @@
 export enum QuestStatus {
   Unresolved = 'Unresolved',
-  Lost       = 'Lost',
-  Won        = 'Won',
+  Lost = 'Lost',
+  Won = 'Won',
 }

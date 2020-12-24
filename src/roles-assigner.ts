@@ -11,16 +11,16 @@ export class RolesAssigner {
   private levelPreset: LevelPreset;
 
   constructor(players: Player[], levelPreset: LevelPreset) {
-    this.players     = players;
+    this.players = players;
     this.levelPreset = levelPreset;
   }
 
   assignRoles(requestedRoleIds: RoleId[] = []): Player[] {
     const roleIds = RolesAssigner.generateRolesConfig(requestedRoleIds);
-    const roles   = RolesAssigner.generateRoles(
+    const roles = RolesAssigner.generateRoles(
       roleIds,
       this.levelPreset.getGoodCount(),
-      this.levelPreset.getEvilCount(),
+      this.levelPreset.getEvilCount()
     );
 
     this.players.forEach((player) => player.setRole(roles.pop()));
@@ -34,22 +34,26 @@ export class RolesAssigner {
     return _.union(roleIds, defaultRoleIds);
   }
 
-  static generateRoles(roleIds: RoleId[], goodCount: number, evilCount: number): Role[] {
+  static generateRoles(
+    roleIds: RoleId[],
+    goodCount: number,
+    evilCount: number
+  ): Role[] {
     const roles = roleIds.map((roleId: RoleId) => {
       const role = new Role(roleId);
 
-      role.getLoyalty() === Loyalty.Good
-        ? goodCount--
-        : evilCount--;
+      role.getLoyalty() === Loyalty.Good ? goodCount-- : evilCount--;
 
       return role;
     });
 
-    return _.shuffle(_.concat(
-      roles,
-      RolesAssigner.generateServants(goodCount),
-      RolesAssigner.generateMinions(evilCount),
-    ));
+    return _.shuffle(
+      _.concat(
+        roles,
+        RolesAssigner.generateServants(goodCount),
+        RolesAssigner.generateMinions(evilCount)
+      )
+    );
   }
 
   static generateServants(count: number): Role[] {

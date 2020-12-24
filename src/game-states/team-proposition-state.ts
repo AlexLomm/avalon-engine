@@ -6,7 +6,7 @@ import { GameState } from '../enums/game-state';
 
 export class TeamPropositionState extends BaseState {
   protected resultsConcealed = true;
-  protected rolesConcealed   = true;
+  protected rolesConcealed = true;
 
   toggleTeammateProposition(game: Game, leaderId: string, id: string) {
     if (!game.getPlayersManager().playerPropositionAllowedFor(leaderId)) {
@@ -43,8 +43,10 @@ export class TeamPropositionState extends BaseState {
   }
 
   private playerAmountIsIncorrect(game: Game) {
-    const proposedPlayersCount = game.getPlayersManager().getProposedPlayersCount();
-    const votesNeededCount     = game.getQuestsManager().getVotesNeededCount();
+    const proposedPlayersCount = game
+      .getPlayersManager()
+      .getProposedPlayersCount();
+    const votesNeededCount = game.getQuestsManager().getVotesNeededCount();
 
     return proposedPlayersCount !== votesNeededCount;
   }

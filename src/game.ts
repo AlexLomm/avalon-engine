@@ -13,12 +13,12 @@ import { IEventEmitter } from './interfaces/event-emitter';
 
 export class Game implements IGameClientApi, IEventEmitter {
   constructor(
-    private playersManager             = new PlayersManager(),
-    private questsManager              = new QuestsManager(),
-    private metaData: GameMetaData     = new GameMetaData(),
-    private fsm: GameStateMachine      = new GameStateMachine(),
-    private state: BaseState           = new PreparationState(),
-    private eventEmitter: EventEmitter = new EventEmitter(),
+    private playersManager = new PlayersManager(),
+    private questsManager = new QuestsManager(),
+    private metaData: GameMetaData = new GameMetaData(),
+    private fsm: GameStateMachine = new GameStateMachine(),
+    private state: BaseState = new PreparationState(),
+    private eventEmitter: EventEmitter = new EventEmitter()
   ) {
     this.fsm.init(this);
 

@@ -6,4 +6,4 @@ export type PlayersManagerSerialized = {
   leaderId: string;
   isSubmitted: boolean;
   victimId: string;
-}
+};

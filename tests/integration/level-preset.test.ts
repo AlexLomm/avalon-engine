@@ -2,8 +2,9 @@ import * as fromErrors from '../../src/errors';
 import { LevelPreset } from '../../src/level-preset';
 
 test('should throw if the specified number of players is incorrect', () => {
-  expect(() => new LevelPreset(100 as any))
-    .toThrow(fromErrors.PlayersAmountIncorrectError);
+  expect(() => new LevelPreset(100 as any)).toThrow(
+    fromErrors.PlayersAmountIncorrectError
+  );
 });
 
 test('should create a level preset for specified number of players', () => {
@@ -45,7 +46,13 @@ test('should return a null object if called with -1 parameter', () => {
 
   expect(levelPreset.getGoodCount()).toStrictEqual(null);
   expect(levelPreset.getEvilCount()).toStrictEqual(null);
-  expect(levelPreset.getQuestsConfig()).toStrictEqual([null, null, null, null, null]);
+  expect(levelPreset.getQuestsConfig()).toStrictEqual([
+    null,
+    null,
+    null,
+    null,
+    null,
+  ]);
 });
 
 test('should return a null object', () => {

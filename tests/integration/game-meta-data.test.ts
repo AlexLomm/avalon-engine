@@ -39,7 +39,9 @@ test('should contain a serialized level preset', () => {
 
   gameMeta.init(5);
 
-  expect(gameMeta.serialize().levelPreset).toEqual(new LevelPreset(5).serialize());
+  expect(gameMeta.serialize().levelPreset).toEqual(
+    new LevelPreset(5).serialize()
+  );
 });
 
 test('should have a starting date set', () => {
