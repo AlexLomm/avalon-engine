@@ -6,7 +6,7 @@ import { GameEvent } from '../enums/game-event';
 
 export class TeamVotingState extends BaseState {
   protected resultsConcealed = true;
-  protected rolesConcealed   = true;
+  protected rolesConcealed = true;
 
   voteForTeam(game: Game, id: string, voteValue: boolean) {
     if (!game.getPlayersManager().teamVotingAllowedFor(id)) {

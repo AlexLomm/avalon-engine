@@ -3,4 +3,4 @@ export type RoleSerialized = {
   name: string;
   description: string;
   loyalty: string;
-}
+};

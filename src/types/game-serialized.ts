@@ -6,4 +6,4 @@ export type GameSerialized = {
   meta: GameMetaDataSerialized;
   players: PlayersManagerSerialized;
   quests: QuestsManagerSerialized;
-}
+};

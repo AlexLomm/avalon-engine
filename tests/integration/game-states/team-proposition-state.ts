@@ -6,10 +6,12 @@ import { GameEvent } from '../../../src/enums/game-event';
 jest.mock('../../../src/players-manager');
 
 test('should emit an event upon team proposition', () => {
-  const playersManager                       = new PlayersManager();
-  playersManager.playerPropositionAllowedFor = jest.fn().mockImplementation(() => true);
+  const playersManager = new PlayersManager();
+  playersManager.playerPropositionAllowedFor = jest
+    .fn()
+    .mockImplementation(() => true);
 
-  const game  = new Game(playersManager);
+  const game = new Game(playersManager);
   const state = new TeamPropositionState();
 
   jest.spyOn(game, 'emit');

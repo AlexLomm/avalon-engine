@@ -6,7 +6,7 @@ import { GameEvent } from '../enums/game-event';
 
 export class QuestVotingState extends BaseState {
   protected resultsConcealed = true;
-  protected rolesConcealed   = true;
+  protected rolesConcealed = true;
 
   voteForQuest(game: Game, id: string, voteValue: boolean) {
     if (!game.getPlayersManager().questVotingAllowedFor(id)) {
@@ -47,7 +47,9 @@ export class QuestVotingState extends BaseState {
 
   // TODO: rename
   private questVotingIsOn(game: Game) {
-    return game.getPlayersManager().getIsSubmitted()
-      && game.getQuestsManager().questVotingAllowed();
+    return (
+      game.getPlayersManager().getIsSubmitted() &&
+      game.getQuestsManager().questVotingAllowed()
+    );
   }
 }

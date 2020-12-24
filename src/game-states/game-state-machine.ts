@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import { EventEmitter } from 'events';
 import { Game } from '../game';
 import { TeamPropositionState } from './team-proposition-state';
 import { TeamVotingState } from './team-voting-state';
@@ -26,9 +26,8 @@ export class GameStateMachine implements IEventListener {
       afterTeamProposition: 5000,
       afterTeamVoting: 5000,
       afterQuestVoting: 5000,
-    },
-  ) {
-  }
+    }
+  ) {}
 
   init(game: Game, startingState: GameState = GameState.Preparation) {
     if (this.isInit) return;
@@ -43,19 +42,20 @@ export class GameStateMachine implements IEventListener {
     this.fsm = new TypeState.FiniteStateMachine<GameState>(startingState);
 
     this.fsm.from(GameState.Preparation).to(GameState.TeamProposition);
-    //
+
     this.fsm.from(GameState.TeamProposition).to(GameState.TeamVoting);
-    this.fsm.from(GameState.TeamProposition).to(GameState.TeamVotingPreApproved);
-    //
+    this.fsm
+      .from(GameState.TeamProposition)
+      .to(GameState.TeamVotingPreApproved);
+
     this.fsm.from(GameState.TeamVoting).to(GameState.TeamProposition);
     this.fsm.from(GameState.TeamVoting).to(GameState.QuestVoting);
-    //
+
     this.fsm.from(GameState.TeamVotingPreApproved).to(GameState.QuestVoting);
-    //
+
     this.fsm.from(GameState.QuestVoting).to(GameState.TeamProposition);
     this.fsm.from(GameState.QuestVoting).to(GameState.Assassination);
-    this.fsm.from(GameState.QuestVoting).to(GameState.GameLost);
-    //
+
     this.fsm.from(GameState.Assassination).to(GameState.GameLost);
     this.fsm.from(GameState.Assassination).to(GameState.GameWon);
   }
@@ -198,7 +198,8 @@ export class GameStateMachine implements IEventListener {
   }
 
   private simulateTeamApproval(game: Game) {
-    game.getPlayersManager()
+    game
+      .getPlayersManager()
       .getAll()
       .forEach((player) => {
         game.voteForTeam(player.getId(), true);

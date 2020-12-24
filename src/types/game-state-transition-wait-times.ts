@@ -1,5 +1,5 @@
 export interface GameStateTransitionWaitTimes {
-  afterTeamProposition: number,
-  afterTeamVoting: number,
-  afterQuestVoting: number,
+  afterTeamProposition: number;
+  afterTeamVoting: number;
+  afterQuestVoting: number;
 }

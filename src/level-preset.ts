@@ -17,7 +17,7 @@ export class LevelPreset {
 
     this.goodCount = levelPresets[playerCount].goodCount;
     this.evilCount = levelPresets[playerCount].evilCount;
-    this.quests    = levelPresets[playerCount].quests;
+    this.quests = levelPresets[playerCount].quests;
   }
 
   // TODO: cache

@@ -9,7 +9,7 @@ export class GameHelper {
 
       _.times(
         game.getQuestsManager().getCurrentQuest().getVotesNeededCount(),
-        (i) => ids.push(`user-${i}`),
+        (i) => ids.push(`user-${i}`)
       );
 
       GameHelper.proposeAndSubmitTeam(game, ids);
@@ -37,16 +37,18 @@ export class GameHelper {
   }
 
   static voteAllForTeam(game: Game, voteValue: boolean) {
-    game.getPlayersManager()
+    game
+      .getPlayersManager()
       .getAll()
-      .forEach(p => game.voteForTeam(p.getId(), voteValue));
+      .forEach((p) => game.voteForTeam(p.getId(), voteValue));
   }
 
   static voteAllForQuest(game: Game, voteValue: boolean) {
     const manager = game.getPlayersManager();
 
-    PlayersManagerHelper.getProposedPlayers(manager)
-      .forEach(p => game.voteForQuest(p.getId(), voteValue));
+    PlayersManagerHelper.getProposedPlayers(manager).forEach((p) =>
+      game.voteForQuest(p.getId(), voteValue)
+    );
   }
 
   static fillPlayers(game: Game, count: number) {
