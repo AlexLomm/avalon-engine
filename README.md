@@ -21,9 +21,11 @@ const { GameClient, GameEvent, RoleId } = require('avalon-engine');
 
 // Instantiate a new game object with an optional config.
 const game = new GameClient({
-  afterTeamProposition: 5000,
-  afterTeamVoting: 7500,
-  afterQuestVoting: 7500,
+  stateTransitionWaitTimes: {
+    afterTeamProposition: 5000,
+    afterTeamVoting: 7500,
+    afterQuestVoting: 7500,
+  },
 });
 ```
 
