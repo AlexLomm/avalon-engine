@@ -4,8 +4,8 @@ import { RoleId } from '../enums/role-id';
 import { GameSerialized } from '../types/game-serialized';
 
 export abstract class BaseState {
-  protected abstract resultsConcealed: boolean = true;
-  protected abstract rolesConcealed: boolean   = true;
+  protected abstract resultsConcealed: boolean;
+  protected abstract rolesConcealed: boolean;
 
   addPlayer(game: Game, id: string): void {
     throw new fromErrors.AlreadyStartedGameError();

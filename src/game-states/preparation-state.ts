@@ -1,14 +1,14 @@
-import { Game } from '../game';
-import { Player } from '../player';
-import { BaseState } from './base-state';
-import { LevelPresetId } from '../types/level-preset-id';
-import { RoleId } from '../enums/role-id';
-import { GameEvent } from '../enums/game-event';
-import { GameState } from '../enums/game-state';
+import {Game} from '../game';
+import {Player} from '../player';
+import {BaseState} from './base-state';
+import {LevelPresetId} from '../types/level-preset-id';
+import {RoleId} from '../enums/role-id';
+import {GameEvent} from '../enums/game-event';
+import {GameState} from '../enums/game-state';
 
 export class PreparationState extends BaseState {
   protected resultsConcealed = true;
-  protected rolesConcealed   = true;
+  protected rolesConcealed = true;
 
   addPlayer(game: Game, id: string) {
     const player = new Player(id);
