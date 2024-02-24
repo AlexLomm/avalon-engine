@@ -2,7 +2,7 @@ import { Game } from '../../../src/game';
 import { PreparationState } from '../../../src/game-states/preparation-state';
 import { GameEvent } from '../../../src/enums/game-event';
 
-jest.mock('../../../src/players-manager');
+jest.mock('../../../src/player-manager');
 jest.mock('../../../src/game-meta-data');
 
 test('should emit an event upon adding a player', () => {

@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
-import { PlayersManager } from './players-manager';
-import { QuestsManager } from './quests-manager';
+import { PlayerManager } from './player-manager';
+import { QuestManager } from './quest-manager';
 import { PreparationState } from './game-states/preparation-state';
 import { BaseState } from './game-states/base-state';
 import { GameMetaData } from './game-meta-data';
@@ -13,8 +13,8 @@ import { IEventEmitter } from './interfaces/event-emitter';
 
 export class Game implements IGameClientApi, IEventEmitter {
   constructor(
-    private playersManager = new PlayersManager(),
-    private questsManager = new QuestsManager(),
+    private playerManager = new PlayerManager(),
+    private questManager = new QuestManager(),
     private metaData: GameMetaData = new GameMetaData(),
     private fsm: GameStateMachine = new GameStateMachine(),
     private state: BaseState = new PreparationState(),
@@ -44,12 +44,12 @@ export class Game implements IGameClientApi, IEventEmitter {
     this.state = state;
   }
 
-  getPlayersManager(): PlayersManager {
-    return this.playersManager;
+  getPlayersManager(): PlayerManager {
+    return this.playerManager;
   }
 
-  getQuestsManager(): QuestsManager {
-    return this.questsManager;
+  getQuestsManager(): QuestManager {
+    return this.questManager;
   }
 
   getMetaData(): GameMetaData {

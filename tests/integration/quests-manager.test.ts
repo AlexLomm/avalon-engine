@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
 import { Vote } from '../../src/vote';
-import { QuestsManager } from '../../src/quests-manager';
+import { QuestManager } from '../../src/quest-manager';
 import { Quest } from '../../src/quest';
 import { LevelPreset } from '../../src/level-preset';
 import { QuestsManagerSerialized } from '../../src/types/quests-manager-serialized';
 
 function resolveQuestsTimes(
-  manager: QuestsManager,
+  manager: QuestManager,
   voteValue: boolean,
   times: number,
 ) {
@@ -25,17 +25,17 @@ function resolveQuestsTimes(
   });
 }
 
-function failQuestsTimes(manager: QuestsManager, times: number) {
+function failQuestsTimes(manager: QuestManager, times: number) {
   resolveQuestsTimes(manager, false, times);
 }
 
-function succeedQuestsTimes(manager: QuestsManager, times: number) {
+function succeedQuestsTimes(manager: QuestManager, times: number) {
   resolveQuestsTimes(manager, true, times);
 }
 
 describe('initialization', () => {
   test('should initialize quests', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
 
     expect(manager.getAll().length).toBeFalsy();
 
@@ -46,7 +46,7 @@ describe('initialization', () => {
   });
 
   test('should get level preset', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
 
     expect(manager.getLevelPreset()).toBeFalsy();
 
@@ -58,10 +58,10 @@ describe('initialization', () => {
 });
 
 describe('current quest', () => {
-  let manager: QuestsManager;
+  let manager: QuestManager;
   let preset: LevelPreset;
   beforeEach(() => {
-    manager = new QuestsManager();
+    manager = new QuestManager();
     preset = new LevelPreset(5);
 
     manager.init(preset);
@@ -83,11 +83,11 @@ describe('current quest', () => {
 });
 
 describe('team voting', () => {
-  let manager: QuestsManager;
+  let manager: QuestManager;
   let preset: LevelPreset;
   let currentQuest: Quest;
   beforeEach(() => {
-    manager = new QuestsManager();
+    manager = new QuestManager();
     preset = new LevelPreset(5);
 
     manager.init(preset);
@@ -144,7 +144,7 @@ describe('team voting', () => {
 
 describe('serialization', () => {
   test('should return an empty state', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
 
     const expected: QuestsManagerSerialized = {
       collection: [],
@@ -158,7 +158,7 @@ describe('serialization', () => {
   });
 
   test('should contain serialized quests', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
     manager.init(new LevelPreset(5));
 
     const serializedQuest = manager.getAll()[0].serialize(false, false);
@@ -167,7 +167,7 @@ describe('serialization', () => {
   });
 
   test('should contain a team voting round tracker', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
     const preset = new LevelPreset(5);
     manager.init(preset);
 
@@ -182,7 +182,7 @@ describe('serialization', () => {
   });
 
   test('should reveal votes only for the current quest', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
     manager.init(new LevelPreset(5));
 
     _.times(5, (i) => manager.addVote(new Vote(`user-${i}`, true)));
@@ -201,7 +201,7 @@ describe('serialization', () => {
 });
 
 test('should get the amount of failed quests', () => {
-  const manager = new QuestsManager();
+  const manager = new QuestManager();
   manager.init(new LevelPreset(7));
 
   succeedQuestsTimes(manager, 2);
@@ -212,7 +212,7 @@ test('should get the amount of failed quests', () => {
 });
 
 test('should get the amount of succeeded quests', () => {
-  const manager = new QuestsManager();
+  const manager = new QuestManager();
   manager.init(new LevelPreset(7));
 
   failQuestsTimes(manager, 1);

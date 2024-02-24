@@ -1,35 +1,35 @@
 import * as _ from 'lodash';
-import { PlayersManager } from '../../src/players-manager';
+import { PlayerManager } from '../../src/player-manager';
 import { Player } from '../../src/player';
 import { LevelPreset } from '../../src/level-preset';
 import { RoleId } from '../../src/enums/role-id';
 import { LevelPresetId } from '../../src/types/level-preset-id';
 
-export class PlayersManagerHelper {
-  static addPlayersAndAssignRoles(manager: PlayersManager, number: number) {
-    PlayersManagerHelper.fillPlayers(manager, number);
-    PlayersManagerHelper.assignRoles(manager);
+export class PlayerManagerHelper {
+  static addPlayersAndAssignRoles(manager: PlayerManager, number: number) {
+    PlayerManagerHelper.fillPlayers(manager, number);
+    PlayerManagerHelper.assignRoles(manager);
   }
 
-  static fillPlayers(manager: PlayersManager, number: number) {
+  static fillPlayers(manager: PlayerManager, number: number) {
     _.times(number, (i: number) => manager.add(new Player(`user-${i}`)));
   }
 
-  static assignRoles(manager: PlayersManager) {
+  static assignRoles(manager: PlayerManager) {
     manager.assignRoles(
       new LevelPreset(manager.getAll().length as LevelPresetId),
     );
   }
 
-  static getAssassin(manager: PlayersManager) {
+  static getAssassin(manager: PlayerManager) {
     return manager.getAll().find((p) => p.isAssassin());
   }
 
-  static getMerlin(manager: PlayersManager) {
+  static getMerlin(manager: PlayerManager) {
     return manager.getAll().find((p) => p.getRole().getId() === RoleId.Merlin);
   }
 
-  static getProposedPlayers(manager: PlayersManager) {
+  static getProposedPlayers(manager: PlayerManager) {
     const id = manager.getAll()[0].getId();
 
     return manager
@@ -39,14 +39,14 @@ export class PlayersManagerHelper {
       );
   }
 
-  static getNonAssassin(manager: PlayersManager) {
-    const assassinsId = PlayersManagerHelper.getAssassin(manager).getId();
+  static getNonAssassin(manager: PlayerManager) {
+    const assassinsId = PlayerManagerHelper.getAssassin(manager).getId();
 
     return manager.getAll().find((p) => p.getId() !== assassinsId);
   }
 
-  static getNonAssassinNonMerlin(manager: PlayersManager) {
-    const assassinsId = PlayersManagerHelper.getAssassin(manager).getId();
+  static getNonAssassinNonMerlin(manager: PlayerManager) {
+    const assassinsId = PlayerManagerHelper.getAssassin(manager).getId();
 
     return manager.getAll().find((p) => {
       return p.getId() !== assassinsId && p.getRole().getId() !== RoleId.Merlin;

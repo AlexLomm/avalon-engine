@@ -1,12 +1,12 @@
 import { Game } from '../../../src/game';
-import { PlayersManager } from '../../../src/players-manager';
+import { PlayerManager } from '../../../src/player-manager';
 import { TeamPropositionState } from '../../../src/game-states/team-proposition-state';
 import { GameEvent } from '../../../src/enums/game-event';
 
-jest.mock('../../../src/players-manager');
+jest.mock('../../../src/player-manager');
 
 test('should emit an event upon team proposition', () => {
-  const playersManager = new PlayersManager();
+  const playersManager = new PlayerManager();
   playersManager.playerPropositionAllowedFor = jest
     .fn()
     .mockImplementation(() => true);

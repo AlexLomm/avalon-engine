@@ -6,7 +6,7 @@ import { RolesAssigner } from './roles-assigner';
 import { PlayersManagerSerialized } from './types/players-manager-serialized';
 import { RoleId } from './enums/role-id';
 
-export class PlayersManager {
+export class PlayerManager {
   private players: Player[] = [];
   private isSubmitted: boolean = false;
   private proposedPlayers: Player[] = [];
@@ -197,9 +197,9 @@ export class PlayersManager {
     return {
       collection: this.serializePlayers(forPlayer, rolesConcealed),
       proposedPlayerIds: this.proposedPlayers.map((p) => p.getId()),
-      leaderId: PlayersManager.getIdOrNull(this.getLeader()),
+      leaderId: PlayerManager.getIdOrNull(this.getLeader()),
       isSubmitted: this.isSubmitted,
-      victimId: PlayersManager.getIdOrNull(this.victim),
+      victimId: PlayerManager.getIdOrNull(this.victim),
     };
   }
 

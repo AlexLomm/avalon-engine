@@ -1,13 +1,13 @@
 import * as _ from 'lodash';
 import * as fromErrors from '../../src/errors';
 import { Game } from '../../src/game';
-import { PlayersManager } from '../../src/players-manager';
-import { QuestsManager } from '../../src/quests-manager';
+import { PlayerManager } from '../../src/player-manager';
+import { QuestManager } from '../../src/quest-manager';
 import { PreparationState } from '../../src/game-states/preparation-state';
 import { GameMetaData } from '../../src/game-meta-data';
 import { GameStateMachine } from '../../src/game-states/game-state-machine';
 import { GameHelper } from '../helpers/game.helper';
-import { PlayersManagerHelper } from '../helpers/players-manager.helper';
+import { PlayerManagerHelper } from '../helpers/player-manager.helper';
 import { GameStatus } from '../../src/enums/game-status';
 import { GameState } from '../../src/enums/game-state';
 import { GameEvent } from '../../src/enums/game-event';
@@ -52,7 +52,7 @@ describe('game start', () => {
   });
 
   test('should assign roles', () => {
-    const playersManager = new PlayersManager();
+    const playersManager = new PlayerManager();
     const game = new Game(playersManager);
     jest.spyOn(playersManager, 'assignRoles');
 
@@ -66,8 +66,8 @@ describe('game start', () => {
   });
 
   test('should initialize quests', () => {
-    const questsManager = new QuestsManager();
-    const game = new Game(new PlayersManager(), questsManager);
+    const questsManager = new QuestManager();
+    const game = new Game(new PlayerManager(), questsManager);
     jest.spyOn(questsManager, 'init');
 
     _.times(5, (i) => game.addPlayer(`user-${i}`));
@@ -82,12 +82,12 @@ describe('game start', () => {
 
 describe('post "reveal roles" phase', () => {
   let game: Game;
-  let playersManager: PlayersManager;
-  let questsManager: QuestsManager;
+  let playersManager: PlayerManager;
+  let questsManager: QuestManager;
 
   beforeEach(async () => {
-    playersManager = new PlayersManager();
-    questsManager = new QuestsManager();
+    playersManager = new PlayerManager();
+    questsManager = new QuestManager();
     game = new Game(
       playersManager,
       questsManager,
@@ -415,8 +415,8 @@ describe('post "reveal roles" phase', () => {
 
   describe('assassination', () => {
     test('should throw if it is not an appropriate time to propose a victim', () => {
-      const assassin = PlayersManagerHelper.getAssassin(playersManager);
-      const victim = PlayersManagerHelper.getNonAssassin(playersManager);
+      const assassin = PlayerManagerHelper.getAssassin(playersManager);
+      const victim = PlayerManagerHelper.getNonAssassin(playersManager);
 
       expect(() =>
         game.toggleVictimProposition(assassin.getId(), victim.getId()),
@@ -430,8 +430,8 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should toggle the victim selection', () => {
-      const assassin = PlayersManagerHelper.getAssassin(playersManager);
-      const victim = PlayersManagerHelper.getNonAssassin(playersManager);
+      const assassin = PlayerManagerHelper.getAssassin(playersManager);
+      const victim = PlayerManagerHelper.getNonAssassin(playersManager);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
 
@@ -447,7 +447,7 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should throw if it is not an appropriate time for assassination', () => {
-      const assassin = PlayersManagerHelper.getAssassin(playersManager);
+      const assassin = PlayerManagerHelper.getAssassin(playersManager);
 
       expect(() => game.assassinate(assassin.getId())).toThrow(
         fromErrors.NoTimeForAssassinationError,
@@ -461,8 +461,8 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should persist assassination results', () => {
-      const assassin = PlayersManagerHelper.getAssassin(playersManager);
-      const victim = PlayersManagerHelper.getNonAssassin(playersManager);
+      const assassin = PlayerManagerHelper.getAssassin(playersManager);
+      const victim = PlayerManagerHelper.getNonAssassin(playersManager);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
 
@@ -477,8 +477,8 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should set the game status to "Lost", if the victim was Merlin', () => {
-      const assassin = PlayersManagerHelper.getAssassin(playersManager);
-      const merlin = PlayersManagerHelper.getMerlin(playersManager);
+      const assassin = PlayerManagerHelper.getAssassin(playersManager);
+      const merlin = PlayerManagerHelper.getMerlin(playersManager);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
 
@@ -489,9 +489,9 @@ describe('post "reveal roles" phase', () => {
     });
 
     test('should set the game status to "Won", if the victim was not Merlin', () => {
-      const assassin = PlayersManagerHelper.getAssassin(playersManager);
+      const assassin = PlayerManagerHelper.getAssassin(playersManager);
       const nonMerlin =
-        PlayersManagerHelper.getNonAssassinNonMerlin(playersManager);
+        PlayerManagerHelper.getNonAssassinNonMerlin(playersManager);
 
       GameHelper.passQuestsWithResults(game, [true, true, true]);
 
@@ -504,12 +504,12 @@ describe('post "reveal roles" phase', () => {
 });
 
 describe('serialization', () => {
-  let playersManager: PlayersManager;
-  let questsManager: QuestsManager;
+  let playersManager: PlayerManager;
+  let questsManager: QuestManager;
   let game: Game;
   beforeEach(() => {
-    playersManager = new PlayersManager();
-    questsManager = new QuestsManager();
+    playersManager = new PlayerManager();
+    questsManager = new QuestManager();
     game = new Game(
       playersManager,
       questsManager,
@@ -549,12 +549,12 @@ describe('serialization', () => {
 });
 
 describe('event emission', () => {
-  let playersManager: PlayersManager;
-  let questsManager: QuestsManager;
+  let playersManager: PlayerManager;
+  let questsManager: QuestManager;
   let game: Game;
   beforeEach(() => {
-    playersManager = new PlayersManager();
-    questsManager = new QuestsManager();
+    playersManager = new PlayerManager();
+    questsManager = new QuestManager();
     game = new Game(
       playersManager,
       questsManager,

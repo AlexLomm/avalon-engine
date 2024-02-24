@@ -4,7 +4,7 @@ import { Vote } from './vote';
 import { QuestsManagerSerialized } from './types/quests-manager-serialized';
 import { QuestStatus } from './enums/quest-status';
 
-export class QuestsManager {
+export class QuestManager {
   private levelPreset: LevelPreset = null;
   private quests: Quest[] = [];
   private currentQuestIndex: number = 0;

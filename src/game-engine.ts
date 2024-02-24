@@ -1,8 +1,8 @@
 import EventEmitter from 'events';
 import { GameStateMachine } from './game-states/game-state-machine';
 import { Game } from './game';
-import { PlayersManager } from './players-manager';
-import { QuestsManager } from './quests-manager';
+import { PlayerManager } from './player-manager';
+import { QuestManager } from './quest-manager';
 import { GameMetaData } from './game-meta-data';
 import { PreparationState } from './game-states/preparation-state';
 import { IGameClientApi } from './interfaces/game-client-api';
@@ -25,8 +25,8 @@ export class GameEngine implements IGameClientApi, IIdentifiable {
 
   constructor(config: GameConfig = defaultConfig) {
     this.game = new Game(
-      new PlayersManager(),
-      new QuestsManager(),
+      new PlayerManager(),
+      new QuestManager(),
       new GameMetaData(),
       new GameStateMachine(config.stateTransitionWaitTimes),
       new PreparationState(),
