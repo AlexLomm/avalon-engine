@@ -20,7 +20,7 @@ const defaultConfig: GameConfig = {
   },
 };
 
-export class GameClient implements IGameClientApi, IIdentifiable {
+export class GameEngine implements IGameClientApi, IIdentifiable {
   private game: Game;
 
   constructor(config: GameConfig = defaultConfig) {
