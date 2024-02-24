@@ -2,6 +2,7 @@ import * as fromErrors from '../../src/errors';
 import { LevelPreset } from '../../src/level-preset';
 
 test('should throw if the specified number of players is incorrect', () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   expect(() => new LevelPreset(100 as any)).toThrow(
     fromErrors.PlayersAmountIncorrectError,
   );

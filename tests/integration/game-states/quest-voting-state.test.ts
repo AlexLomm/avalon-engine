@@ -24,6 +24,6 @@ test('should emit an event upon adding a player', () => {
 
   state.voteForQuest(game, 'user-1', true);
 
-  expect(game.emit).toBeCalledTimes(1);
+  expect(game.emit).toHaveBeenCalledTimes(1);
   expect(game.emit).toBeCalledWith(GameEvent.StateChange);
 });

@@ -18,6 +18,6 @@ test('should emit an event upon team proposition', () => {
 
   state.toggleTeammateProposition(game, 'user-1', 'user-2');
 
-  expect(game.emit).toBeCalledTimes(1);
+  expect(game.emit).toHaveBeenCalledTimes(1);
   expect(game.emit).toBeCalledWith(GameEvent.StateChange);
 });

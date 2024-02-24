@@ -455,7 +455,9 @@ describe('serialization', () => {
 
     manager.serialize('user-1', true);
 
-    manager.getAll().forEach((p) => expect(p.serialize).toBeCalledTimes(1));
+    manager
+      .getAll()
+      .forEach((p) => expect(p.serialize).toHaveBeenCalledTimes(1));
   });
 
   test('should contain proposed player ids', () => {

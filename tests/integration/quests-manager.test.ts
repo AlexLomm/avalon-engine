@@ -100,7 +100,7 @@ describe('team voting', () => {
 
     manager.addVote(new Vote('user-1', true));
 
-    expect(currentQuest.addVote).toBeCalledTimes(1);
+    expect(currentQuest.addVote).toHaveBeenCalledTimes(1);
   });
 
   test('should return whether the current team voting was successful or not', () => {
@@ -114,7 +114,7 @@ describe('team voting', () => {
       manager.teamVotingSucceeded(),
     );
 
-    expect(currentQuest.teamVotingSucceeded).toBeCalled();
+    expect(currentQuest.teamVotingSucceeded).toHaveBeenCalled();
   });
 
   test('should return whether the team voting is over or not', () => {
@@ -128,7 +128,7 @@ describe('team voting', () => {
       manager.teamVotingRoundFinished(),
     );
 
-    expect(currentQuest.teamVotingRoundFinished).toBeCalled();
+    expect(currentQuest.teamVotingRoundFinished).toHaveBeenCalled();
   });
 
   test("should return whether it's the last round of team voting", () => {
@@ -138,7 +138,7 @@ describe('team voting', () => {
       manager.isLastRoundOfTeamVoting(),
     );
 
-    expect(currentQuest.isLastRoundOfTeamVoting).toBeCalled();
+    expect(currentQuest.isLastRoundOfTeamVoting).toHaveBeenCalled();
   });
 });
 

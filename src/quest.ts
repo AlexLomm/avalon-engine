@@ -177,7 +177,7 @@ export class Quest {
 
     const votes = this.questVotes.map((v) => new Vote(null, v.getValue()));
 
-    votes.sort((a: Vote, b: Vote) => (a.getValue() ? -1 : 1));
+    votes.sort((a: Vote) => (a.getValue() ? -1 : 1));
 
     return votes.map((vote) => vote.serialize());
   }

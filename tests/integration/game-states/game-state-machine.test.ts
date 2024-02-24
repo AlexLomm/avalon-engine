@@ -39,7 +39,7 @@ describe('transition', () => {
 
     jest.runAllTimers();
 
-    expect(spy).toBeCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
   test('should be called exactly after the specified time', () => {
@@ -49,11 +49,11 @@ describe('transition', () => {
 
     jest.advanceTimersByTime(4500);
 
-    expect(spy).not.toBeCalled();
+    expect(spy).not.toHaveBeenCalled();
 
     jest.advanceTimersByTime(500);
 
-    expect(spy).toBeCalled();
+    expect(spy).toHaveBeenCalled();
   });
 });
 
@@ -168,11 +168,11 @@ describe('timed transitions', () => {
 
       jest.advanceTimersByTime(expectedWait * 0.95);
 
-      expect(spy).not.toBeCalled();
+      expect(spy).not.toHaveBeenCalled();
 
       jest.advanceTimersByTime(expectedWait * 0.05);
 
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
@@ -211,15 +211,8 @@ describe('instant transitions', () => {
 
   let game: Game;
   let machine: GameStateMachine;
-  let defaultWait: GameStateTransitionWaitTimes;
   beforeEach(() => {
     jest.useFakeTimers();
-
-    defaultWait = {
-      afterTeamProposition: 5000,
-      afterTeamVoting: 5000,
-      afterQuestVoting: 5000,
-    };
 
     game = new Game();
 
@@ -238,7 +231,7 @@ describe('instant transitions', () => {
 
       machine.transitionTo(to);
 
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 

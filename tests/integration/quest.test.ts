@@ -333,9 +333,9 @@ describe('serialization', () => {
     quest.addVote(new Vote('user-4', true));
     quest.addVote(new Vote('user-5', true));
 
-    const votes = (quest.serialize(false, false).questVotes as Array<any>).map(
-      (obj: any) => obj.value,
-    );
+    const votes = quest
+      .serialize(false, false)
+      .questVotes.map((obj) => obj.value);
 
     expect(votes).toEqual([true, true, true, false, false]);
   });

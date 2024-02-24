@@ -3,6 +3,7 @@ import { Game } from '../game';
 import { RoleId } from '../enums/role-id';
 import { GameSerialized } from '../types/game-serialized';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export abstract class BaseState {
   protected abstract resultsConcealed: boolean;
   protected abstract rolesConcealed: boolean;
@@ -59,3 +60,4 @@ export abstract class BaseState {
     };
   }
 }
+/* eslint-enable @typescript-eslint/no-unused-vars */

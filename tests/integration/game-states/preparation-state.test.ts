@@ -14,7 +14,7 @@ test('should emit an event upon adding a player', () => {
 
   state.addPlayer(game, 'user-1');
 
-  expect(game.emit).toBeCalledTimes(1);
+  expect(game.emit).toHaveBeenCalledTimes(1);
   expect(game.emit).toBeCalledWith(GameEvent.StateChange);
 });
 
@@ -29,6 +29,6 @@ test('should emit an event upon removing a player', () => {
 
   state.removePlayer(game, 'user-1');
 
-  expect(game.emit).toBeCalledTimes(1);
+  expect(game.emit).toHaveBeenCalledTimes(1);
   expect(game.emit).toBeCalledWith(GameEvent.StateChange);
 });

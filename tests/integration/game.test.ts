@@ -28,7 +28,7 @@ describe('game start', () => {
 
     game.addPlayer('user-1');
 
-    expect(game.getMetaData().setCreatorOnce).toBeCalled();
+    expect(game.getMetaData().setCreatorOnce).toHaveBeenCalled();
   });
 
   test('should not add a player when the game is started', () => {
@@ -58,11 +58,11 @@ describe('game start', () => {
 
     _.times(5, (i) => game.addPlayer(`user-${i}`));
 
-    expect(playersManager.assignRoles).toBeCalledTimes(0);
+    expect(playersManager.assignRoles).toHaveBeenCalledTimes(0);
 
     game.start();
 
-    expect(playersManager.assignRoles).toBeCalledTimes(1);
+    expect(playersManager.assignRoles).toHaveBeenCalledTimes(1);
   });
 
   test('should initialize quests', () => {
@@ -72,11 +72,11 @@ describe('game start', () => {
 
     _.times(5, (i) => game.addPlayer(`user-${i}`));
 
-    expect(questsManager.init).toBeCalledTimes(0);
+    expect(questsManager.init).toHaveBeenCalledTimes(0);
 
     game.start();
 
-    expect(questsManager.init).toBeCalledTimes(1);
+    expect(questsManager.init).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -128,7 +128,7 @@ describe('post "reveal roles" phase', () => {
 
       game.toggleTeammateProposition(leader.getId(), 'user-3');
 
-      expect(playersManager.togglePlayerProposition).toBeCalledTimes(1);
+      expect(playersManager.togglePlayerProposition).toHaveBeenCalledTimes(1);
     });
 
     test('should disallow any further propositions once the team is submitted', () => {
@@ -222,7 +222,7 @@ describe('post "reveal roles" phase', () => {
       jest.spyOn(questsManager, 'addVote');
       game.voteForTeam('user-1', true);
 
-      expect(questsManager.addVote).toBeCalledTimes(1);
+      expect(questsManager.addVote).toHaveBeenCalledTimes(1);
     });
 
     test('should reset the votes when the team voting was successful', () => {
@@ -349,7 +349,7 @@ describe('post "reveal roles" phase', () => {
 
       game.voteForQuest('user-1', true);
 
-      expect(questsManager.addVote).toBeCalledTimes(1);
+      expect(questsManager.addVote).toHaveBeenCalledTimes(1);
     });
 
     test('should reset the votes after every proposed player has voted', () => {
@@ -439,7 +439,7 @@ describe('post "reveal roles" phase', () => {
 
       game.toggleVictimProposition(assassin.getId(), victim.getId());
 
-      expect(playersManager.toggleVictimProposition).toBeCalledTimes(1);
+      expect(playersManager.toggleVictimProposition).toHaveBeenCalledTimes(1);
       expect(playersManager.toggleVictimProposition).toBeCalledWith(
         assassin.getId(),
         victim.getId(),
@@ -472,8 +472,8 @@ describe('post "reveal roles" phase', () => {
       game.toggleVictimProposition(assassin.getId(), victim.getId());
       game.assassinate(assassin.getId());
 
-      expect(playersManager.assassinate).toBeCalledTimes(1);
-      expect(game.getMetaData().finish).toBeCalledTimes(1);
+      expect(playersManager.assassinate).toHaveBeenCalledTimes(1);
+      expect(game.getMetaData().finish).toHaveBeenCalledTimes(1);
     });
 
     test('should set the game status to "Lost", if the victim was Merlin', () => {
