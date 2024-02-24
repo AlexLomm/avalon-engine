@@ -8,18 +8,18 @@ export class Quest {
   private votesNeededCount: number;
   private failsNeededCount: number;
   private totalPlayers: number;
-  private teamVoteRounds: Vote[][]     = [[], [], [], [], []];
+  private teamVoteRounds: Vote[][] = [[], [], [], [], []];
   private teamVotingRoundIndex: number = 0;
-  private questVotes: Vote[]           = [];
+  private questVotes: Vote[] = [];
 
   constructor(config: {
-    votesNeededCount: number,
-    failsNeededCount: number,
-    totalPlayers: number
+    votesNeededCount: number;
+    failsNeededCount: number;
+    totalPlayers: number;
   }) {
     this.votesNeededCount = config.votesNeededCount;
     this.failsNeededCount = config.failsNeededCount;
-    this.totalPlayers     = config.totalPlayers;
+    this.totalPlayers = config.totalPlayers;
   }
 
   getVotesNeededCount() {
@@ -57,7 +57,8 @@ export class Quest {
 
   private failsCount() {
     return this.questVotes.reduce(
-      (acc, vote) => vote.getValue() ? acc : acc + 1, 0,
+      (acc, vote) => (vote.getValue() ? acc : acc + 1),
+      0,
     );
   }
 
@@ -82,8 +83,10 @@ export class Quest {
   }
 
   questVotingAllowed() {
-    return this.teamVotingSucceeded()
-      && this.questVotes.length < this.votesNeededCount;
+    return (
+      this.teamVotingSucceeded() &&
+      this.questVotes.length < this.votesNeededCount
+    );
   }
 
   teamVotingSucceeded() {
@@ -94,15 +97,18 @@ export class Quest {
     const currentRound = this.getCurrentTeamVotingRound();
 
     const rejectsCount = currentRound.reduce(
-      (acc, vote) => vote.getValue() ? acc : acc + 1, 0,
+      (acc, vote) => (vote.getValue() ? acc : acc + 1),
+      0,
     );
 
     return rejectsCount < Math.ceil(currentRound.length / 2);
   }
 
   teamVotingAllowed() {
-    return this.getCurrentTeamVotingRound().length < this.totalPlayers
-      || !this.majorityApproved();
+    return (
+      this.getCurrentTeamVotingRound().length < this.totalPlayers ||
+      !this.majorityApproved()
+    );
   }
 
   teamVotingRoundFinished() {
@@ -112,8 +118,10 @@ export class Quest {
 
     if (!previousRound) return false;
 
-    return this.everybodyVotedFor(previousRound)
-      && this.getCurrentTeamVotingRound().length === 0;
+    return (
+      this.everybodyVotedFor(previousRound) &&
+      this.getCurrentTeamVotingRound().length === 0
+    );
   }
 
   private getPreviousTeamVotingRound() {
@@ -142,7 +150,10 @@ export class Quest {
     };
   }
 
-  private getSerializedTeamVotes(votesOmitted: boolean, resultsConcealed: boolean): VoteSerialized[] {
+  private getSerializedTeamVotes(
+    votesOmitted: boolean,
+    resultsConcealed: boolean,
+  ): VoteSerialized[] {
     if (votesOmitted || this.questVotingAllowed() || this.isComplete()) {
       return [];
     }
@@ -150,21 +161,24 @@ export class Quest {
     const votes = this.getCurrentTeamVotingRound();
 
     return resultsConcealed
-      ? votes.map(v => new Vote(v.getId(), null).serialize())
-      : votes.map(v => v.serialize());
+      ? votes.map((v) => new Vote(v.getId(), null).serialize())
+      : votes.map((v) => v.serialize());
   }
 
-  private getSerializedQuestVotes(votesOmitted: boolean, resultsConcealed: boolean): VoteSerialized[] {
+  private getSerializedQuestVotes(
+    votesOmitted: boolean,
+    resultsConcealed: boolean,
+  ): VoteSerialized[] {
     if (votesOmitted) return [];
 
     if (resultsConcealed) {
       return this.questVotes.map((v) => new Vote(v.getId(), null).serialize());
     }
 
-    const votes = this.questVotes.map(v => new Vote(null, v.getValue()));
+    const votes = this.questVotes.map((v) => new Vote(null, v.getValue()));
 
-    votes.sort((a: Vote, b: Vote) => a.getValue() ? -1 : 1);
+    votes.sort((a: Vote, b: Vote) => (a.getValue() ? -1 : 1));
 
-    return votes.map(vote => vote.serialize());
+    return votes.map((vote) => vote.serialize());
   }
 }

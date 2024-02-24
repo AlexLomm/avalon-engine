@@ -8,4 +8,4 @@ export type GameMetaDataSerialized = {
   levelPreset: LevelPresetSerialized;
   status: string;
   creatorId: string;
-}
+};

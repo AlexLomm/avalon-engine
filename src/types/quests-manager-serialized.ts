@@ -4,4 +4,4 @@ export type QuestsManagerSerialized = {
   collection: QuestSerialized[];
   currentQuestIndex: number;
   teamVotingRoundIndex: number;
-}
+};

@@ -5,7 +5,11 @@ import { Quest } from '../../src/quest';
 import { LevelPreset } from '../../src/level-preset';
 import { QuestsManagerSerialized } from '../../src/types/quests-manager-serialized';
 
-function resolveQuestsTimes(manager: QuestsManager, voteValue: boolean, times: number) {
+function resolveQuestsTimes(
+  manager: QuestsManager,
+  voteValue: boolean,
+  times: number,
+) {
   _.times(times, () => {
     // approve the team
     _.times(manager.getLevelPreset().getPlayerCount(), (i: number) => {
@@ -58,7 +62,7 @@ describe('current quest', () => {
   let preset: LevelPreset;
   beforeEach(() => {
     manager = new QuestsManager();
-    preset  = new LevelPreset(5);
+    preset = new LevelPreset(5);
 
     manager.init(preset);
   });
@@ -84,7 +88,7 @@ describe('team voting', () => {
   let currentQuest: Quest;
   beforeEach(() => {
     manager = new QuestsManager();
-    preset  = new LevelPreset(5);
+    preset = new LevelPreset(5);
 
     manager.init(preset);
 
@@ -102,10 +106,13 @@ describe('team voting', () => {
   test('should return whether the current team voting was successful or not', () => {
     jest.spyOn(currentQuest, 'teamVotingSucceeded');
 
-    _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(`user-${i}`, true)));
+    _.times(preset.getPlayerCount(), (i) =>
+      manager.addVote(new Vote(`user-${i}`, true)),
+    );
 
-    expect(currentQuest.teamVotingSucceeded())
-      .toStrictEqual(manager.teamVotingSucceeded());
+    expect(currentQuest.teamVotingSucceeded()).toStrictEqual(
+      manager.teamVotingSucceeded(),
+    );
 
     expect(currentQuest.teamVotingSucceeded).toBeCalled();
   });
@@ -113,19 +120,23 @@ describe('team voting', () => {
   test('should return whether the team voting is over or not', () => {
     jest.spyOn(currentQuest, 'teamVotingRoundFinished');
 
-    _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(`user-${i}`, false)));
+    _.times(preset.getPlayerCount(), (i) =>
+      manager.addVote(new Vote(`user-${i}`, false)),
+    );
 
-    expect(currentQuest.teamVotingRoundFinished())
-      .toStrictEqual(manager.teamVotingRoundFinished());
+    expect(currentQuest.teamVotingRoundFinished()).toStrictEqual(
+      manager.teamVotingRoundFinished(),
+    );
 
     expect(currentQuest.teamVotingRoundFinished).toBeCalled();
   });
 
-  test('should return whether it\'s the last round of team voting', () => {
+  test("should return whether it's the last round of team voting", () => {
     jest.spyOn(currentQuest, 'isLastRoundOfTeamVoting');
 
-    expect(currentQuest.isLastRoundOfTeamVoting())
-      .toStrictEqual(manager.isLastRoundOfTeamVoting());
+    expect(currentQuest.isLastRoundOfTeamVoting()).toStrictEqual(
+      manager.isLastRoundOfTeamVoting(),
+    );
 
     expect(currentQuest.isLastRoundOfTeamVoting).toBeCalled();
   });
@@ -157,7 +168,7 @@ describe('serialization', () => {
 
   test('should contain a team voting round tracker', () => {
     const manager = new QuestsManager();
-    const preset  = new LevelPreset(5);
+    const preset = new LevelPreset(5);
     manager.init(preset);
 
     const currentQuest = manager.getCurrentQuest();
@@ -165,8 +176,9 @@ describe('serialization', () => {
       currentQuest.addVote(new Vote(`user-${i}`, false));
     });
 
-    expect(manager.serialize(false).teamVotingRoundIndex)
-      .toEqual(currentQuest.getTeamVotingRoundIndex());
+    expect(manager.serialize(false).teamVotingRoundIndex).toEqual(
+      currentQuest.getTeamVotingRoundIndex(),
+    );
   });
 
   test('should reveal votes only for the current quest', () => {

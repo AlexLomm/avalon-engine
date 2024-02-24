@@ -6,7 +6,7 @@ export const rolesConfig: RolesConfig = {
   [RoleId.Unknown]: {
     id: RoleId.Unknown,
     name: 'Unknown',
-    description: 'The player\'s identity isn\'t known',
+    description: "The player's identity isn't known",
     loyalty: Loyalty.Unknown,
     visibleRoleIds: [],
   },
@@ -30,10 +30,7 @@ export const rolesConfig: RolesConfig = {
     name: 'Percival',
     description: 'Sees Merlin and Morgana, does not know which is which',
     loyalty: Loyalty.Good,
-    visibleRoleIds: [
-      RoleId.Merlin,
-      RoleId.Morgana,
-    ],
+    visibleRoleIds: [RoleId.Merlin, RoleId.Morgana],
   },
   [RoleId.Servant_1]: {
     id: RoleId.Servant_1,
@@ -99,7 +96,8 @@ export const rolesConfig: RolesConfig = {
   [RoleId.Assassin]: {
     id: RoleId.Assassin,
     name: 'Assassin',
-    description: 'Gets to guess who Merlin is, if the team Good wins. Sees other evil guys',
+    description:
+      'Gets to guess who Merlin is, if the team Good wins. Sees other evil guys',
     loyalty: Loyalty.Evil,
     visibleRoleIds: [
       RoleId.Morgana,

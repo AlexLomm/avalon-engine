@@ -39,7 +39,11 @@ export abstract class BaseState {
     throw new fromErrors.NoTimeForQuestVotingError();
   }
 
-  toggleVictimProposition(game: Game, assassinsId: string, victimsId: string): void {
+  toggleVictimProposition(
+    game: Game,
+    assassinsId: string,
+    victimsId: string,
+  ): void {
     throw new fromErrors.NoTimeVictimPropositionError();
   }
 

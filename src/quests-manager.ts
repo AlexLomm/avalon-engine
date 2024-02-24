@@ -5,57 +5,53 @@ import { QuestsManagerSerialized } from './types/quests-manager-serialized';
 import { QuestStatus } from './enums/quest-status';
 
 export class QuestsManager {
-  private levelPreset: LevelPreset  = null;
-  private quests: Quest[]           = [];
+  private levelPreset: LevelPreset = null;
+  private quests: Quest[] = [];
   private currentQuestIndex: number = 0;
 
-  constructor() {
-  }
+  constructor() {}
 
   getLevelPreset() {
     return this.levelPreset;
-  };
+  }
 
   getAll() {
     return this.quests;
-  };
+  }
 
   init(levelPreset: LevelPreset) {
     this.levelPreset = levelPreset;
 
     this.quests = this.levelPreset.getQuestsConfig().map(
       // TODO: add types
-      (config) => new Quest({
-        votesNeededCount: config.votesNeededCount,
-        failsNeededCount: config.failsNeededCount,
-        totalPlayers: this.levelPreset.getPlayerCount(),
-      }),
+      (config) =>
+        new Quest({
+          votesNeededCount: config.votesNeededCount,
+          failsNeededCount: config.failsNeededCount,
+          totalPlayers: this.levelPreset.getPlayerCount(),
+        }),
     );
-  };
+  }
 
   addVote(vote: Vote) {
     this.getCurrentQuest().addVote(vote);
-  };
+  }
 
   getFailedQuestsCount() {
-    return this.quests
-      .filter((q) => q.getStatus() === QuestStatus.Lost)
-      .length;
-  };
+    return this.quests.filter((q) => q.getStatus() === QuestStatus.Lost).length;
+  }
 
   getSucceededQuestsCount() {
-    return this.quests
-      .filter((q) => q.getStatus() === QuestStatus.Won)
-      .length;
-  };
+    return this.quests.filter((q) => q.getStatus() === QuestStatus.Won).length;
+  }
 
   teamVotingRoundFinished() {
     return this.getCurrentQuest().teamVotingRoundFinished();
-  };
+  }
 
   teamVotingSucceeded() {
     return this.getCurrentQuest().teamVotingSucceeded();
-  };
+  }
 
   getVotesNeededCount() {
     return this.getCurrentQuest().getVotesNeededCount();
@@ -68,15 +64,15 @@ export class QuestsManager {
   // TODO: make private
   getCurrentQuest() {
     return this.quests[this.currentQuestIndex];
-  };
+  }
 
   nextQuest() {
     this.currentQuestIndex++;
-  };
+  }
 
   isLastRoundOfTeamVoting() {
     return this.getCurrentQuest().isLastRoundOfTeamVoting();
-  };
+  }
 
   serialize(resultsConcealed: boolean): QuestsManagerSerialized {
     return {
@@ -89,7 +85,7 @@ export class QuestsManager {
   }
 
   private getSerializedQuests(resultsConcealed: boolean) {
-    return this.quests.map(q => {
+    return this.quests.map((q) => {
       const votesOmitted = q !== this.getCurrentQuest();
 
       return q.serialize(votesOmitted, resultsConcealed);
