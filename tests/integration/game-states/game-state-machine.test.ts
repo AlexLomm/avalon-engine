@@ -23,7 +23,7 @@ describe('transition', () => {
   beforeEach(() => {
     jest.useFakeTimers();
 
-    game    = new Game();
+    game = new Game();
     machine = new GameStateMachine({
       afterTeamProposition: 5000,
       afterTeamVoting: 5000,
@@ -39,7 +39,7 @@ describe('transition', () => {
 
     jest.runAllTimers();
 
-    expect(spy).toBeCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
   test('should be called exactly after the specified time', () => {
@@ -49,11 +49,11 @@ describe('transition', () => {
 
     jest.advanceTimersByTime(4500);
 
-    expect(spy).not.toBeCalled();
+    expect(spy).not.toHaveBeenCalled();
 
     jest.advanceTimersByTime(500);
 
-    expect(spy).toBeCalled();
+    expect(spy).toHaveBeenCalled();
   });
 });
 
@@ -63,7 +63,7 @@ describe('events', () => {
   beforeEach(() => {
     jest.useFakeTimers();
 
-    game    = new Game();
+    game = new Game();
     machine = new GameStateMachine();
   });
 
@@ -100,43 +100,43 @@ describe('timed transitions', () => {
       from: GameState.TeamProposition,
       to: GameState.TeamVoting,
       expectedWait: 1000,
-      actualWait: {afterTeamProposition: 1000},
+      actualWait: { afterTeamProposition: 1000 },
     },
     {
       from: GameState.TeamProposition,
       to: GameState.TeamVotingPreApproved,
       expectedWait: 1000,
-      actualWait: {afterTeamProposition: 1000},
+      actualWait: { afterTeamProposition: 1000 },
     },
     {
       from: GameState.TeamVoting,
       to: GameState.TeamProposition,
       expectedWait: 1000,
-      actualWait: {afterTeamVoting: 1000},
+      actualWait: { afterTeamVoting: 1000 },
     },
     {
       from: GameState.TeamVoting,
       to: GameState.QuestVoting,
       expectedWait: 1000,
-      actualWait: {afterTeamVoting: 1000},
+      actualWait: { afterTeamVoting: 1000 },
     },
     {
       from: GameState.TeamVotingPreApproved,
       to: GameState.QuestVoting,
       expectedWait: 1000,
-      actualWait: {afterTeamVoting: 1000},
+      actualWait: { afterTeamVoting: 1000 },
     },
     {
       from: GameState.QuestVoting,
       to: GameState.TeamProposition,
       expectedWait: 1000,
-      actualWait: {afterQuestVoting: 1000},
+      actualWait: { afterQuestVoting: 1000 },
     },
     {
       from: GameState.QuestVoting,
       to: GameState.Assassination,
       expectedWait: 1000,
-      actualWait: {afterQuestVoting: 1000},
+      actualWait: { afterQuestVoting: 1000 },
     },
   ];
 
@@ -154,7 +154,7 @@ describe('timed transitions', () => {
     game = new Game();
   });
 
-  timedTransitions.forEach(({from, to, expectedWait, actualWait}) => {
+  timedTransitions.forEach(({ from, to, expectedWait, actualWait }) => {
     test(`should transition from ${from} to ${to} in exactly ${expectedWait}ms`, () => {
       const machine = new GameStateMachine({
         ...defaultWait,
@@ -168,15 +168,15 @@ describe('timed transitions', () => {
 
       jest.advanceTimersByTime(expectedWait * 0.95);
 
-      expect(spy).not.toBeCalled();
+      expect(spy).not.toHaveBeenCalled();
 
       jest.advanceTimersByTime(expectedWait * 0.05);
 
-      expect(spy).toBeCalled();
+      expect(spy).toHaveBeenCalled();
     });
   });
 
-  timedTransitions.forEach(({from, to}) => {
+  timedTransitions.forEach(({ from, to }) => {
     test(`should fire an event twice, while transitioning from ${from} to ${to}`, () => {
       const machine = new GameStateMachine(defaultWait);
 
@@ -203,23 +203,16 @@ describe('timed transitions', () => {
 
 describe('instant transitions', () => {
   const instantTransitions = [
-    {from: GameState.Preparation, to: GameState.TeamProposition},
-    {from: GameState.Assassination, to: GameState.GameLost},
-    {from: GameState.Assassination, to: GameState.GameWon},
-    {from: GameState.QuestVoting, to: GameState.GameLost},
+    { from: GameState.Preparation, to: GameState.TeamProposition },
+    { from: GameState.Assassination, to: GameState.GameLost },
+    { from: GameState.Assassination, to: GameState.GameWon },
+    { from: GameState.QuestVoting, to: GameState.GameLost },
   ];
 
   let game: Game;
   let machine: GameStateMachine;
-  let defaultWait: GameStateTransitionWaitTimes;
   beforeEach(() => {
     jest.useFakeTimers();
-
-    defaultWait = {
-      afterTeamProposition: 5000,
-      afterTeamVoting: 5000,
-      afterQuestVoting: 5000,
-    };
 
     game = new Game();
 
@@ -230,7 +223,7 @@ describe('instant transitions', () => {
     });
   });
 
-  instantTransitions.forEach(({from, to}) => {
+  instantTransitions.forEach(({ from, to }) => {
     test(`should transition from ${from} to ${to} instantly`, () => {
       machine.init(game, from);
 
@@ -238,11 +231,11 @@ describe('instant transitions', () => {
 
       machine.transitionTo(to);
 
-      expect(spy).toBeCalledTimes(1);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 
-  instantTransitions.forEach(({from, to}) => {
+  instantTransitions.forEach(({ from, to }) => {
     test(`should fire an event, while transitioning from ${from} to ${to}`, () => {
       machine.init(game, from);
 

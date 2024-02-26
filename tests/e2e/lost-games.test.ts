@@ -91,6 +91,8 @@ test('should serialize correctly', () => {
   expect(serialized.meta.status).toEqual('Lost');
 
   // every player should be revealed
-  const unknownPlayers = serialized.players.collection.filter(p => p.role.id === RoleId.Unknown);
+  const unknownPlayers = serialized.players.collection.filter(
+    (p) => p.role.id === RoleId.Unknown,
+  );
   expect(unknownPlayers.length).toStrictEqual(0);
 });

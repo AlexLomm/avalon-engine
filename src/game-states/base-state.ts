@@ -3,9 +3,10 @@ import { Game } from '../game';
 import { RoleId } from '../enums/role-id';
 import { GameSerialized } from '../types/game-serialized';
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export abstract class BaseState {
-  protected abstract resultsConcealed: boolean = true;
-  protected abstract rolesConcealed: boolean   = true;
+  protected abstract resultsConcealed: boolean;
+  protected abstract rolesConcealed: boolean;
 
   addPlayer(game: Game, id: string): void {
     throw new fromErrors.AlreadyStartedGameError();
@@ -39,7 +40,11 @@ export abstract class BaseState {
     throw new fromErrors.NoTimeForQuestVotingError();
   }
 
-  toggleVictimProposition(game: Game, assassinsId: string, victimsId: string): void {
+  toggleVictimProposition(
+    game: Game,
+    assassinsId: string,
+    victimsId: string,
+  ): void {
     throw new fromErrors.NoTimeVictimPropositionError();
   }
 
@@ -55,3 +60,4 @@ export abstract class BaseState {
     };
   }
 }
+/* eslint-enable @typescript-eslint/no-unused-vars */

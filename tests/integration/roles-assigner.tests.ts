@@ -7,7 +7,7 @@ import { RoleId } from '../../src/enums/role-id';
 import { LevelPresetId } from '../../src/types/level-preset-id';
 
 const generateRolesAssigner = (levelPresetId: LevelPresetId): RolesAssigner => {
-  const players     = generatePlayers(levelPresetId);
+  const players = generatePlayers(levelPresetId);
   const levelPreset = new LevelPreset(players.length as LevelPresetId);
 
   return new RolesAssigner(players, levelPreset);
@@ -27,22 +27,25 @@ test('should have a correct number of good and evil players', () => {
 
     let goodCount = 0;
     let evilCount = 0;
-    assigner.assignRoles().forEach(p => {
+    assigner.assignRoles().forEach((p) => {
       const loyalty: Loyalty = p.getRole().getLoyalty();
 
       loyalty === Loyalty.Good ? goodCount++ : evilCount++;
     });
 
-    expect(new LevelPreset(j as LevelPresetId).getGoodCount()).toEqual(goodCount);
-    expect(new LevelPreset(j as LevelPresetId).getEvilCount()).toEqual(evilCount);
+    expect(new LevelPreset(j as LevelPresetId).getGoodCount()).toEqual(
+      goodCount,
+    );
+    expect(new LevelPreset(j as LevelPresetId).getEvilCount()).toEqual(
+      evilCount,
+    );
   }
 });
 
 test('should assign every player a role', () => {
   const assigner = generateRolesAssigner(5);
 
-  const roles = assigner.assignRoles()
-    .filter(p => p.getRole());
+  const roles = assigner.assignRoles().filter((p) => p.getRole());
 
   expect(roles.length).toEqual(8);
 });
@@ -50,18 +53,22 @@ test('should assign every player a role', () => {
 test('should always assign default roles to players', () => {
   const assigner = generateRolesAssigner(5);
 
-  const players = assigner.assignRoles([
-    RoleId.Minion_1,
-  ]);
+  const players = assigner.assignRoles([RoleId.Minion_1]);
 
-  expect(players.find((p: Player) => p.getRole().getId() === RoleId.Merlin)).toBeTruthy();
-  expect(players.find((p: Player) => p.getRole().getId() === RoleId.Assassin)).toBeTruthy();
+  expect(
+    players.find((p: Player) => p.getRole().getId() === RoleId.Merlin),
+  ).toBeTruthy();
+  expect(
+    players.find((p: Player) => p.getRole().getId() === RoleId.Assassin),
+  ).toBeTruthy();
 });
 
 test('should assign every player a unique role', () => {
   const assigner = generateRolesAssigner(5);
 
-  const roleIds = assigner.assignRoles().map(p => p.getRole().getId());
+  const roleIds = assigner.assignRoles().map((p) => p.getRole().getId());
 
-  expect(_.uniqBy(roleIds, (v: RoleId): RoleId => v).length).toEqual(roleIds.length);
+  expect(_.uniqBy(roleIds, (v: RoleId): RoleId => v).length).toEqual(
+    roleIds.length,
+  );
 });

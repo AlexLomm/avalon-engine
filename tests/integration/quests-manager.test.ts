@@ -1,11 +1,15 @@
 import * as _ from 'lodash';
 import { Vote } from '../../src/vote';
-import { QuestsManager } from '../../src/quests-manager';
+import { QuestManager } from '../../src/quest-manager';
 import { Quest } from '../../src/quest';
 import { LevelPreset } from '../../src/level-preset';
 import { QuestsManagerSerialized } from '../../src/types/quests-manager-serialized';
 
-function resolveQuestsTimes(manager: QuestsManager, voteValue: boolean, times: number) {
+function resolveQuestsTimes(
+  manager: QuestManager,
+  voteValue: boolean,
+  times: number,
+) {
   _.times(times, () => {
     // approve the team
     _.times(manager.getLevelPreset().getPlayerCount(), (i: number) => {
@@ -21,17 +25,17 @@ function resolveQuestsTimes(manager: QuestsManager, voteValue: boolean, times: n
   });
 }
 
-function failQuestsTimes(manager: QuestsManager, times: number) {
+function failQuestsTimes(manager: QuestManager, times: number) {
   resolveQuestsTimes(manager, false, times);
 }
 
-function succeedQuestsTimes(manager: QuestsManager, times: number) {
+function succeedQuestsTimes(manager: QuestManager, times: number) {
   resolveQuestsTimes(manager, true, times);
 }
 
 describe('initialization', () => {
   test('should initialize quests', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
 
     expect(manager.getAll().length).toBeFalsy();
 
@@ -42,7 +46,7 @@ describe('initialization', () => {
   });
 
   test('should get level preset', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
 
     expect(manager.getLevelPreset()).toBeFalsy();
 
@@ -54,11 +58,11 @@ describe('initialization', () => {
 });
 
 describe('current quest', () => {
-  let manager: QuestsManager;
+  let manager: QuestManager;
   let preset: LevelPreset;
   beforeEach(() => {
-    manager = new QuestsManager();
-    preset  = new LevelPreset(5);
+    manager = new QuestManager();
+    preset = new LevelPreset(5);
 
     manager.init(preset);
   });
@@ -79,12 +83,12 @@ describe('current quest', () => {
 });
 
 describe('team voting', () => {
-  let manager: QuestsManager;
+  let manager: QuestManager;
   let preset: LevelPreset;
   let currentQuest: Quest;
   beforeEach(() => {
-    manager = new QuestsManager();
-    preset  = new LevelPreset(5);
+    manager = new QuestManager();
+    preset = new LevelPreset(5);
 
     manager.init(preset);
 
@@ -96,44 +100,51 @@ describe('team voting', () => {
 
     manager.addVote(new Vote('user-1', true));
 
-    expect(currentQuest.addVote).toBeCalledTimes(1);
+    expect(currentQuest.addVote).toHaveBeenCalledTimes(1);
   });
 
   test('should return whether the current team voting was successful or not', () => {
     jest.spyOn(currentQuest, 'teamVotingSucceeded');
 
-    _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(`user-${i}`, true)));
+    _.times(preset.getPlayerCount(), (i) =>
+      manager.addVote(new Vote(`user-${i}`, true)),
+    );
 
-    expect(currentQuest.teamVotingSucceeded())
-      .toStrictEqual(manager.teamVotingSucceeded());
+    expect(currentQuest.teamVotingSucceeded()).toStrictEqual(
+      manager.teamVotingSucceeded(),
+    );
 
-    expect(currentQuest.teamVotingSucceeded).toBeCalled();
+    expect(currentQuest.teamVotingSucceeded).toHaveBeenCalled();
   });
 
   test('should return whether the team voting is over or not', () => {
     jest.spyOn(currentQuest, 'teamVotingRoundFinished');
 
-    _.times(preset.getPlayerCount(), (i) => manager.addVote(new Vote(`user-${i}`, false)));
+    _.times(preset.getPlayerCount(), (i) =>
+      manager.addVote(new Vote(`user-${i}`, false)),
+    );
 
-    expect(currentQuest.teamVotingRoundFinished())
-      .toStrictEqual(manager.teamVotingRoundFinished());
+    expect(currentQuest.teamVotingRoundFinished()).toStrictEqual(
+      manager.teamVotingRoundFinished(),
+    );
 
-    expect(currentQuest.teamVotingRoundFinished).toBeCalled();
+    expect(currentQuest.teamVotingRoundFinished).toHaveBeenCalled();
   });
 
-  test('should return whether it\'s the last round of team voting', () => {
+  test("should return whether it's the last round of team voting", () => {
     jest.spyOn(currentQuest, 'isLastRoundOfTeamVoting');
 
-    expect(currentQuest.isLastRoundOfTeamVoting())
-      .toStrictEqual(manager.isLastRoundOfTeamVoting());
+    expect(currentQuest.isLastRoundOfTeamVoting()).toStrictEqual(
+      manager.isLastRoundOfTeamVoting(),
+    );
 
-    expect(currentQuest.isLastRoundOfTeamVoting).toBeCalled();
+    expect(currentQuest.isLastRoundOfTeamVoting).toHaveBeenCalled();
   });
 });
 
 describe('serialization', () => {
   test('should return an empty state', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
 
     const expected: QuestsManagerSerialized = {
       collection: [],
@@ -147,7 +158,7 @@ describe('serialization', () => {
   });
 
   test('should contain serialized quests', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
     manager.init(new LevelPreset(5));
 
     const serializedQuest = manager.getAll()[0].serialize(false, false);
@@ -156,8 +167,8 @@ describe('serialization', () => {
   });
 
   test('should contain a team voting round tracker', () => {
-    const manager = new QuestsManager();
-    const preset  = new LevelPreset(5);
+    const manager = new QuestManager();
+    const preset = new LevelPreset(5);
     manager.init(preset);
 
     const currentQuest = manager.getCurrentQuest();
@@ -165,12 +176,13 @@ describe('serialization', () => {
       currentQuest.addVote(new Vote(`user-${i}`, false));
     });
 
-    expect(manager.serialize(false).teamVotingRoundIndex)
-      .toEqual(currentQuest.getTeamVotingRoundIndex());
+    expect(manager.serialize(false).teamVotingRoundIndex).toEqual(
+      currentQuest.getTeamVotingRoundIndex(),
+    );
   });
 
   test('should reveal votes only for the current quest', () => {
-    const manager = new QuestsManager();
+    const manager = new QuestManager();
     manager.init(new LevelPreset(5));
 
     _.times(5, (i) => manager.addVote(new Vote(`user-${i}`, true)));
@@ -189,7 +201,7 @@ describe('serialization', () => {
 });
 
 test('should get the amount of failed quests', () => {
-  const manager = new QuestsManager();
+  const manager = new QuestManager();
   manager.init(new LevelPreset(7));
 
   succeedQuestsTimes(manager, 2);
@@ -200,7 +212,7 @@ test('should get the amount of failed quests', () => {
 });
 
 test('should get the amount of succeeded quests', () => {
-  const manager = new QuestsManager();
+  const manager = new QuestManager();
   manager.init(new LevelPreset(7));
 
   failQuestsTimes(manager, 1);

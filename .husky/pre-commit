@@ -1,0 +1,5 @@
+npm run docs
+git add ./docs
+npm run lint
+npm run format:staged
+npm run test

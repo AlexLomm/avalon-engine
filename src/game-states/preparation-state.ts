@@ -8,7 +8,7 @@ import { GameState } from '../enums/game-state';
 
 export class PreparationState extends BaseState {
   protected resultsConcealed = true;
-  protected rolesConcealed   = true;
+  protected rolesConcealed = true;
 
   addPlayer(game: Game, id: string) {
     const player = new Player(id);
@@ -26,7 +26,8 @@ export class PreparationState extends BaseState {
   }
 
   start(game: Game, roleIds: RoleId[]) {
-    const playerCount = game.getPlayersManager().getAll().length as LevelPresetId;
+    const playerCount = game.getPlayersManager().getAll()
+      .length as LevelPresetId;
     const levelPreset = game.getMetaData().init(playerCount);
 
     game.getPlayersManager().assignRoles(levelPreset, roleIds);
