@@ -3,7 +3,7 @@
 This is an engine for playing the popular board game - "The Resistance: Avalon".
 
 The library can be interacted with via
-the [GameEngine](https://alexlomm.github.io/avalon-engine/classes/_game_engine_.gameengine.html) class.
+the [GameEngine](https://alexlomm.github.io/avalon-engine/classes/GameEngine.html) class.
 
 Please see the instructions below.
 
